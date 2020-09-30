@@ -14,4 +14,4 @@ jobs:
           name: Build docker 
           command: |
             ls -a
-            docker-compose up -d
+            # docker-compose up -d
