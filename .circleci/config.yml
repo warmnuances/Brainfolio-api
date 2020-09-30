@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/node:12.18.4
-    working_directory: ~/
+    working_directory: ~/repo
     steps:
       - run:
           name: Install Docker Compose
