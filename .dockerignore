@@ -1,0 +1,4 @@
+node_modules
+docker-compose.yml
+.template.env
+README.md
