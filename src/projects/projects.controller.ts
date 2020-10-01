@@ -52,11 +52,11 @@ export class ProjectsController {
                 cacheControl: 'public, max-age=31536000',
               },
             });
-        
-            // console.log(`${filename} uploaded to ${bucketName}.`);
+          
+            console.log(`${files} uploaded to brainfolio-1faf6`);
         }
-
-        uploadFile();
+          
+        uploadFile().catch(console.error);
         console.log(theRest);
 
         
