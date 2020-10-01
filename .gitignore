@@ -41,3 +41,6 @@ lerna-debug.log*
 
 # firebase Config json
 firebaseconfig.json
+
+# files
+/files
