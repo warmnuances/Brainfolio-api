@@ -9,7 +9,6 @@ import { JwtStrategy } from './jwt/jwt-strategy';
 
 @Module({
   imports: [
-  
     MongooseModule.forFeature([{
       name: User.name, 
       schema: UserSchema 
