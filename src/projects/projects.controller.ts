@@ -2,9 +2,14 @@ import { Controller, Get, Post, Put, Delete, Body, Param, ValidationPipe, UseInt
 import { ProjectDto } from './dto/create-project.dto';
 import { ProjectsService } from './projects.service'
 import { Project } from './interfaces/project.interface'
-import {FileFieldsInterceptor} from '@nestjs/platform-express'
+import {FileFieldsInterceptor, FilesInterceptor} from '@nestjs/platform-express'
+import { diskStorage } from 'multer';
+import { editFileName, imageFileFilter } from '../utils/file-uploading.utils';
+import {FileDto} from './dto/project-file.dto'
+
 
 import * as admin from 'firebase-admin';
+import { from } from 'rxjs';
 
 @Controller('projects')
 export class ProjectsController {
@@ -20,50 +25,24 @@ export class ProjectsController {
         return this.projectsService.findOne(param.id);
     }
 
+    // @Post()
+    // create(@Body(ValidationPipe) createProjectDto: ProjectDto): Promise<Project> {
+    //     return this.projectsService.create(createProjectDto);
+    // }
+    
     @Post()
-    create(@Body(ValidationPipe) createProjectDto: ProjectDto): Promise<Project> {
-        return this.projectsService.create(createProjectDto);
+    @UseInterceptors(FilesInterceptor('files',3,
+      {
+        storage: diskStorage({
+          destination: './files',
+          filename: editFileName,
+        }),
+        fileFilter: imageFileFilter,
+      }
+    ))
+    Create(@UploadedFiles() files:[FileDto], @Body(ValidationPipe) createProjectDto: ProjectDto): Promise<Project> {      
+      return this.projectsService.createFiles(files,createProjectDto)
     }
-    
-    @Post('upload')
-    @UseInterceptors(FileFieldsInterceptor([
-      { name: 'avatar', maxCount: 1 },
-      { name: 'background', maxCount: 1 },
-    ]))
-
-
-    uploadFile(@UploadedFiles() files, @Body() theRest: String) {
-
-        var bucket = admin.storage().bucket();
-
-        console.log(bucket);
-         
-        async function uploadFile() {
-            // Uploads a local file to the bucket
-            await bucket.upload(files, {
-              // Support for HTTP requests made with `Accept-Encoding: gzip`
-              gzip: true,
-              // By setting the option `destination`, you can change the name of the
-              // object you are uploading to a bucket.
-              metadata: {
-                // Enable long-lived HTTP caching headers
-                // Use only if the contents of the file will never change
-                // (If the contents will change, use cacheControl: 'no-cache')
-                cacheControl: 'public, max-age=31536000',
-              },
-            });
-          
-            console.log(`${files} uploaded to brainfolio-1faf6`);
-        }
-          
-        uploadFile().catch(console.error);
-        console.log(theRest);
-
-        
-        console.log(files);
-    }
-
-    
     
 
     @Delete(':id')
