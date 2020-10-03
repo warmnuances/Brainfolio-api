@@ -3,8 +3,8 @@ import { JwtService } from '@nestjs/jwt/dist/jwt.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { User } from '../User/user.schema';
-import { IAccessToken } from './jwt/access-token.interface';
+import { User } from './user.schema';
+import { ISignInResponse } from './interfaces/sign-in-response.interface';
 import { JwtPayload } from './jwt/jwt-payload.interface';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user-dto';
@@ -29,7 +29,7 @@ export class AuthService {
   }
 
 
-  async signUp(createUserDto: CreateUserDto): Promise<User>{
+  async signUp(createUserDto: CreateUserDto): Promise<Partial<User>>{
     const { fullname, email, password } = createUserDto;
 
     const User = new this.userModel(createUserDto);
@@ -39,17 +39,23 @@ export class AuthService {
     User.password = await this.hashPassword(password, User.salt);
     
 
-    return await User.save().catch(err =>{
+    await User.save().catch(err =>{
       throw new ConflictException({
         ...err,
         reason:`${(err.code === 11000 && "Duplicate") || "Mongo Input Error"}`
       })
     });
     
+    const newUser: Partial<User> = {
+      fullname: User.fullname,
+      email: User.email
+    }
+
+    return newUser;
   }
 
 
-  async signIn(signInDto: SignInDto) : Promise<IAccessToken>{
+  async signIn(signInDto: SignInDto) : Promise<ISignInResponse>{
 
     const { email, password } = signInDto;
     const user = await this.userModel.findOne({email})
@@ -58,7 +64,13 @@ export class AuthService {
     if(user && await this.validatePassword(password, user)){
       const payload: JwtPayload = { email }
       const accessToken =  this.jwtService.sign(payload);
-      return {accessToken}
+
+
+      return {
+        fullname: user.fullname,
+        email: user.email,
+        accessToken
+      }
     }
     else{
       throw new NotFoundException({
@@ -66,4 +78,5 @@ export class AuthService {
       })
     }
   }
+  
 }

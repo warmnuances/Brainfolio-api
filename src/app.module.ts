@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './Auth/auth.module';
 import { HealthcheckModule } from './Healthcheck/healthcheck.module';
-import { UserModule } from './User/user.module';
 import {MongooseConfig} from './Config/mongoose.config';
 import { ProjectsModule } from './projects/projects.module';
 
@@ -14,11 +13,16 @@ import { ProjectsModule } from './projects/projects.module';
       envFilePath: '.env',
       isGlobal: true
     }),
-    MongooseModule.forRoot(process.env.MONGO_URL, MongooseConfig),
+    MongooseModule.forRoot(
+      process.env.TEST_MONGO, 
+      MongooseConfig
+    ),
     AuthModule,
     HealthcheckModule,
-    UserModule,
     ProjectsModule,
   ]
 })
+
+
+
 export class AppModule {}
