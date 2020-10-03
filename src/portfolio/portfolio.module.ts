@@ -4,11 +4,17 @@ import { PortfolioService } from './portfolio.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PortfolioSchema } from './schemas/portfolio.schema';
 import { AuthModule } from 'src/auth/auth.module';
-import { EducationService } from './education/education.service';
+import { EducationModule } from './education/education.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'Portfolio', schema: PortfolioSchema }]), AuthModule],
+  imports: [
+    MongooseModule.forFeature([{ name: 'Portfolio', schema: PortfolioSchema }]), 
+    AuthModule, 
+    EducationModule
+  ],
   controllers: [PortfolioController],
-  providers: [PortfolioService, EducationService],
+  providers: [PortfolioService],
 })
-export class PortfolioModule {}
+export class PortfolioModule {
+
+}

@@ -16,7 +16,7 @@ export class EducationDto {
     readonly degree: string;
 
     @IsNotEmpty()
-    readonly institution: number;
+    readonly institution: string;
 
     @IsNotEmpty()
     readonly location: string;

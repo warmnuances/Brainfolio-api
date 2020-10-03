@@ -5,7 +5,9 @@ import { AuthModule } from './Auth/auth.module';
 import { HealthcheckModule } from './Healthcheck/healthcheck.module';
 import { UserModule } from './User/user.module';
 import {MongooseConfig} from './Config/mongoose.config';
-import { EducationService } from './education/education.service';
+import {ProjectsModule} from './projects/projects.module';
+import {PortfolioModule} from './portfolio/portfolio.module';
+
 
 //TODO: (Optional) Create ConfigServiceto deserialise vars
 @Module({
@@ -17,8 +19,9 @@ import { EducationService } from './education/education.service';
     MongooseModule.forRoot(process.env.MONGO_URL, MongooseConfig),
     AuthModule,
     HealthcheckModule,
-    UserModule
+    UserModule,
+    ProjectsModule,
+    PortfolioModule
   ],
-  providers: [EducationService]
 })
 export class AppModule {}

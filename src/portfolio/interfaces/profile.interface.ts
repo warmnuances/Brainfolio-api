@@ -6,7 +6,7 @@ export interface Profile extends Document{
     address: string;
     email: string;
     phone: string;
-    relevantLink: number;
+    relevantLink: string;
     linkedIn: string;
     title:string;
     //Profile Image insert

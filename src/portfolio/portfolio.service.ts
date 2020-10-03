@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Portfolio } from './interfaces/portfolio.interface'
 import { PortfolioDto } from './dto/portfolio.dto';
-import { Education } from './interfaces/education.interface'
-import { EducationDto } from './dto/education.dto';
+import { EducationService } from './education/education.service';
+
 import { Experience } from './interfaces/experience.interface'
 import { ExperienceDto } from './dto/experience.dto';
 import { Profile } from './interfaces/profile.interface'

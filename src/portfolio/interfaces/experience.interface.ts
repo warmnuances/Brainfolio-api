@@ -10,7 +10,7 @@ export interface Experience extends Document{
     title: string;
     name: string;
     startDate: string;
-    endDate: number;
+    endDate: string;
     description: string;
 }
 

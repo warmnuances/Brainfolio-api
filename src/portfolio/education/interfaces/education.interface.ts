@@ -6,7 +6,7 @@ export interface Education extends Document{
     endDate: string;
     degree: string;
     institution: string;
-    location: number;
+    location: string;
     score: string;
 }
 
