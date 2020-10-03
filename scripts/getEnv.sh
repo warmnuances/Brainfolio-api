@@ -5,5 +5,5 @@ if [ -f $file ] ; then
     rm $file
 fi
 
-echo "MONGO_URL=$MONGO_URL" >> $file
-echo "SECRET=$SECRET" >> $file
+echo "MONGO_URL=$MONGO_URL">> $file
+echo "SECRET=$SECRET">> $file
