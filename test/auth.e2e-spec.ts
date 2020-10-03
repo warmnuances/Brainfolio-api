@@ -26,9 +26,8 @@ describe('AppController (e2e)', () => {
   });
 
   afterAll(async done => {
-    await mongoose.connection.close()
+    await mongoose.disconnect(done);
     await app.close()
-    await done()
   })
 
 
@@ -39,7 +38,7 @@ describe('AppController (e2e)', () => {
     password: "123456"
   }
 
-  it('should Sign up user', (done) => {
+  it('should Sign up user', async (done) => {
   
   return request(app.getHttpServer())
     .post('/auth/signup')
@@ -48,49 +47,63 @@ describe('AppController (e2e)', () => {
       expect(response.body).toBeDefined()
       expect(response.body.fullname).toBeDefined();
       expect(response.body.email).toBeDefined();
-      // expect(response.body.password).toBeUndefined();
-      // expect(response.body.salt).toBeUndefined();
+      expect(response.body.password).toBeUndefined();
+      expect(response.body.salt).toBeUndefined();
       expect(HttpStatus.CREATED)
-      done()
-    }).then(() => {
       done()
     })
   });
 
-
-  // it('should not Sign up User(Duplicate)', (done) => {
   
-  //   return request(app.getHttpServer())
-  //     .post('/auth/signup')
-  //     .send(user)
-  //     .expect(response => {
-  //       expect(response.body).toBeUndefined()
-  //       expect(response.body.fullname).toBeUndefined();
-  //       expect(response.body.email).toBeUndefined();
-  //       // expect(response.body.password).toBeUndefined();
-  //       // expect(response.body.salt).toBeUndefined();
-  //       expect(HttpStatus.CREATED)
-  //       done()
-  //     }).then(() => {
-  //       done()
-  //     })
-  //   });
+  it('should not Sign up User(Duplicate)', async (done) => {
+  
+    return request(app.getHttpServer())
+      .post('/auth/signup')
+      .send(user)
+      .expect(response => {
+        expect(response.body.fullname).toBeUndefined();
+        expect(response.body.email).toBeUndefined();
+        // expect(response.body.password).toBeUndefined();
+        // expect(response.body.salt).toBeUndefined();
+        expect(HttpStatus.CONFLICT)
+        done()
+      })
+  });
+
+  it('should fail to login (UnAuthorised)', (done) => {
+    const user: SignInDto = {
+      email: "NonExistentEmail@nutz.com",
+      password: "123456"
+    }
+    return request(app.getHttpServer())
+      .post('/auth/signin')
+      .send(user)
+      .then(response => {
+        expect(response.body.accessToken).toBeUndefined();
+        expect(response.body.fullname).toBeUndefined();
+        expect(response.body.email).toBeUndefined();
+        expect(HttpStatus.UNAUTHORIZED)
+        done();
+      })
+  });
 
 
-  // it('should login and return JWT', (done) => {
-  //   const user: SignInDto = {
-  //     email: "Deez@nutz.com",
-  //     password: "123456"
-  //   }
-  //   return request(app.getHttpServer())
-  //     .post('/auth/signin')
-  //     .send(user)
-  //     .then(response => {
-  //       expect(response.body.accessToken).toBeDefined();
-  //       expect(response.status).toBe(200);
-  //       done();
-  //     })
-  // });
+  it('should login and return JWT', (done) => {
+    const user: SignInDto = {
+      email: "Deez@nutz.com",
+      password: "123456"
+    }
+    return request(app.getHttpServer())
+      .post('/auth/signin')
+      .send(user)
+      .then(response => {
+        expect(response.body.accessToken).toBeDefined();
+        expect(response.body.fullname).toBeDefined();
+        expect(response.body.email).toBeDefined();
+        expect(HttpStatus.OK)
+        done();
+      })
+  });
 
 
 

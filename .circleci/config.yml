@@ -12,10 +12,16 @@ jobs:
           command: |
             bash getEnv.sh
 
+      - run: 
+          name: Run e2e test
+          command: |
+            npm run test:e2e
+
       - run:
           name: Push to master branch
           command: |
-            bash getEnv.sh
+            echo "Push to master"
+
 
       # - run:
       #     name: Install Docker Compose
