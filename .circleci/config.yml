@@ -7,10 +7,36 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - restore_cache:
+          keys:
+            # Find a cache corresponding to this specific package-lock.json
+            - v1-npm-deps-{{ checksum "package-lock.json" }}
+            # Fallback cache to be used 
+            - v1-npm-deps-
+      - run:
+          name: Install Dependencies
+          command: npm install
+
+      - save_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+
+      - run:
+          name: "Install Firebase CLI"
+          command: |
+            curl -sL firebase.tools | bash
+
       - run: 
           name: Get Environment Variables from CircleCI
           command: |
-            bash getEnv.sh
+            bash scripts/getEnv.sh
+      
+      - run: 
+          name: Get Service Account Key from environment Variables
+          command: |
+            bash scripts/getServiceAccount.sh
+
 
       - run: 
           name: Run e2e test
