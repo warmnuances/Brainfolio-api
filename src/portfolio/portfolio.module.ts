@@ -3,7 +3,7 @@ import { PortfolioController } from './portfolio.controller';
 import { PortfolioService } from './portfolio.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PortfolioSchema } from './schemas/portfolio.schema';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'Portfolio', schema: PortfolioSchema }]), AuthModule],
