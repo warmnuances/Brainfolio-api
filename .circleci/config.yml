@@ -22,11 +22,6 @@ jobs:
           paths:
             - ./node_modules
 
-      - run:
-          name: "Install Firebase CLI"
-          command: |
-            curl -sL firebase.tools | bash
-
       - run: 
           name: Get Environment Variables from CircleCI
           command: |
