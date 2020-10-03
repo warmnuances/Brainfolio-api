@@ -6,7 +6,6 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - setup_remote_docker
       - restore_cache:
           keys:
             # Find a cache corresponding to this specific package-lock.json
@@ -27,7 +26,9 @@ jobs:
           command: |
             bash scripts/getEnv.sh
             ls -a
-            sed -i 's/\s*$//' .env
+            echo $MONGO_URL
+            echo $TEST_MONGO
+            echo $SECRET
       
 
       - run: 
