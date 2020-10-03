@@ -1,4 +1,4 @@
-file=.ex.env
+file=.env
 
 # -f Check if file exists
 if [ -f $file ] ; then
