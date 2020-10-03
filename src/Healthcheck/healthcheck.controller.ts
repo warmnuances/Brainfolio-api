@@ -7,7 +7,7 @@ import { User } from '../User/user.schema';
 
 
 @Controller("/test")
-@UseGuards(AuthGuard())
+// @UseGuards(AuthGuard())
 export class HealthCheckController {
   private start: number;
 

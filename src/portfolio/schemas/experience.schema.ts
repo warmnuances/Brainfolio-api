@@ -7,14 +7,17 @@ export enum experienceType {
 
 @Schema()
 export class Experience extends Document {
-  @Prop({ required: true })
-  Type: experienceType;
+  @Prop()
+  portfolioId: String;
 
   @Prop({ required: true })
-  Title: string;
+  type: experienceType;
 
   @Prop({ required: true })
-  Name: string;
+  title: string;
+
+  @Prop({ required: true })
+  name: string;
 
   @Prop({ required: true })
   startDate: string;

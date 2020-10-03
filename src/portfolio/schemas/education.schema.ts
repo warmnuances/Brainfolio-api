@@ -3,6 +3,10 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Education extends Document {
+  
+  @Prop()
+  portfolioId: String;
+
   @Prop({ required: true })
   startDate: string;
 

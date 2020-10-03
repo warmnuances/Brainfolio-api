@@ -3,6 +3,9 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Profile extends Document {
+  @Prop()
+  portfolioId: String;
+  
   @Prop({ required: true })
   fullName: string;
 

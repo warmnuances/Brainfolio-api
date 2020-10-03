@@ -5,6 +5,7 @@ import { AuthModule } from './Auth/auth.module';
 import { HealthcheckModule } from './Healthcheck/healthcheck.module';
 import { UserModule } from './User/user.module';
 import {MongooseConfig} from './Config/mongoose.config';
+import { EducationService } from './education/education.service';
 
 //TODO: (Optional) Create ConfigServiceto deserialise vars
 @Module({
@@ -17,6 +18,7 @@ import {MongooseConfig} from './Config/mongoose.config';
     AuthModule,
     HealthcheckModule,
     UserModule
-  ]
+  ],
+  providers: [EducationService]
 })
 export class AppModule {}
