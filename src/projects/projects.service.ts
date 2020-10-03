@@ -5,7 +5,10 @@ import { Project } from './interfaces/project.interface'
 import { ProjectDto } from './dto/create-project.dto';
 import { FileDto } from './dto/project-file.dto';
 
+
+
 import * as admin from 'firebase-admin';
+import * as fs from 'fs';
 
 @Injectable()
 export class ProjectsService {
@@ -26,29 +29,89 @@ export class ProjectsService {
           var imgPath = './files/'+fileName
           // Uploads a local file to the bucket
           await bucket.upload(imgPath, {
-            gzip: true,
-            metadata: {
-              cacheControl: 'public, max-age=31536000',
-            },
+
+            // gzip: true,
+            // metadata: {
+            //   cacheControl: 'public, max-age=31536000',
+            // },
           });
           console.log(`uploaded to brainfolio-1faf6`);
-        }
-        
-        files.forEach(file => {
-            uploadFile(file.filename).catch(console.error);
-        });    
 
+        }
+
+        var projectFileName = [];
+        files.forEach(file => {  
+            console.log('upload');
+                      
+            uploadFile(file.filename).catch(console.error);
+            projectFileName.push(file.filename);
+        });
+
+        // projectFileName.forEach(filename =>{
+        //     console.log('DELETE');
+            
+        //     var path = './files/' + filename;
+        //     try {
+        //         fs.unlinkSync(path)
+        //         //file removed
+        //       } catch(err) {
+        //         console.error(err)
+        //       }
+        // })
+
+        project["projectFileName"] = projectFileName;
+        
         const newProject = new this.projectModel(project);
         return newProject.save();
     } 
     
-    async findAll(): Promise<Project[]> {
-        return this.projectModel.find().exec();
-    }
+    // async findAll(): Promise<Project[]> {
+    //     return this.projectModel.find().exec();
+    // }
 
 
     async findOne(id: string): Promise<Project> {
-        return await this.projectModel.findOne({_id: id})
+
+        var projectModel = await this.projectModel.findOne({_id: id});
+
+        var fileNames = projectModel.projectFileName;
+        console.log(fileNames);
+        
+
+        function getUrl(fileNames){
+
+            var response = [];
+
+            fileNames.forEach(fileName => {
+            
+            var file = admin.storage().bucket().file(fileName);
+            const config = {
+            action: "read" as const,
+            expires: Date.now() + 1000 * 60 * 3, // 3 minutes
+            };
+            
+            file.getSignedUrl(config, function(err, url) {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            
+            response.push(url);
+            console.log(url);
+            
+            });
+            })
+
+            return response;
+        }
+        
+        var urlFiles = await getUrl(fileNames);
+        console.log(urlFiles);
+
+        
+
+
+        return projectModel;
         
     }
 
@@ -57,12 +120,10 @@ export class ProjectsService {
         
     }
 
-    async update(id: string, project:ProjectDto): Promise<Project> {
-        return await this.projectModel.findByIdAndUpdate(id, project, {new: true})
+    // async update(id: string, project:ProjectDto): Promise<Project> {
+    //     return await this.projectModel.findByIdAndUpdate(id, project, {new: true})
         
-    }
+    // }
     
-    async 
-
 
 }

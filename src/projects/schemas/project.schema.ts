@@ -26,13 +26,22 @@ export class Project extends Document {
     title: String;
 
     @Prop()
-    description: String;
+    startDate: String;
 
     @Prop()
-    projectFile: String;
+    endDate: String;
 
     @Prop()
-    contributor: String;
+    visibility : String;
+
+    @Prop()
+    description : String;
+
+    @Prop()
+    projectFileName: [String];
+
+    @Prop()
+    contributor: [[String]];
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

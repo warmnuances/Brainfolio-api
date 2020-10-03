@@ -9,21 +9,25 @@ import {FileDto} from './dto/project-file.dto'
 
 
 import * as admin from 'firebase-admin';
-import { from } from 'rxjs';
+import * as request from 'request';
+
 
 @Controller('projects')
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService){}
 
-    @Get()
-    findAll(): Promise<Project[]> {
-        return this.projectsService.findAll();
-    } 
+    // @Get()
+    // findAll(): Promise<Project[]> {
+    //     return this.projectsService.findAll();
+    // } 
 
     @Get(':id')
-    findOne(@Param() param): Promise<Project> {
-        return this.projectsService.findOne(param.id);
+    findOne(@Param() param):Promise<Project> { 
+
+      var result = this.projectsService.findOne(param.id);
+      return result
     }
+    
 
     // @Post()
     // create(@Body(ValidationPipe) createProjectDto: ProjectDto): Promise<Project> {
@@ -50,8 +54,8 @@ export class ProjectsController {
         return this.projectsService.delete(param.id);
     }
 
-    @Put(':id')
-    update(@Body() updateItemDto: ProjectDto, @Param() param): Promise<Project> {
-        return this.projectsService.update(param.id,updateItemDto);
-    }
+    // @Put(':id')
+    // update(@Body() updateItemDto: ProjectDto, @Param() param): Promise<Project> {
+    //     return this.projectsService.update(param.id,updateItemDto);
+    // }
 }
