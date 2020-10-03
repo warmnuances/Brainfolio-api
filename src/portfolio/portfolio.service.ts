@@ -8,9 +8,11 @@ import { PortfolioDto } from './dto/portfolio.dto';
 export class PortfolioService {
     constructor(@InjectModel('Portfolio') private readonly portfolioModel: Model<Portfolio>) {}
 
-
     async create(portfolio: PortfolioDto): Promise<Portfolio> {
         const newportfolio = new this.portfolioModel(portfolio);
+        
+        // newportfolio.userId = user._id;
+
         return newportfolio.save();
       } 
     

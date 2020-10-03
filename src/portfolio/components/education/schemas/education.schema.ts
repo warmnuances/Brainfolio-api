@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 @Schema()
 export class Education extends Document {
   
-  @Prop()
+  @Prop({required: true })
   portfolioId: String;
 
   @Prop({ required: true })

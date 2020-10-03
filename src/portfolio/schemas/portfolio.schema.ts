@@ -7,7 +7,9 @@ import {SkillsSchema, Skills} from '../components/skills/schemas/skills.schema'
 
 @Schema()
 export class Portfolio extends Document {
-    
+    @Prop()
+    userId: string;
+
     @Prop({type: EducationSchema })
     education: [Education];
 
