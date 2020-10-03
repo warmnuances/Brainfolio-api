@@ -3,7 +3,7 @@ import { EducationDto } from './dto/education.dto';
 import { EducationService } from './education.service'
 import { Education } from './interfaces/education.interface'
 
-@Controller('education')
+@Controller('edit/education')
 export class EducationController {
     constructor(private readonly educationService: EducationService){}
     // portfolio id missing
@@ -18,8 +18,8 @@ export class EducationController {
     }
 
     @Post()
-    create(@Body(ValidationPipe) createProjectDto: EducationDto): Promise<Education> {
-        return this.educationService.create(createProjectDto);
+    create(@Body(ValidationPipe) createEducationDto: EducationDto): Promise<Education> {
+        return this.educationService.create(createEducationDto);
     }
 
     @Delete(':id')
@@ -28,8 +28,8 @@ export class EducationController {
     }
 
     @Put(':id')
-    update(@Body() updateItemDto: Education, @Param() param): Promise<Education> {
-        return this.educationService.update(param.id,updateItemDto);
+    update(@Body() updateEducationDto: Education, @Param() param): Promise<Education> {
+        return this.educationService.update(param.id,updateEducationDto);
     }
 
 }

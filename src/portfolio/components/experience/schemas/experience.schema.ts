@@ -1,9 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export enum experienceType {
-  Work, Volunteer
-}
 
 @Schema()
 export class Experience extends Document {
@@ -11,7 +8,7 @@ export class Experience extends Document {
   portfolioId: String;
 
   @Prop({ required: true })
-  type: experienceType;
+  type: string;
 
   @Prop({ required: true })
   title: string;

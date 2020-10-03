@@ -31,9 +31,5 @@ export class PortfolioController {
     update(@Body() updateItemDto: PortfolioDto, @Param() param): Promise<Portfolio> {
         return this.portfolioService.update(param.id,updateItemDto);
     }
-    @Get('edit')
-    findOne(@Param() param): Promise<Portfolio> {
-        return this.portfolioService.findOne(param.id);
-    }
 }
 

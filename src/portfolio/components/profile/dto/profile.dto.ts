@@ -11,7 +11,7 @@ export class ProfileDto {
 
     readonly email: string;
 
-    readonly phone: number;
+    readonly phone: string;
 
     readonly relevantLink: string;
 

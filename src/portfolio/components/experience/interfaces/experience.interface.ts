@@ -1,12 +1,8 @@
 import { Document } from 'mongoose';
 
-export enum experienceType {
-    Work, Volunteer
-}  
-
 export interface Experience extends Document{
     portfolioId: string;
-    type: experienceType;
+    type: string;
     title: string;
     name: string;
     startDate: string;

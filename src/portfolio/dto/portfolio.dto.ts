@@ -1,25 +1,12 @@
 import { IsNotEmpty } from "class-validator";
+import {Education} from '../components/education/interfaces/education.interface';
+import {Experience} from '../components/experience/interfaces/experience.interface';
+import {Profile} from '../components/profile/interfaces/profile.interface';
+import {Skills} from '../components/skills/interfaces/skills.interface';
 
 export class PortfolioDto {
-    @IsNotEmpty()
-    readonly title: string;
-
-    @IsNotEmpty()
-    readonly description: string;
-
-    @IsNotEmpty()
-    readonly projectFile: string;
-
-    @IsNotEmpty()
-    readonly contributor: string;
-
-    @IsNotEmpty()
-    readonly like: number;
-
-    @IsNotEmpty()
-    readonly comment: string;
-
-    @IsNotEmpty()
-    readonly share: string;
-
+    readonly education: Education[];
+    readonly experience: Experience[];
+    readonly profile: Profile[];
+    readonly skills: Skills[];
 }  

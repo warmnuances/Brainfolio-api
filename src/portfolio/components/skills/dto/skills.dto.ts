@@ -9,7 +9,7 @@ export class SkillsDto {
 
     readonly name: string;
 
-    readonly rating: number;
+    readonly rating: string;
 
     readonly priority: string;
 

@@ -1,32 +1,24 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
+import {EducationSchema, Education} from '../components/education/schemas/education.schema'
+import {ProfileSchema, Profile} from '../components/profile/schemas/profile.schema'
+import {ExperienceSchema, Experience} from '../components/experience/schemas/experience.schema'
+import {SkillsSchema, Skills} from '../components/skills/schemas/skills.schema'
 
 @Schema()
 export class Portfolio extends Document {
+    
+    @Prop({type: EducationSchema })
+    education: [Education];
 
-    @Prop()
-    id: String;
+    @Prop({type: ProfileSchema })
+    profile:[Profile];
 
-    @Prop()
-    title: String;
+    @Prop({type: ExperienceSchema })
+    experience: [Experience];
 
-    @Prop()
-    description: String;
-
-    @Prop()
-    projectFile: String;
-
-    @Prop()
-    contributor: String;
-
-    @Prop()
-    like: Number;
-
-    @Prop()
-    comment: String;
-
-    @Prop()
-    share: String;
+    @Prop({type: SkillsSchema })
+    skills: [Skills];
 }
 
 export const PortfolioSchema = SchemaFactory.createForClass(Portfolio);

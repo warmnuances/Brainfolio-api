@@ -1,9 +1,5 @@
 import { IsNotEmpty } from "class-validator";
 
-export enum experienceType {
-    Work, Volunteer
-}  
-
 export class ExperienceDto {
     @IsNotEmpty()
     readonly portfolioId: string;
@@ -12,13 +8,13 @@ export class ExperienceDto {
     readonly type: string;
 
     @IsNotEmpty()
-    readonly title: experienceType;
+    readonly title: string;
 
     @IsNotEmpty()
     readonly name: string;
 
     @IsNotEmpty()
-    readonly startDate: number;
+    readonly startDate: string;
 
     @IsNotEmpty()
     readonly endDate: string;

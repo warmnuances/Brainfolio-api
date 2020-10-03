@@ -5,7 +5,7 @@ export interface Skills extends Document{
     category: string;
     name: string;
     rating: string;
-    priority: number;
+    priority: string;
 }
 // @Prop()
 // portfolioId: String;

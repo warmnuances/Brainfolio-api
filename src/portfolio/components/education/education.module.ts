@@ -6,7 +6,7 @@ import { EducationSchema } from './schemas/education.schema';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'Portfolio', schema: EducationSchema }]), AuthModule, EducationModule],
+  imports: [MongooseModule.forFeature([{ name: 'Education', schema: EducationSchema }]), AuthModule, EducationModule],
   controllers: [EducationController],
   providers: [EducationService],
 })
