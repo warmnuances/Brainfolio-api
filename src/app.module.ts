@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './Auth/auth.module';
 import { HealthcheckModule } from './Healthcheck/healthcheck.module';
 import {MongooseConfig} from './Config/mongoose.config';
-import { ProjectsModule } from './projects/projects.module';
+// import { ProjectsModule } from './projects/projects.module';
 
 //TODO: (Optional) Create ConfigServiceto deserialise vars
 @Module({
@@ -19,7 +19,7 @@ import { ProjectsModule } from './projects/projects.module';
     ),
     AuthModule,
     HealthcheckModule,
-    ProjectsModule,
+    // ProjectsModule,
   ]
 })
 
