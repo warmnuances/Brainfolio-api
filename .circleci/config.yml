@@ -26,8 +26,10 @@ jobs:
           name: Get Environment Variables from CircleCI
           command: |
             bash scripts/getEnv.sh
-            sed -i 's/\s*$//' .env
+            ls -a
+           
       
+
       - run: 
           name: Get Service Account Key from environment Variables
           command: |
