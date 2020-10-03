@@ -27,7 +27,7 @@ jobs:
           command: |
             bash scripts/getEnv.sh
             ls -a
-           
+            sed -i 's/\s*$//' .env
       
 
       - run: 
