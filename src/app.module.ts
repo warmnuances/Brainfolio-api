@@ -15,7 +15,7 @@ import { ProjectsModule } from './projects/projects.module';
       isGlobal: true
     }),
     MongooseModule.forRoot(
-      process.env.TEST_MONGO, 
+      (process.env.NODE_ENV === "test")? process.env.TEST_MONGO: process.env.MONGO_URL, 
       MongooseConfig
     ),
     AuthModule,
