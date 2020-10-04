@@ -7,6 +7,6 @@ export interface Project extends Document{
     endDate: string;
     visibility: string;
     description: string;
-    projectFileName: [string];
+    projectFileName: [[string]];
     contributor: [[string]];
 }
