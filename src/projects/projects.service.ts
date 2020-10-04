@@ -82,35 +82,29 @@ export class ProjectsService {
 
         var i = 0;
 
-        async function updateModel(fileNames){
-            async function getUrl(fileName) {
+        async function getUrl(fileName) {
+        
+            var file = admin.storage().bucket().file(fileName);
+            const config = {
+            action: "read" as const,
+            expires: Date.now() + 1000 * 60 * 3, // 3 minutes
+            };
             
-                var file = admin.storage().bucket().file(fileName);
-                const config = {
-                action: "read" as const,
-                expires: Date.now() + 1000 * 60 * 3, // 3 minutes
-                };
-                
-                var x = file.getSignedUrl(config)
-                var url = await x;
-    
-                projectModel.projectFileName[i] = url;
-                projectModel.projectFileName[i].unshift(fileName)
-    
-                i+=1;                         
-            
-            }
+            var x = file.getSignedUrl(config)
+            var url = await x;
 
-            for (let fileName of fileNames){
-                await getUrl(fileName);
-            }
+            projectModel.projectFileName[i] = url;
+            projectModel.projectFileName[i].unshift(fileName)
 
-            return projectModel;
+            i+=1;                         
+        
         }
-       
 
+        for (let fileName of fileNames){
+            await getUrl(fileName);
+        }
 
-        return await updateModel(fileNames);
+        return projectModel;
         
     }
 
