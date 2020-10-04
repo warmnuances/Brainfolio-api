@@ -1,0 +1,7 @@
+build:
+  docker: 
+    web: Dockerfile
+release: 
+  image: Dockerfile
+  command: 
+    - cd scripts && ./getEnv.sh && ./getServiceAccount.sh
