@@ -3,14 +3,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Portfolio } from './interfaces/portfolio.interface'
 import { PortfolioDto } from './dto/portfolio.dto';
+import { User } from 'src/User/user.schema';
 
 @Injectable()
 export class PortfolioService {
     constructor(@InjectModel('Portfolio') private readonly portfolioModel: Model<Portfolio>) {}
+    // async create(portfolio: PortfolioDto, user: User): Promise<Portfolio> {
 
     async create(portfolio: PortfolioDto): Promise<Portfolio> {
         const newportfolio = new this.portfolioModel(portfolio);
-        
+        // console.log(user._id);
         // newportfolio.userId = user._id;
 
         return newportfolio.save();
