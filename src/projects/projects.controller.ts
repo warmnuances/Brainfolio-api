@@ -54,8 +54,17 @@ export class ProjectsController {
         return this.projectsService.delete(param.id);
     }
 
-    // @Put(':id')
-    // update(@Body() updateItemDto: ProjectDto, @Param() param): Promise<Project> {
-    //     return this.projectsService.update(param.id,updateItemDto);
-    // }
+    @Put(':id')
+    @UseInterceptors(FilesInterceptor('files',3,
+      {
+        storage: diskStorage({
+          destination: './files',
+          filename: editFileName,
+        }),
+        fileFilter: imageFileFilter,
+      }
+    ))
+    update(@UploadedFiles() files:[FileDto], @Body() updateItemDto: ProjectDto, @Param() param): Promise<Project> {
+        return this.projectsService.update(files, param.id,updateItemDto);
+    }
 }
