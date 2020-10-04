@@ -24,7 +24,8 @@ export class ProjectsService {
     async createFiles(files: [FileDto], project: ProjectDto): Promise<Project> {
         
         var bucket = admin.storage().bucket();
-
+        console.log('a');
+        
         async function uploadFile(fileName) {
           var imgPath = './files/'+fileName
           // Uploads a local file to the bucket
@@ -35,30 +36,34 @@ export class ProjectsService {
             //   cacheControl: 'public, max-age=31536000',
             // },
           });
-          console.log(`uploaded to brainfolio-1faf6`);
+        //   console.log(`uploaded to brainfolio-1faf6`);
+          console.log('b');
+          
+        }
+        console.log('c');
+        
+        var projectFileName = [];
 
+        for(let file of files){
+            await uploadFile(file.filename).catch(console.error);
+            projectFileName.push(file.filename);
+            console.log('upload');
+            
         }
 
-        var projectFileName = [];
-        files.forEach(file => {  
-            console.log('upload');
-                      
-            uploadFile(file.filename).catch(console.error);
-            projectFileName.push(file.filename);
-        });
+        for (let filename of projectFileName){
+            var path = './files/' + filename;
+            try {
+                await fs.unlinkSync(path)
+                console.log('remove');
+                //file removed
+              } catch(err) {
+                console.error(err)
+              }
+        }
 
-        // projectFileName.forEach(filename =>{
-        //     console.log('DELETE');
-            
-        //     var path = './files/' + filename;
-        //     try {
-        //         fs.unlinkSync(path)
-        //         //file removed
-        //       } catch(err) {
-        //         console.error(err)
-        //       }
-        // })
-
+        console.log('f');
+        
         project["projectFileName"] = projectFileName;
         
         const newProject = new this.projectModel(project);
@@ -68,7 +73,6 @@ export class ProjectsService {
     // async findAll(): Promise<Project[]> {
     //     return this.projectModel.find().exec();
     // }
-
 
     async findOne(id: string): Promise<Project> {
 
