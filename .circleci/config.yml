@@ -4,8 +4,6 @@ jobs:
     docker:
       - image: circleci/node:12.18.4
     working_directory: ~/repo
-    branches:
-      only: staging
     steps:
       - checkout
       - restore_cache:
@@ -61,4 +59,13 @@ jobs:
       #     command: |
       #       ls -a
       #       docker-compose up
-        
+
+### Only work in staging branch
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          filters: 
+            branches:
+              only: staging
