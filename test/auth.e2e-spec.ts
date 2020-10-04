@@ -35,7 +35,10 @@ describe('AppController (e2e)', () => {
   const user: CreateUserDto = {
     fullname: "Deez Nutz",
     email: "Deez@nutz.com",
-    password: "123456"
+    password: "123456",
+    username: "DeezNutZ",
+    visibility: "private",
+    visibilitylist: []
   }
 
   it('should Sign up user', async (done) => {
@@ -47,6 +50,9 @@ describe('AppController (e2e)', () => {
       expect(response.body).toBeDefined()
       expect(response.body.fullname).toBeDefined();
       expect(response.body.email).toBeDefined();
+      expect(response.body.username).toBeDefined();
+      expect(response.body.visibility).toBeDefined();
+      expect(response.body.visibilitylist).toBeDefined();
       expect(response.body.password).toBeUndefined();
       expect(response.body.salt).toBeUndefined();
       expect(HttpStatus.CREATED)
@@ -63,14 +69,13 @@ describe('AppController (e2e)', () => {
       .expect(response => {
         expect(response.body.fullname).toBeUndefined();
         expect(response.body.email).toBeUndefined();
-        // expect(response.body.password).toBeUndefined();
-        // expect(response.body.salt).toBeUndefined();
         expect(HttpStatus.CONFLICT)
         done()
       })
   });
 
   it('should fail to login (UnAuthorised)', (done) => {
+
     const user: SignInDto = {
       email: "NonExistentEmail@nutz.com",
       password: "123456"
@@ -87,11 +92,13 @@ describe('AppController (e2e)', () => {
       })
   });
 
+  let token = null;
 
   it('should login and return JWT', (done) => {
     const user: SignInDto = {
       email: "Deez@nutz.com",
-      password: "123456"
+      password: "123456",
+
     }
     return request(app.getHttpServer())
       .post('/auth/signin')
@@ -100,10 +107,26 @@ describe('AppController (e2e)', () => {
         expect(response.body.accessToken).toBeDefined();
         expect(response.body.fullname).toBeDefined();
         expect(response.body.email).toBeDefined();
+        expect(response.body.username).toBeDefined();
+        expect(response.body.visibility).toBeDefined();
+        expect(response.body.visibilitylist).toBeDefined();
         expect(HttpStatus.OK)
+        token = response.body.accessToken;
         done();
       })
   });
+
+  it('Access Token Should work', (done) => {
+    expect(token).toBeDefined()
+    request(app.getHttpServer())
+      .get('/test/authenticated')
+      .set("Authorization", `Bearer ${token}`)
+      .then(response => {
+        console.log(response.body)
+        expect(HttpStatus.OK)
+        done();
+      })
+  })
 
 
 

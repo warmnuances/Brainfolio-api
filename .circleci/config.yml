@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  heroku: circleci/heroku@1.2.2
 jobs:
   build:
     docker:
@@ -69,3 +71,4 @@ workflows:
           filters: 
             branches:
               only: staging
+          

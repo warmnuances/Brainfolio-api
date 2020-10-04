@@ -1,5 +1,4 @@
-export interface ISignInResponse {
-  accessToken: string | null,
+export interface IJwtPayload {
   fullname: string
   email: string
   username: string

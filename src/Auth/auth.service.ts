@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 
 import { User } from './user.schema';
 import { ISignInResponse } from './interfaces/sign-in-response.interface';
-import { JwtPayload } from './jwt/jwt-payload.interface';
+import { IJwtPayload } from './interfaces/jwt-payload.interface';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user-dto';
 import { SignInDto } from './dto/sign-in-dto';
@@ -30,13 +30,17 @@ export class AuthService {
 
 
   async signUp(createUserDto: CreateUserDto): Promise<Partial<User>>{
-    const { fullname, email, password } = createUserDto;
+    const { fullname, email, password, username, visibility, visibilitylist } = createUserDto;
 
     const User = new this.userModel(createUserDto);
     User.fullname = fullname,
     User.email = email,
     User.salt = await bcrypt.genSalt()
     User.password = await this.hashPassword(password, User.salt);
+    User.username = username,
+    User.visibility = visibility,
+    User.visibilitylist = visibilitylist
+
     
 
     await User.save().catch(err =>{
@@ -48,7 +52,10 @@ export class AuthService {
     
     const newUser: Partial<User> = {
       fullname: User.fullname,
-      email: User.email
+      email: User.email,
+      username:User.username,
+      visibility:User.visibility,
+      visibilitylist: User.visibilitylist
     }
 
     return newUser;
@@ -62,13 +69,19 @@ export class AuthService {
   
     //await !important
     if(user && await this.validatePassword(password, user)){
-      const payload: JwtPayload = { email }
+      const payload: IJwtPayload = {
+        fullname: user.fullname,
+        email: user.email,
+        username: user.username,
+        visibility: user.visibility,
+        visibilitylist: user.visibilitylist
+      }
+
       const accessToken =  this.jwtService.sign(payload);
 
 
       return {
-        fullname: user.fullname,
-        email: user.email,
+        ...payload,
         accessToken
       }
     }
