@@ -3,9 +3,9 @@ import { JwtService } from '@nestjs/jwt/dist/jwt.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { User } from '../User/user.schema';
-import { IAccessToken } from './jwt/access-token.interface';
-import { JwtPayload } from './jwt/jwt-payload.interface';
+import { User } from './user.schema';
+import { ISignInResponse } from './interfaces/sign-in-response.interface';
+import { IJwtPayload } from './interfaces/jwt-payload.interface';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user-dto';
 import { SignInDto } from './dto/sign-in-dto';
@@ -29,36 +29,61 @@ export class AuthService {
   }
 
 
-  async signUp(createUserDto: CreateUserDto): Promise<User>{
-    const { fullname, email, password } = createUserDto;
+  async signUp(createUserDto: CreateUserDto): Promise<Partial<User>>{
+    const { fullname, email, password, username, visibility, visibilitylist } = createUserDto;
 
     const User = new this.userModel(createUserDto);
     User.fullname = fullname,
     User.email = email,
     User.salt = await bcrypt.genSalt()
     User.password = await this.hashPassword(password, User.salt);
+    User.username = username,
+    User.visibility = visibility,
+    User.visibilitylist = visibilitylist
+
     
 
-    return await User.save().catch(err =>{
+    await User.save().catch(err =>{
       throw new ConflictException({
         ...err,
         reason:`${(err.code === 11000 && "Duplicate") || "Mongo Input Error"}`
       })
     });
     
+    const newUser: Partial<User> = {
+      fullname: User.fullname,
+      email: User.email,
+      username:User.username,
+      visibility:User.visibility,
+      visibilitylist: User.visibilitylist
+    }
+
+    return newUser;
   }
 
 
-  async signIn(signInDto: SignInDto) : Promise<IAccessToken>{
+  async signIn(signInDto: SignInDto) : Promise<ISignInResponse>{
 
     const { email, password } = signInDto;
     const user = await this.userModel.findOne({email})
   
     //await !important
     if(user && await this.validatePassword(password, user)){
-      const payload: JwtPayload = { email }
+      const payload: IJwtPayload = {
+        fullname: user.fullname,
+        email: user.email,
+        username: user.username,
+        visibility: user.visibility,
+        visibilitylist: user.visibilitylist
+      }
+
       const accessToken =  this.jwtService.sign(payload);
-      return {accessToken}
+
+
+      return {
+        ...payload,
+        accessToken
+      }
     }
     else{
       throw new NotFoundException({
@@ -66,4 +91,5 @@ export class AuthService {
       })
     }
   }
+  
 }

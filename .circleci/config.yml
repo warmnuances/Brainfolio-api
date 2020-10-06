@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  heroku: circleci/heroku@1.2.2
 jobs:
   build:
     docker:
@@ -6,17 +8,45 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - setup_remote_docker
+      - restore_cache:
+          keys:
+            # Find a cache corresponding to this specific package-lock.json
+            - v1-npm-deps-{{ checksum "package-lock.json" }}
+            # Fallback cache to be used 
+            - v1-npm-deps-
+      - run:
+          name: Install Dependencies
+          command: npm install
+
+      - save_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+
       - run: 
           name: Get Environment Variables from CircleCI
           command: |
-            bash getEnv.sh
+            bash scripts/getEnv.sh
+      
+
+      - run: 
+          name: Get Service Account Key from environment Variables
+          command: |
+            bash scripts/getServiceAccount.sh
+
+
+      - run: 
+          name: Run e2e test
+          command: |
+            npm run test:e2e
 
       - run:
           name: Push to master branch
           command: |
-            bash getEnv.sh
+            git checkout testBranch
+            git merge testBranch
 
+        
       # - run:
       #     name: Install Docker Compose
       #     command: |
@@ -31,4 +61,14 @@ jobs:
       #     command: |
       #       ls -a
       #       docker-compose up
-        
+
+### Only work in staging branch
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          filters: 
+            branches:
+              only: staging
+          
