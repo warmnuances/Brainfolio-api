@@ -16,154 +16,159 @@ export class ProjectsService {
     constructor(@InjectModel('Project') private readonly projectModel: Model<Project>) {}
 
 
+    // Will take filename and return the link to access the file
+    async getFileNameAndLink(fileNames, username, projectId) {
+
+        var fileNameAndLink = [];
+        var bucket = admin.storage().bucket();
+        const config = {
+            action: "read" as const,
+            expires: Date.now() + 1000 * 60 * 5, // 5 minutes
+        };
+ 
+        for(let fileName of fileNames){
+            var fileNamePath = username + '/' + projectId + '/'+ fileName;
+            var file = bucket.file(fileNamePath);
+            var url = await file.getSignedUrl(config) 
+            url.unshift(fileName)
+            fileNameAndLink.push(url);
+        }
+
+        return fileNameAndLink;
+    }
+
+    //Upload file to firebase Function and delete file on local
+    async uploadFile(fileNames, username, projectId) {
+        var bucket = admin.storage().bucket();
+
+        for(let fileName of fileNames){
+            var filePath = './files/'+fileName
+
+            // Uploads a local file to the bucket
+            await bucket.upload(filePath, {
+                destination: username + '/' + projectId + '/' +fileName,
+            });
+            console.log('upload');
+
+
+            try {
+                await fs.unlinkSync(filePath)
+                console.log('remove');
+            } catch(err) {
+                console.error(err)  
+            }
+        }
+
+
+    }
+
+    async  deleteFile(username, projectId,  fileNames) {
+        var bucket = admin.storage().bucket();
+
+        for(let fileName of fileNames){
+            var fileNamePath = username + '/' + projectId + '/' + fileName;
+            await bucket.file(fileNamePath).delete();
+            console.log('deleted');
+        }
+
+    }
+    
+
+
     // async create(project: ProjectDto): Promise<Project> {
     //     const newProject = new this.projectModel(project);
     //     return newProject.save();
     // } 
 
-    async createFiles(files: [FileDto], project: ProjectDto): Promise<Project> {
+    async uploadFiles(files: [FileDto], projectId, username): Promise<Project> {
         
-        var bucket = admin.storage().bucket();
-        
-        async function uploadFile(fileName) {
-          var imgPath = './files/'+fileName
-          // Uploads a local file to the bucket
-          await bucket.upload(imgPath, {
-            destination: 'username/'+fileName,
-            // gzip: true,
-            // metadata: {
-            //   cacheControl: 'public, max-age=31536000',
-            // },
-          });
-        //   console.log(`uploaded to brainfolio-1faf6`);
-          
-        }
-        
-        var projectFileName = [];
+        var updateModel = {}  
 
+        //!!!!!!!!!! null or undefied or ''
+        
+        if(projectId === ''){
+            const newProject = await new this.projectModel({username: username});
+            await newProject.save();   
+            projectId = newProject.id;   
+        }
+
+        // Grabing fileNames
+        var fileNames = [];
         for(let file of files){
-            await uploadFile(file.filename).catch(console.error);
-            projectFileName.push(file.filename);
-            console.log('upload');
-            
-        }
+            fileNames.push(file.filename)
+        };
 
-        for (let filename of projectFileName){
-            var path = './files/' + filename;
-            try {
-                await fs.unlinkSync(path)
-                console.log('remove');
-                //file removed
-              } catch(err) {
-                console.error(err)
-              }
-        }
+        //Upload files to firebase
+        await this.uploadFile(fileNames, username, projectId).catch(console.error);
+
+        //Update database with fileNames
+        updateModel["projectFileName"] = fileNames;
+        var projectModel = await this.projectModel.findByIdAndUpdate(projectId, updateModel, {new: true});
         
-        project["projectFileName"] = projectFileName;
-        
-        const newProject = new this.projectModel(project);
-        return newProject.save();
-    } 
-    
-    // async findAll(): Promise<Project[]> {
-    //     return this.projectModel.find().exec();
-    // }
-
-    async findOne(id: string): Promise<Project> {
-
-        var projectModel = await this.projectModel.findOne({_id: id});
-
-        var fileNames = projectModel.projectFileName;
-
-        var i = 0;
-
-        async function getUrl(fileName) {
-            var fileNamePath = 'username/' + fileName;
-            var file = admin.storage().bucket().file(fileNamePath);
-            const config = {
-                action: "read" as const,
-                expires: Date.now() + 1000 * 60 * 3, // 3 minutes
-            };
-            
-            var x = file.getSignedUrl(config)
-            var url = await x;
-
-            projectModel.projectFileName[i] = url;
-            projectModel.projectFileName[i].unshift(fileName)
-
-            i+=1;                         
-        
-        }
-
-        for (let fileName of fileNames){
-            await getUrl(fileName);
-        }
+        //Get link
+        projectModel.projectFileName = await this.getFileNameAndLink(fileNames, username, projectId);
 
         return projectModel;
-        
-    }
-
-    async delete(id: string): Promise<Project> {
-        return await this.projectModel.findByIdAndRemove(id)
-        
-    }
-
-    async update(files: [FileDto], id: string, project:ProjectDto): Promise<Project> {
-        // console.log(project);
-        
-
-        if(files.length >= 1){
-            var bucket = admin.storage().bucket();
-
-            // Delete old file
-            var oldModel = await this.projectModel.findOne({_id: id});
-            var oldDataName = oldModel.projectFileName;
-
-            async function deleteFile(fileName) {
-                var fileNamePath = 'username/' + fileName;
-                await bucket.file(fileNamePath).delete();
-                console.log(`${fileName} deleted.`);
-            }
-            for(let file of oldDataName){
-                await deleteFile(file).catch(console.error);
-            }
-              
-
-            // Upload new file
-            async function uploadFile(fileName) {
-              var imgPath = './files/'+fileName
-              await bucket.upload(imgPath, {
-                destination: 'username/'+fileName,
-              });   
-            }
-            
-            var projectFileName = [];
+    } 
     
-            for(let file of files){
-                await uploadFile(file.filename).catch(console.error);
-                projectFileName.push(file.filename);
-                console.log('upload');
-            }
+    async findAll(username:string): Promise<Project[]> {
+        return this.projectModel.find({username:username}).exec();
+    }
+
+    async findOne(projectId: string, username:string ): Promise<Project> {
+        //Grabing model data
+        var projectModel = await this.projectModel.findOne({_id: projectId});
+        var fileNames = projectModel.projectFileName;
+        
+        // Grab filename and Link to access
+        projectModel.projectFileName = await this.getFileNameAndLink(fileNames, username, projectId);
+
+        return projectModel;
+    }
+
+
+    async deleteFiles(username:string, projectId, fileNames: string[]): Promise<Project> {
+        var updateModel = {}
+
+        // Delete files given
+        return await this.projectModel.findByIdAndUpdate(projectId, updateModel, {new: true})
+
+        
+    }
+    
+    async deleteProject(username: string, projectId: string): Promise<Project> {
+
+        // Delete old file
+        var oldModel = await this.projectModel.findOne({ _id: projectId});
+        var oldDataName = oldModel.projectFileName;
+        console.log(oldDataName);
+        
+        await this.deleteFile(username, projectId, oldDataName).catch(console.error);
+
+        return await this.projectModel.findByIdAndRemove(projectId)
+        
+    }
+
+    async createUpdateProject(project:ProjectDto, username:string): Promise<Project> {
+
+        var projectId = project.projectId;
+        var projectModel;
+        
+        // undefined or null or ''
+        if(projectId === undefined || projectId === ''){
             
-            // Delete file from local
-            for (let filename of projectFileName){
-                var path = './files/' + filename;
-                try {
-                    await fs.unlinkSync(path)
-                    console.log('remove');
-                    //file removed
-                  } catch(err) {
-                    console.error(err)
-                  }
-            }
-            project["projectFileName"] = projectFileName;
-            var projectModel = await this.projectModel.findByIdAndUpdate(id, project, {new: true})
+            project['username'] = username;
+            projectModel = await new this.projectModel(project);
+            await projectModel.save();
         } else{
-
-            // Updating without the file
-            var projectModel = await this.projectModel.findByIdAndUpdate(id, project, {new: true})
+            projectModel = await this.projectModel.findByIdAndUpdate(projectId, project, {new: true})
         }
+        console.log(projectModel);
+        
 
+        const fileNames = projectModel.projectFileName;
+
+        projectModel.projectFileName = await this.getFileNameAndLink(fileNames, projectId, username);
         return projectModel;
         
     }

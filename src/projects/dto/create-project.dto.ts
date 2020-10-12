@@ -2,7 +2,7 @@ import { IsNotEmpty } from "class-validator";
 
 export class ProjectDto {
 
-    readonly id: string;
+    readonly projectId: string;
 
     readonly title: string;
 
@@ -14,7 +14,7 @@ export class ProjectDto {
     
     readonly description: string;
 
-    readonly contributor: [[string]];
+    readonly contributor: string;
 
     
 

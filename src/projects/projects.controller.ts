@@ -16,45 +16,45 @@ import * as request from 'request';
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService){}
 
-    // @Get()
-    // findAll(): Promise<Project[]> {
-    //     return this.projectsService.findAll();
-    // } 
+    @Get()
+    findAll(): Promise<Project[]> {
+        return this.projectsService.findAll('username');
+    } 
 
+
+    // Get a single project
     @Get(':id')
     findOne(@Param() param):Promise<Project> { 
 
-      var result = this.projectsService.findOne(param.id);
+      var result = this.projectsService.findOne(param.id,'username');
       return result
     }
     
-
-    // @Post()
-    // create(@Body(ValidationPipe) createProjectDto: ProjectDto): Promise<Project> {
-    //     return this.projectsService.create(createProjectDto);
-    // }
-    
-    @Post()
-    @UseInterceptors(FilesInterceptor('files',3,
-      {
-        storage: diskStorage({
-          destination: './files',
-          filename: editFileName,
-        }),
-        fileFilter: imageFileFilter,
-      }
-    ))
-    Create(@UploadedFiles() files:[FileDto], @Body(ValidationPipe) createProjectDto: ProjectDto): Promise<Project> {      
-      return this.projectsService.createFiles(files,createProjectDto)
-    }
-    
-
+    //Delete all project
     @Delete(':id')
-    delete(@Param() param): Promise<Project> {
-        return this.projectsService.delete(param.id);
+    deleteProject(@Param() param): Promise<Project> {
+      return this.projectsService.deleteProject('username', param.id);
     }
 
-    @Put(':id')
+    // //Delete files only
+    // @Delete('files/:projectId')
+    // deleteFiles(@Param() param, @Body() body){
+    //   console.log(body);
+      
+    //   var fileNames = ['Screenshot (57).png'];
+    //   console.log(fileNames);
+      
+    //   return this.projectsService.deleteFile('username',param.projectId, fileNames);
+    // }
+
+    //Save project without files
+    @Post()
+    update(@Body(ValidationPipe) project: ProjectDto): Promise<Project> {
+      return this.projectsService.createUpdateProject(project, 'username');
+    }
+
+    //Save project files only
+    @Post('files')
     @UseInterceptors(FilesInterceptor('files',3,
       {
         storage: diskStorage({
@@ -64,7 +64,8 @@ export class ProjectsController {
         fileFilter: imageFileFilter,
       }
     ))
-    update(@UploadedFiles() files:[FileDto], @Body() updateItemDto: ProjectDto, @Param() param): Promise<Project> {
-        return this.projectsService.update(files, param.id,updateItemDto);
+    Create(@UploadedFiles() files:[FileDto], @Body(ValidationPipe) projectDto: ProjectDto): Promise<Project> { 
+      var projectId = projectDto.projectId;
+      return this.projectsService.uploadFiles(files,projectId,'username')
     }
 }

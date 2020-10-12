@@ -1,12 +1,13 @@
 import { Document } from 'mongoose';
 
 export interface Project extends Document{
-    id?: string;
+    username: string;
     title: string;
     startDate: string;
     endDate: string;
     visibility: string;
     description: string;
-    projectFileName: [[string]];
-    contributor: [[string]];
+    projectFileName: string[][];
+    // projectFileLink: [string];
+    contributor: string;
 }
