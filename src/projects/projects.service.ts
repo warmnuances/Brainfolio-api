@@ -48,12 +48,9 @@ export class ProjectsService {
             await bucket.upload(filePath, {
                 destination: username + '/' + projectId + '/' +fileName,
             });
-            console.log('upload');
-
 
             try {
                 await fs.unlinkSync(filePath)
-                console.log('remove');
             } catch(err) {
                 console.error(err)  
             }
@@ -68,24 +65,16 @@ export class ProjectsService {
         for(let fileName of fileNamesArray){
             var fileNamePath = username + '/' + projectId + '/' + fileName;
             await bucket.file(fileNamePath).delete();
-            console.log('deleted');
         }
 
     }
     
-
-
-    // async create(project: ProjectDto): Promise<Project> {
-    //     const newProject = new this.projectModel(project);
-    //     return newProject.save();
-    // } 
 
     async uploadFiles(files: [FileDto], projectId, username): Promise<Project> {
         
         var updateModel = {}  
 
         //!!!!!!!!!! null or undefied or ''
-        console.log(projectId);
         
         if(projectId === '' || projectId === undefined){
             const newProject = await new this.projectModel({username: username});
@@ -163,7 +152,6 @@ export class ProjectsService {
         // Delete old file
         var oldModel = await this.projectModel.findOne({ _id: projectId});
         var oldDataName = oldModel.projectFileName;
-        console.log(oldDataName);
         
         await this.deleteFile(username, projectId, oldDataName).catch(console.error);
 
@@ -184,9 +172,7 @@ export class ProjectsService {
             await projectModel.save();
         } else{
             projectModel = await this.projectModel.findByIdAndUpdate(projectId, project, {new: true})
-        }
-        console.log(projectModel);
-        
+        }    
 
         const fileNames = projectModel.projectFileName;
 

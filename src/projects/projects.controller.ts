@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, ValidationPipe, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ValidationPipe, UseInterceptors, UploadedFiles, UseGuards } from '@nestjs/common';
 import { ProjectDto } from './dto/create-project.dto';
 import { ProjectsService } from './projects.service'
 import { Project } from './interfaces/project.interface'
@@ -11,43 +11,47 @@ import {FileDto} from './dto/project-file.dto'
 import * as admin from 'firebase-admin';
 import * as request from 'request';
 import { DeleteFilesDto } from './dto/delete-file.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/Auth/get-user.decorator';
+import { User } from 'src/Auth/user.schema';
 
 
 @Controller('projects')
+@UseGuards(AuthGuard())
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService){}
 
     @Get()
-    findAll(): Promise<Project[]> {
-      return this.projectsService.findAll('username');
+    findAll(@GetUser() user: User): Promise<Project[]> {
+      return this.projectsService.findAll(user.username);
     } 
 
 
     // Get a single project
     @Get(':id')
-    findOne(@Param() param):Promise<Project> { 
+    findOne(@GetUser() user: User, @Param() param):Promise<Project> { 
 
-      var result = this.projectsService.findOne(param.id,'username');
+      var result = this.projectsService.findOne(param.id,user.username);
       return result
     }
     
     // //Delete files only
     @Delete('files')
-    deleteFiles(@Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project>{      
-      return this.projectsService.deleteFiles('username', deletionData);
+    deleteFiles(@GetUser() user: User, @Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project>{      
+      return this.projectsService.deleteFiles(user.username, deletionData);
     }
 
     //Delete all project
     @Delete('project')
-    deleteProject(@Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project> {
+    deleteProject(@GetUser() user: User, @Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project> {
       var projectId = deletionData.projectId;
-      return this.projectsService.deleteProject('username', projectId);
+      return this.projectsService.deleteProject(user.username, projectId);
     }
 
     //Save project without files
     @Post('project')
-    update(@Body(ValidationPipe) project: ProjectDto): Promise<Project> {
-      return this.projectsService.createUpdateProject(project, 'username');
+    update(@GetUser() user: User, @Body(ValidationPipe) project: ProjectDto): Promise<Project> {
+      return this.projectsService.createUpdateProject(project, user.username);
     }
 
     //Save project files only
@@ -61,9 +65,9 @@ export class ProjectsController {
         fileFilter: imageFileFilter,
       }
     ))
-    Create(@UploadedFiles() files:[FileDto], @Body(ValidationPipe) projectDto: ProjectDto): Promise<Project> { 
+    Create(@GetUser() user: User, @UploadedFiles() files:[FileDto], @Body(ValidationPipe) projectDto: ProjectDto): Promise<Project> { 
       
       var projectId = projectDto.projectId;
-      return this.projectsService.uploadFiles(files,projectId,'username')
+      return this.projectsService.uploadFiles(files,projectId,user.username)
     }
 }
