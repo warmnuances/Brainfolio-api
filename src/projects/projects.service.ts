@@ -62,10 +62,10 @@ export class ProjectsService {
 
     }
 
-    async  deleteFile(username, projectId,  fileNames) {
+    async deleteFile(username, projectId,  fileNamesArray) {
         var bucket = admin.storage().bucket();
 
-        for(let fileName of fileNames){
+        for(let fileName of fileNamesArray){
             var fileNamePath = username + '/' + projectId + '/' + fileName;
             await bucket.file(fileNamePath).delete();
             console.log('deleted');
@@ -85,8 +85,9 @@ export class ProjectsService {
         var updateModel = {}  
 
         //!!!!!!!!!! null or undefied or ''
+        console.log(projectId);
         
-        if(projectId === ''){
+        if(projectId === '' || projectId === undefined){
             const newProject = await new this.projectModel({username: username});
             await newProject.save();   
             projectId = newProject.id;   
@@ -127,11 +128,32 @@ export class ProjectsService {
     }
 
 
-    async deleteFiles(username:string, projectId, fileNames: string[]): Promise<Project> {
+    async deleteFiles(username:string, deletionData): Promise<Project> {
+        
+        const projectId = deletionData.projectId;
+        const deleteFiles = deletionData.projectFileNames;
         var updateModel = {}
 
+        var projectModel = await this.projectModel.findOne({_id: projectId});
+        var oldFileNames = projectModel.projectFileName;
+
+        var updateFileName = []
+        oldFileNames.forEach(element => updateFileName.push(element));
+
+        
+        for(let deleteFile of deleteFiles){            
+            updateFileName = updateFileName.filter(i => i !== deleteFile);
+        }
+
+        this.deleteFile(username, projectId, deleteFiles) 
+      
+        updateModel["projectFileName"] = updateFileName;
+        
         // Delete files given
-        return await this.projectModel.findByIdAndUpdate(projectId, updateModel, {new: true})
+        var projectModel = await this.projectModel.findByIdAndUpdate(projectId, updateModel, {new: true});
+        projectModel.projectFileName = await this.getFileNameAndLink(projectModel.projectFileName, username, projectId);
+
+        return projectModel;
 
         
     }
@@ -155,7 +177,7 @@ export class ProjectsService {
         var projectModel;
         
         // undefined or null or ''
-        if(projectId === undefined || projectId === ''){
+        if(projectId === '' || projectId === undefined){
             
             project['username'] = username;
             projectModel = await new this.projectModel(project);

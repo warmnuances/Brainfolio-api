@@ -7,7 +7,6 @@ export class FileDto {
     mimetype: string;
     destination: string;
     filename: string;
-    path: string;
-    size: number;
+
 
 }  

@@ -10,6 +10,7 @@ import {FileDto} from './dto/project-file.dto'
 
 import * as admin from 'firebase-admin';
 import * as request from 'request';
+import { DeleteFilesDto } from './dto/delete-file.dto';
 
 
 @Controller('projects')
@@ -18,7 +19,7 @@ export class ProjectsController {
 
     @Get()
     findAll(): Promise<Project[]> {
-        return this.projectsService.findAll('username');
+      return this.projectsService.findAll('username');
     } 
 
 
@@ -30,25 +31,21 @@ export class ProjectsController {
       return result
     }
     
-    //Delete all project
-    @Delete(':id')
-    deleteProject(@Param() param): Promise<Project> {
-      return this.projectsService.deleteProject('username', param.id);
+    // //Delete files only
+    @Delete('files')
+    deleteFiles(@Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project>{      
+      return this.projectsService.deleteFiles('username', deletionData);
     }
 
-    // //Delete files only
-    // @Delete('files/:projectId')
-    // deleteFiles(@Param() param, @Body() body){
-    //   console.log(body);
-      
-    //   var fileNames = ['Screenshot (57).png'];
-    //   console.log(fileNames);
-      
-    //   return this.projectsService.deleteFile('username',param.projectId, fileNames);
-    // }
+    //Delete all project
+    @Delete('project')
+    deleteProject(@Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project> {
+      var projectId = deletionData.projectId;
+      return this.projectsService.deleteProject('username', projectId);
+    }
 
     //Save project without files
-    @Post()
+    @Post('project')
     update(@Body(ValidationPipe) project: ProjectDto): Promise<Project> {
       return this.projectsService.createUpdateProject(project, 'username');
     }
@@ -65,6 +62,7 @@ export class ProjectsController {
       }
     ))
     Create(@UploadedFiles() files:[FileDto], @Body(ValidationPipe) projectDto: ProjectDto): Promise<Project> { 
+      
       var projectId = projectDto.projectId;
       return this.projectsService.uploadFiles(files,projectId,'username')
     }
