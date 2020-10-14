@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   heroku: circleci/heroku@1.2.2
-  slack: circleci/slack@4.0
+  slack: circleci/slack@4.0.0
 
 commands:
   install:
@@ -448,6 +448,23 @@ jobs:
       - image: circleci/node:12.18.4
     working_directory: ~/repo
     steps:
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*Slack Test*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: always
       - checkout
       - restore_cache:
           keys:
