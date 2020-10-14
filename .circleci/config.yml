@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   heroku: circleci/heroku@1.2.2
 jobs:
-  build:
+  test:
     docker:
       - image: circleci/node:12.18.4
     working_directory: ~/repo
@@ -56,10 +56,10 @@ jobs:
       #     command: |
       #       ls -a
       #       docker-compose up
+  
 
   deploy:
-    docker:
-      - image: circleci/node:12.18.4
+    machine: true
     environment:
       HEROKU_APP: "testdockerprod123"
     steps: 
