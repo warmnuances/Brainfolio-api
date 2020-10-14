@@ -247,7 +247,7 @@ jobs:
                 }
               ]
             }
-          event: success
+          event: pass
 
 
 
