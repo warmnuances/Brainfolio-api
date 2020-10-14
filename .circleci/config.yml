@@ -54,7 +54,7 @@ commands:
       - run: 
           name: build docker images
           command: |
-            docker-compose up
+            docker-compose build
       - run: 
           command: 
             docker tag brainfolio-api_web registry.heroku.com/testdockerprod123/web \
@@ -172,7 +172,7 @@ jobs:
       - install
       - check-authentication
       - checkout
-      
+
       - run: 
           name: Get Environment Variables from CircleCI
           command: |
