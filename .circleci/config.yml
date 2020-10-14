@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   heroku: circleci/heroku@1.2.2
+  slack: circleci/slack@4.0.0
 
 commands:
   install:
@@ -143,6 +144,31 @@ jobs:
           command: |
             npm run test:e2e
 
+
+      - slack/notify:
+          color: "#9EFD38"
+          message: Execute e2e Test
+
+      - slack/notify:
+          channel: github-build
+          event: fail
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Successfully build and deployed application* ❌😢🍀🍀🍀",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          
+
       - run: 
           name: Configure git and Set Commit message as Env variable
           command: |
@@ -158,6 +184,7 @@ jobs:
             git checkout testBranch
             git merge staging -m "Test Passed! $GIT_COMMIT_DESC"
             git push -q https://${GITHUB_PERSONAL_TOKEN}@github.com/warmnuances/Brainfolio-prod.git testBranch
+
 
         
      
@@ -199,9 +226,28 @@ jobs:
 
       - push-docker-image:
           app-name: testdockerprod123
+
       - release-docker-image:
           app-name: testdockerprod123
           process-types: web
+
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Successfully build and deployed application* ✅🤗🔥🔥🔥",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: success
 
 
 
