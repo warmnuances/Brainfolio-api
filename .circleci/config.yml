@@ -57,37 +57,38 @@ jobs:
       #       ls -a
       #       docker-compose up
 
-deploy:
-   machine:
-      executor: heroku/default
-      environment:
-        HEROKU_APP: "testdockerprod123"
-      steps: 
-       - checkout
-       - heroku/install
-       -  install:
-            description: |
-                Download and install the Heroku CLI. Will be skipped if the CLI is already installed in the system.
-            steps:
-                - run:
-                    command: |
-                        if [[ $(command -v heroku) == "" ]]; then
-                          curl https://cli-assets.heroku.com/install.sh | sh
-                        else
-                          echo "Heroku is already installed. No operation was performed."
-                        fi
-                    name: Install Heroku CLI (If not installed)
-                - run:
-                    name: Install Docker Compose
-                    command: |
-                      curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-                      chmod +x ~/docker-compose
-                      sudo mv ~/docker-compose /usr/local/bin/docker-compose
+  deploy:
+    docker:
+      - image: circleci/node:12.18.4
+    environment:
+      HEROKU_APP: "testdockerprod123"
+        
+    steps: 
+      - checkout
+      - heroku/install
+      - install:
+          description: |
+              Download and install the Heroku CLI. Will be skipped if the CLI is already installed in the system.
+          steps:
+              - run:
+                  command: |
+                      if [[ $(command -v heroku) == "" ]]; then
+                        curl https://cli-assets.heroku.com/install.sh | sh
+                      else
+                        echo "Heroku is already installed. No operation was performed."
+                      fi
+                  name: Install Heroku CLI (If not installed)
+              - run:
+                  name: Install Docker Compose
+                  command: |
+                    curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+                    chmod +x ~/docker-compose
+                    sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
-       - run: 
+      - run: 
           name: Verify if heroku key is set 
           command: |
-           if [[ $HEROKU_API_KEY == "" ]]; then
+            if [[ $HEROKU_API_KEY == "" ]]; then
             echo "No Heroku API key set, please set the HEROKU_API_KEY environment variable."
             echo "This can be found by running the `heroku auth:token` command locally."
               exit 1
@@ -98,12 +99,12 @@ deploy:
             <</parameters.print-whoami>>
             fi
 
-       - run: 
+      - run: 
           name: build docker images
           command: |
             docker-compose up
 
-       - push-docker-image:
+      - push-docker-image:
           description: |
             Deploy built docker image to heroku
           executor: default 
@@ -117,11 +118,14 @@ deploy:
               type: string
           steps:
             - run: 
+              command: heroku container:login
+              name: Login to Heroku Docker image registry
+            - run: 
               command: 
                 docker tag brainfolio-api_web registry.heroku.com/testdockerprod123/web \
                 docker push registry.heroku.com/testdockerprod123/web
 
-       - release-docker-image:
+      - release-docker-image:
           description: |
             Release a Docker image from the Heroku Docker registry.
           executor: default
@@ -149,8 +153,7 @@ deploy:
 
 ### Only work in staging branch
 workflows:
-  version: 2
-  build:
+  heroku_deploy:
     jobs:
       - build:
           filters: 
