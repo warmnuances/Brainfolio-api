@@ -210,11 +210,14 @@ workflows:
             - test
           filters:
             branches:
-              only: testBranch
+              only: 
+                - testBranch
       - test:
           filters: 
             branches:
-              only: testBranch
+              only: 
+               - staging
+               - testBranch
  
 
           
