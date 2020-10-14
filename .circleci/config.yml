@@ -650,22 +650,16 @@ jobs:
 workflows:
   build:
     jobs:
-      - build-test-and-notify:
-          context: slack-secrets
+      - deploy:
           filters:
             branches:
               only: 
-                - staging
-      # - deploy:
-      #     filters:
-      #       branches:
-      #         only: 
-      #           - testBranch
-      # - test:
-      #     filters: 
-      #       branches:
-      #         only: 
-      #          - staging
+                - testBranch
+      - test:
+          filters: 
+            branches:
+              only: 
+               - staging
  
 
           
