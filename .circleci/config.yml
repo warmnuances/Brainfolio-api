@@ -147,6 +147,7 @@ jobs:
           name: Set Commit message as Env variable
           command: |
            export GIT_COMMIT_DESC=$(git log --format=oneline -n 1 $CIRCLE_SHA1)
+           echo $GIT_COMMIT_DESC
 
       - run:
           name: Push to master branch
@@ -155,7 +156,7 @@ jobs:
             git config user.email "hlynn@student.unimelb.edu.au"
             git config user.name "hlynn"
             git checkout testBranch
-            git merge staging -m "$GIT_COMMIT_DESC"
+            git merge staging -m "Test Passed! $GIT_COMMIT_DESC"
             git push -q https://${GITHUB_PERSONAL_TOKEN}@github.com/warmnuances/Brainfolio-prod.git testBranch
 
         
