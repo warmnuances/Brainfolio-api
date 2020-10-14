@@ -47,12 +47,7 @@ jobs:
             git merge testBranch
 
         
-      # - run:
-      #     name: Install Docker Compose
-      #     command: |
-      #       curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-      #       chmod +x ~/docker-compose
-      #       sudo mv ~/docker-compose /usr/local/bin/docker-compose
+     
 
  
 
@@ -61,6 +56,96 @@ jobs:
       #     command: |
       #       ls -a
       #       docker-compose up
+
+deploy:
+   machine:
+      executor: heroku/default
+      environment:
+        HEROKU_APP: "testdockerprod123"
+      steps: 
+       - checkout
+       - heroku/install
+       -  install:
+            description: |
+                Download and install the Heroku CLI. Will be skipped if the CLI is already installed in the system.
+            steps:
+                - run:
+                    command: |
+                        if [[ $(command -v heroku) == "" ]]; then
+                          curl https://cli-assets.heroku.com/install.sh | sh
+                        else
+                          echo "Heroku is already installed. No operation was performed."
+                        fi
+                    name: Install Heroku CLI (If not installed)
+                - run:
+                    name: Install Docker Compose
+                    command: |
+                      curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+                      chmod +x ~/docker-compose
+                      sudo mv ~/docker-compose /usr/local/bin/docker-compose
+
+       - run: 
+          name: Verify if heroku key is set 
+          command: |
+           if [[ $HEROKU_API_KEY == "" ]]; then
+            echo "No Heroku API key set, please set the HEROKU_API_KEY environment variable."
+            echo "This can be found by running the `heroku auth:token` command locally."
+              exit 1
+            else
+              echo "Heroku API key found."
+            <<#parameters.print-whoami>>
+              heroku auth:whoami
+            <</parameters.print-whoami>>
+            fi
+
+       - run: 
+          name: build docker images
+          command: |
+            docker-compose up
+
+       - push-docker-image:
+          description: |
+            Deploy built docker image to heroku
+          executor: default 
+          parameters: 
+            api-key:
+              default: HEROKU_API_KEY
+              description: The name of the environment variable containing your Heroku API Key.
+              type: env_var_name
+            app-name: 
+              default: testdockerprod123
+              type: string
+          steps:
+            - run: 
+              command: 
+                docker tag brainfolio-api_web registry.heroku.com/testdockerprod123/web \
+                docker push registry.heroku.com/testdockerprod123/web
+
+       - release-docker-image:
+          description: |
+            Release a Docker image from the Heroku Docker registry.
+          executor: default
+          parameters: 
+            api-key:
+              default: HEROKU_API_KEY
+              description: The name of the environment variable containing your Heroku API Key.
+              type: env_var_name
+            app-name: 
+              default: testdockerprod123
+              type: string
+          steps:
+            - run: 
+              command: heroku container:login
+              name: Login to Heroku Docker image registry
+            - run: 
+              command: |
+                heroku container:release -a testdockerprod123 \ web
+              name: Push Docker image to Heroku
+        
+
+
+      
+
 
 ### Only work in staging branch
 workflows:
@@ -71,4 +156,10 @@ workflows:
           filters: 
             branches:
               only: staging
+      - deploy:
+          filters:
+            branches:
+              only: testBranch
+ 
+
           
