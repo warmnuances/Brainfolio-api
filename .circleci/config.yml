@@ -172,6 +172,17 @@ jobs:
       - install
       - check-authentication
       - checkout
+      
+      - run: 
+          name: Get Environment Variables from CircleCI
+          command: |
+            bash scripts/getEnv.sh
+      
+      - run: 
+          name: Get Service Account Key from environment Variables
+          command: |
+            bash scripts/getServiceAccount.sh
+
       - push-docker-image:
           app-name: testdockerprod123
       - release-docker-image:
