@@ -62,7 +62,6 @@ jobs:
       - image: circleci/node:12.18.4
     environment:
       HEROKU_APP: "testdockerprod123"
-        
     steps: 
       - checkout
       - heroku/install
@@ -153,13 +152,15 @@ jobs:
 
 ### Only work in staging branch
 workflows:
-  heroku_deploy:
+  build:
     jobs:
       - build:
           filters: 
             branches:
               only: staging
       - deploy:
+          requires:
+            - build
           filters:
             branches:
               only: testBranch
