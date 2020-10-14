@@ -1,6 +1,90 @@
 version: 2.1
 orbs:
   heroku: circleci/heroku@1.2.2
+
+commands:
+   check-authentication:
+    description: |
+        Verifies the Heroku API key has been added so we can authenticate.
+    parameters:
+        print-whoami:
+            default: false
+            description: Print the result of heroku auth:whoami.
+            type: boolean
+    steps:
+        - run:
+            command: |
+                if [[ $HEROKU_API_KEY == "" ]]; then
+                  echo "No Heroku API key set, please set the HEROKU_API_KEY environment variable."
+                  echo "This can be found by running the `heroku auth:token` command locally."
+                  exit 1
+                else
+                  echo "Heroku API key found."
+                  heroku auth:whoami
+                fi
+            name: Verify HEROKU_API_KEY is set
+
+   install:
+      description: |
+          Download and install the Heroku CLI. Will be skipped if the CLI is already installed in the system.
+      steps:
+          - run:
+              command: |
+                  if [[ $(command -v heroku) == "" ]]; then
+                    curl https://cli-assets.heroku.com/install.sh | sh
+                  else
+                    echo "Heroku is already installed. No operation was performed."
+                  fi
+              name: Install Heroku CLI (If not installed)
+
+   push-docker-image:
+      description: |
+        Deploy built docker image to heroku
+      executor: default 
+      parameters: 
+        api-key:
+          default: HEROKU_API_KEY
+          description: The name of the environment variable containing your Heroku API Key.
+          type: env_var_name
+        app-name: 
+          default: testdockerprod123
+          type: string
+      steps:
+        - run: 
+            command: heroku container:login
+            name: Login to Heroku Docker image registry
+        - run: 
+            name: build docker images
+            command: |
+              docker-compose up
+        - run: 
+            command: 
+              docker tag brainfolio-api_web registry.heroku.com/testdockerprod123/web \
+              docker push registry.heroku.com/testdockerprod123/web
+      
+
+   release-docker-image:
+      description: |
+        Release a Docker image from the Heroku Docker registry.
+      executor: default
+      parameters: 
+        api-key:
+          default: HEROKU_API_KEY
+          description: The name of the environment variable containing your Heroku API Key.
+          type: env_var_name
+        app-name: 
+          default: testdockerprod123
+          type: string
+      steps:
+        - run: 
+            command: heroku container:login
+            name: Login to Heroku Docker image registry
+        - run: 
+            command: |
+              heroku container:release -a testdockerprod123 \ web
+            name: Push Docker image to Heroku
+
+
 jobs:
   test:
     docker:
@@ -59,86 +143,29 @@ jobs:
   
 
   deploy:
-    machine: true
-    environment:
-      HEROKU_APP: "testdockerprod123"
-    steps: 
+    description: |
+      Quickly and easily take the changes to this branch and deploy them to Heroku automatically with this job.
+    executor: default
+    parameters: 
+      app-name:
+        default: testdockerprod123
+        description: The name of your Heroku App. For backwards compatibility the literal value `$HEROKU_APP_NAME` is the default, so you can easily use this command by setting an environment variable called HEROKU_APP_NAME
+        type: string
+    steps:
+      - install
+      - check-authentication
       - checkout
-      - heroku/install
-      - run:
-          command: |
-              if [[ $(command -v heroku) == "" ]]; then
-                curl https://cli-assets.heroku.com/install.sh | sh
-              else
-                echo "Heroku is already installed. No operation was performed."
-              fi
-          name: Install Heroku CLI (If not installed)
-          
-      - run:
-          name: Install Docker Compose
-          command: |
-            curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
-
-      - run: 
-          name: Verify if heroku key is set 
-          command: |
-            if [[ $HEROKU_API_KEY == "" ]]; then
-            echo "No Heroku API key set, please set the HEROKU_API_KEY environment variable."
-            echo "This can be found by running the `heroku auth:token` command locally."
-              exit 1
-            else
-              echo "Heroku API key found."
-              heroku auth:whoami
-            fi
-
-      - run: 
-          name: build docker images
-          command: |
-            docker-compose up
-
       - push-docker-image:
-          description: |
-            Deploy built docker image to heroku
-          executor: default 
-          parameters: 
-            api-key:
-              default: HEROKU_API_KEY
-              description: The name of the environment variable containing your Heroku API Key.
-              type: env_var_name
-            app-name: 
-              default: testdockerprod123
-              type: string
-          steps:
-            - run: 
-              command: heroku container:login
-              name: Login to Heroku Docker image registry
-            - run: 
-              command: 
-                docker tag brainfolio-api_web registry.heroku.com/testdockerprod123/web \
-                docker push registry.heroku.com/testdockerprod123/web
+          app-name: testdockerprod123
+      -  release-docker-image:
+          app-name: testdockerprod123
+          process-types: web
 
-      - release-docker-image:
-          description: |
-            Release a Docker image from the Heroku Docker registry.
-          executor: default
-          parameters: 
-            api-key:
-              default: HEROKU_API_KEY
-              description: The name of the environment variable containing your Heroku API Key.
-              type: env_var_name
-            app-name: 
-              default: testdockerprod123
-              type: string
-          steps:
-            - run: 
-              command: heroku container:login
-              name: Login to Heroku Docker image registry
-            - run: 
-              command: |
-                heroku container:release -a testdockerprod123 \ web
-              name: Push Docker image to Heroku
+
+
+        
+   
+     
         
 
 
