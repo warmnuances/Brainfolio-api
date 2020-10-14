@@ -206,15 +206,15 @@ workflows:
   build:
     jobs:
       - deploy:
-          # requires:
-          #   - test
+          requires:
+            - test
           filters:
             branches:
               only: testBranch
-      # - test:
-      #     filters: 
-      #       branches:
-      #         only: testBranch
+      - test:
+          filters: 
+            branches:
+              only: testBranch
  
 
           
