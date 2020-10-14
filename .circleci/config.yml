@@ -109,8 +109,6 @@ jobs:
     docker:
       - image: circleci/node:12.18.4
     working_directory: ~/repo
-    environment:
-      GIT_COMMIT_DESC: git log --format=%B -n 1 $CIRCLE_SHA1
     steps:
       - checkout
       - restore_cache:
@@ -144,6 +142,11 @@ jobs:
           name: Run e2e test
           command: |
             npm run test:e2e
+
+      - run: 
+          name: Set Commit message as Env variable
+          command: |
+           export GIT_COMMIT_DESC=git log --format=oneline -n 1 $CIRCLE_SHA1
 
       - run:
           name: Push to master branch
