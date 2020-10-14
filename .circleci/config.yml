@@ -295,11 +295,13 @@ workflows:
   build:
     jobs:
       - deploy:
+          context: slack-secrets
           filters:
             branches:
               only: 
                 - testBranch
       - test:
+          context: slack-secrets
           filters: 
             branches:
               only: 
