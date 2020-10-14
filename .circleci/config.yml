@@ -131,7 +131,7 @@ jobs:
           name: Push to master branch
           command: |
             git checkout testBranch
-            git merge testBranch
+            git merge staging
 
         
      
