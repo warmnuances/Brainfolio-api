@@ -151,7 +151,7 @@ jobs:
             git config user.name "Deployment Bot"
             git checkout testBranch
             git merge staging
-            git commit --allow-empty -m "Trigger deployment"
+            git commit
             git push -q https://${GITHUB_PERSONAL_TOKEN}@github.com/warmnuances/Brainfolio-prod.git testBranch
 
         
