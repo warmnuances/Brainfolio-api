@@ -146,7 +146,7 @@ jobs:
       - run: 
           name: Set Commit message as Env variable
           command: |
-           export GIT_COMMIT_DESC=git log --format=oneline -n 1 $CIRCLE_SHA1
+           export GIT_COMMIT_DESC=$(git log --format=oneline -n 1 $CIRCLE_SHA1)
 
       - run:
           name: Push to master branch
