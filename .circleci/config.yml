@@ -443,6 +443,17 @@ executors:
             type: string
 
 jobs:
+  build-test-and-notify:
+    executor: default
+    steps:
+      - slack/notify:
+          color: "#42e2f4"
+          mentions: "hlynn"
+          message: A custom message to notify the channel about the latest build
+
+      - slack/status:
+          fail_only: true
+          mentions: "hlynn"
   test:
     docker:
       - image: circleci/node:12.18.4
@@ -645,16 +656,21 @@ jobs:
 workflows:
   build:
     jobs:
-      - deploy:
-          filters:
+      - build-test-and-notify:
+           filters:
             branches:
               only: 
-                - testBranch
-      - test:
-          filters: 
-            branches:
-              only: 
-               - staging
+                - staging
+      # - deploy:
+      #     filters:
+      #       branches:
+      #         only: 
+      #           - testBranch
+      # - test:
+      #     filters: 
+      #       branches:
+      #         only: 
+      #          - staging
  
 
           
