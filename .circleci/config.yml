@@ -164,6 +164,7 @@ jobs:
             }
       
       - slack/notify:
+          channel: github-build
           custom: |
             {
               "blocks": [
@@ -245,6 +246,7 @@ jobs:
           process-types: web
 
       - slack/notify:
+          channel: github-build
           custom: |
             {
               "blocks": [
