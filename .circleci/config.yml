@@ -446,20 +446,8 @@ jobs:
   build-test-and-notify:
     executor: default
     steps:
-      - slack/notify:
-          color: "#42e2f4"
-          mentions: "hlynn"
-          message: A custom message to notify the channel about the latest build
-
-      - slack/status:
-          fail_only: true
-          mentions: "hlynn"
-  test:
-    docker:
-      - image: circleci/node:12.18.4
-    working_directory: ~/repo
-    steps:
-      - slack/notify:
+       - slack/notify:
+          channel: github-build
           custom: |
             {
               "blocks": [
@@ -476,6 +464,12 @@ jobs:
               ]
             }
           event: always
+
+  test:
+    docker:
+      - image: circleci/node:12.18.4
+    working_directory: ~/repo
+    steps:
       - checkout
       - restore_cache:
           keys:
