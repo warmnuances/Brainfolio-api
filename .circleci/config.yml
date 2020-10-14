@@ -167,6 +167,9 @@ jobs:
         description: The name of your Heroku App. For backwards compatibility the literal value `$HEROKU_APP_NAME` is the default, so you can easily use this command by setting an environment variable called HEROKU_APP_NAME
         type: string
     steps:
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true 
       - install
       - check-authentication
       - checkout
@@ -189,15 +192,15 @@ workflows:
   build:
     jobs:
       - deploy:
-          requires:
-            - test
+          # requires:
+          #   - test
           filters:
             branches:
               only: testBranch
-      - test:
-          filters: 
-            branches:
-              only: testBranch
+      # - test:
+      #     filters: 
+      #       branches:
+      #         only: testBranch
  
 
           
