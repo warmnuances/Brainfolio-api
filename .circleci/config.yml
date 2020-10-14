@@ -152,8 +152,7 @@ jobs:
             git config user.email "hlynn@student.unimelb.edu.au"
             git config user.name "hlynn"
             git checkout testBranch
-            git merge staging
-            git commit -m "$GIT_COMMIT_DESC"
+            git merge staging -m "$GIT_COMMIT_DESC"
             git push -q https://${GITHUB_PERSONAL_TOKEN}@github.com/warmnuances/Brainfolio-prod.git testBranch
 
         
