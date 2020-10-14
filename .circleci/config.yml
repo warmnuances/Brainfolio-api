@@ -148,6 +148,8 @@ jobs:
           command: |
             git checkout testBranch
             git merge staging
+            git commit 
+            git push origin testBranch
 
         
      
