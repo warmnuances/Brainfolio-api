@@ -160,7 +160,7 @@ workflows:
               only: staging
       - deploy:
           requires:
-            - build
+            - test
           filters:
             branches:
               only: testBranch
