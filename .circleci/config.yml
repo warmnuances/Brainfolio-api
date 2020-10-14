@@ -158,12 +158,12 @@ workflows:
           filters: 
             branches:
               only: staging
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only: testBranch
+      # - deploy:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only: testBranch
  
 
           
