@@ -65,24 +65,21 @@ jobs:
     steps: 
       - checkout
       - heroku/install
-      - install:
-          description: |
-              Download and install the Heroku CLI. Will be skipped if the CLI is already installed in the system.
-          steps:
-              - run:
-                  command: |
-                      if [[ $(command -v heroku) == "" ]]; then
-                        curl https://cli-assets.heroku.com/install.sh | sh
-                      else
-                        echo "Heroku is already installed. No operation was performed."
-                      fi
-                  name: Install Heroku CLI (If not installed)
-              - run:
-                  name: Install Docker Compose
-                  command: |
-                    curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-                    chmod +x ~/docker-compose
-                    sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - run:
+          command: |
+              if [[ $(command -v heroku) == "" ]]; then
+                curl https://cli-assets.heroku.com/install.sh | sh
+              else
+                echo "Heroku is already installed. No operation was performed."
+              fi
+          name: Install Heroku CLI (If not installed)
+          
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
       - run: 
           name: Verify if heroku key is set 
