@@ -56,8 +56,12 @@ commands:
           command: |
             docker-compose build
       - run: 
-          command: >
+          name: tag docker images
+          command: |
             docker tag brainfolio-api_web registry.heroku.com/testdockerprod123/web 
+      - run: 
+          name: push docker images
+          command: |
             docker push registry.heroku.com/testdockerprod123/web
     
 
@@ -81,7 +85,7 @@ commands:
           command: heroku container:login
           name: Login to Heroku Docker image registry
       - run: 
-          command: >
+          command: |
             heroku container:release -a testdockerprod123  web
           name: Push Docker image to Heroku
 
