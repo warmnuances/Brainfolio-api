@@ -91,6 +91,342 @@ commands:
           name: Push Docker image to Heroku
 
 
+  notify:
+    description: Notify a Slack channel with a custom message.
+    parameters:
+        branch_pattern:
+            default: .+
+            description: |
+                A comma separated list of regex matchable branch names. Notifications will only be sent if sent from a job from these branches. By default ".+" will be used to match all branches. Pattern must match the full string, no partial matches.
+            type: string
+        channel:
+            default: $SLACK_DEFAULT_CHANNEL
+            description: |
+                Select which channel in which to post to. Channel name or ID will work. You may include a comma separated list of channels if you wish to post to multiple channels at once. Set the "SLACK_DEFAULT_CHANNEL" environment variable for the default channel.
+            type: string
+        custom:
+            default: ""
+            description: |
+                Enter a custom message template.
+
+                1. Create your message template using the Block Kit Builder: https://app.slack.com/block-kit-builder/.
+                2. Insert any desired environment variables.
+                3. Paste value here.
+            type: string
+        event:
+            default: always
+            description: |
+                In what event should this message send? Options: ["fail", "pass", "always"]
+            enum:
+                - fail
+                - pass
+                - always
+            type: enum
+        mentions:
+            default: ""
+            description: |
+                Exports to the "$SLACK_PARAM_MENTIONS" environment variable for use in templates.
+                Mention users via the @ symbol: "@USER"
+                If the username contains a space, the Slack ID must be used with angled brackets: "<@U8XXXXXXX>"
+            type: string
+        template:
+            default: ""
+            description: 'Use one of the built-in templates. Select the template name. Preview each template on the gitHub Readme: '
+            type: string
+    steps:
+        - run:
+            command: |
+                echo 'export CCI_STATUS="fail"' > /tmp/SLACK_JOB_STATUS
+            name: Slack - Detecting Job Status (FAIL)
+            when: on_fail
+        - run:
+            command: |
+                echo 'export CCI_STATUS="pass"' > /tmp/SLACK_JOB_STATUS
+            name: Slack - Detecting Job Status (PASS)
+            when: on_success
+        - run:
+            command: |
+                BuildMessageBody() {
+                    # Send message
+                    #   If sending message, default to custom template,
+                    #   if none is supplied, check for a pre-selected template value.
+                    #   If none, error.
+                    if [ -n "$SLACK_PARAM_CUSTOM" ]; then
+                        ModifyCustomTemplate
+                        CUSTOM_BODY_MODIFIED=$(echo "$CUSTOM_BODY_MODIFIED" | sed 's/"/\\"/g' | sed 's/\\n/\\\\n/g' | sed 's/|/\\|/g' | sed 's/</\\</g' | sed 's/>/\\>/g')
+                        T2=$(eval echo $CUSTOM_BODY_MODIFIED)
+                    elif [ -n "$SLACK_PARAM_TEMPLATE" ]; then
+                        TEMPLATE="$(echo \$$SLACK_PARAM_TEMPLATE)"
+                        T1=$(eval echo $TEMPLATE | sed 's/"/\\"/g' | sed 's/\\n/\\\\n/g')
+                        T2=$(eval echo $T1)
+                    else
+                        echo "Error: No message template selected."
+                        echo "Select either a custom template or one of the pre-included ones via the 'custom' or 'template' parameters."
+                        exit 1
+                    fi
+                    # Insert the default channel. THIS IS TEMPORARY
+                    T2=$(echo "$T2" | jq ". + {\"channel\": \"$SLACK_DEFAULT_CHANNEL\"}")
+                    SLACK_MSG_BODY=$T2
+                }
+
+
+                PostToSlack() {
+                    # Post once per channel listed by the channel parameter
+                    #    The channel must be modified in SLACK_MSG_BODY
+
+                    # If no channel is provided, quit with error
+                    if [ "$SLACK_PARAM_CHANNEL" = "" ]; then
+                        echo "No channel was provided. Enter value for SLACK_DEFAULT_CHANNEL env var, or channel parameter"
+                        exit 0
+                    fi
+                    for i in $(echo $(eval echo "$SLACK_PARAM_CHANNEL")  | sed "s/,/ /g")
+                    do
+                        echo "Sending to Slack Channel: $i"
+                        SLACK_MSG_BODY=$(echo "$SLACK_MSG_BODY" | jq --arg channel "$i" '.channel = $channel')
+                        curl -s -f -X POST -H 'Content-type: application/json' \
+                        -H "Authorization: Bearer $SLACK_ACCESS_TOKEN" \
+                        --data \
+                        "$SLACK_MSG_BODY" https://slack.com/api/chat.postMessage > /dev/null
+                    done
+                }
+
+                Notify() {
+                    if [ "$CCI_STATUS" = "$SLACK_PARAM_EVENT" ] || [ "$SLACK_PARAM_EVENT" = "always" ]; then
+                    BranchFilter # In the event the Slack notification would be sent, first ensure it is allowed to trigger on this branch.
+                    echo "Sending Notification"
+                    PostToSlack
+                    else
+                        # dont send message.
+                        echo "NO SLACK ALERT"
+                        echo
+                        echo "This command is set to send an alert on: $SLACK_PARAM_EVENT"
+                        echo "Current status: ${CCI_STATUS}"
+                        exit 0
+                    fi
+                }
+
+                ModifyCustomTemplate() {
+                    # Inserts the required "text" field to the custom json template from block kit builder.
+                    if [ "$(echo "$SLACK_PARAM_CUSTOM" | jq '.text')" = "null" ]; then
+                        CUSTOM_BODY_MODIFIED=$(echo "$SLACK_PARAM_CUSTOM" | jq '. + {"text": ""}')
+                    else
+                        # In case the text field was set manually.
+                        CUSTOM_BODY_MODIFIED=$(echo "$SLACK_PARAM_CUSTOM" | jq '.')
+                    fi
+                }
+
+                InstallJq() {
+                    if uname -a | grep Darwin > /dev/null 2>&1; then
+                        echo "Checking For JQ + CURL: MacOS"
+                        command -v jq >/dev/null 2>&1 || HOMEBREW_NO_AUTO_UPDATE=1 brew install jq --quiet
+                        return $?
+
+                    elif cat /etc/issue | grep Debian > /dev/null 2>&1 || cat /etc/issue | grep Ubuntu > /dev/null 2>&1; then
+                        echo "Checking For JQ + CURL: Debian"
+                        if [ "$(id -u)" = 0 ]; then export SUDO=""; else # Check if we're root
+                            export SUDO="sudo";
+                        fi
+                        command -v jq >/dev/null 2>&1 || { $SUDO apt -qq update && $SUDO apt -qq install -y jq; }
+                        return $?
+
+                    elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
+                        echo "Checking For JQ + CURL: Alpine"
+                        command -v curl >/dev/null 2>&1 || { echo >&2 "SLACK ORB ERROR: CURL is required. Please install."; exit 1; }
+                        command -v jq >/dev/null 2>&1 || { echo >&2 "SLACK ORB ERROR: JQ is required. Please install"; exit 1; }
+                        return $?
+                    fi
+                }
+
+                BranchFilter() {
+                    # If any pattern supplied matches the current branch, proceed; otherwise, exit with message.
+                    FLAG_MATCHES_FILTER="false"
+                    for i in $(echo "$SLACK_PARAM_BRANCHPATTERN" | sed "s/,/ /g")
+                    do
+                      if echo "$CIRCLE_BRANCH" | grep -Eq "^${i}$" ; then
+                        FLAG_MATCHES_FILTER="true"
+                        break
+                      fi
+                    done
+                    if [ "$FLAG_MATCHES_FILTER" = "false" ]; then
+                        # dont send message.
+                        echo "NO SLACK ALERT"
+                        echo
+                        echo 'Current branch does not match any item from the "branch_list" parameter'
+                        echo "Current branch: ${CIRCLE_BRANCH}"
+                        exit 0
+                    fi
+                }
+
+                # Will not run if sourced from another script.
+                # This is done so this script may be tested.
+                ORB_TEST_ENV="bats-core"
+                if [ "${0#*$ORB_TEST_ENV}" = "$0" ]; then
+                    . "/tmp/SLACK_JOB_STATUS"
+                    InstallJq
+                    BuildMessageBody
+                    Notify
+                fi
+            environment:
+                SLACK_PARAM_BRANCHPATTERN: <<parameters.branch_pattern>>
+                SLACK_PARAM_CHANNEL: <<parameters.channel>>
+                SLACK_PARAM_CUSTOM: <<parameters.custom>>
+                SLACK_PARAM_EVENT: <<parameters.event>>
+                SLACK_PARAM_MENTIONS: <<parameters.mentions>>
+                SLACK_PARAM_TEMPLATE: <<parameters.template>>
+                basic_fail_1: |-
+                    {
+                      "text": "",
+                      "blocks": [
+                        {
+                          "type": "section",
+                          "text": {
+                            "type": "mrkdwn",
+                            "text": "Your job *${CIRCLE_JOB}* has failed ⚠️ "
+                          },
+                          "fields": [
+                            {
+                              "type": "mrkdwn",
+                              "text": "*Commiter*:\\n${CIRCLE_USERNAME}"
+                            },
+                            {
+                              "type": "mrkdwn",
+                              "text": "*SHA*:\\n${CIRCLE_SHA1}"
+                            },
+                            {
+                              "type": "mrkdwn",
+                              "text": "*Mentions*:\\n${SLACK_PARAM_MENTIONS}"
+                            }
+                          ],
+                          "accessory": {
+                            "type": "image",
+                            "image_url": "https://assets.brandfolder.com/otz5mn-bw4j2w-6jzqo8/original/circle-logo-badge-black.png",
+                            "alt_text": "CircleCI logo"
+                          }
+                        },
+                        {
+                          "type": "actions",
+                          "elements": [
+                            {
+                              "type": "button",
+                              "text": {
+                                "type": "plain_text",
+                                "text": "View Job"
+                              },
+                              "url": "${CIRCLE_BUILD_URL}"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                basic_on_hold_1: |-
+                    {
+                      "blocks": [
+                        {
+                          "type": "header",
+                          "text": {
+                            "type": "plain_text",
+                            "text": "ON HOLD - Awaiting Approval :raised_hand:",
+                            "emoji": true
+                          }
+                        },
+                        {
+                          "type": "section",
+                          "fields": [
+                            {
+                              "type": "mrkdwn",
+                              "text": "*Project*:\\n$CIRCLE_PROJECT_REPONAME"
+                            },
+                            {
+                              "type": "mrkdwn",
+                              "text": "*Branch*:\\n$CIRCLE_BRANCH"
+                            },
+                            {
+                              "type": "mrkdwn",
+                              "text": "*Author*:\\n$CIRCLE_USERNAME"
+                            }
+                          ],
+                          "accessory": {
+                            "type": "image",
+                            "image_url": "https://assets.brandfolder.com/otz5mn-bw4j2w-6jzqo8/original/circle-logo-badge-black.png",
+                            "alt_text": "CircleCI logo"
+                          }
+                        },
+                        {
+                          "type": "section",
+                          "fields": [
+                            {
+                              "type": "mrkdwn",
+                              "text": "*Mentions*:\\n$SLACK_PARAM_MENTIONS"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "actions",
+                          "elements": [
+                            {
+                              "type": "button",
+                              "text": {
+                                "type": "plain_text",
+                                "text": "View Workflow"
+                              },
+                              "url": "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                success_tagged_deploy_1: |-
+                    {
+                      "text": "",
+                      "blocks": [
+                        {
+                          "type": "header",
+                          "text": {
+                            "type": "plain_text",
+                            "text": "Deployment Successful! :tada:",
+                            "emoji": true
+                          }
+                        },
+                        {
+                          "type": "section",
+                          "fields": [
+                            {
+                              "type": "mrkdwn",
+                              "text": "*Project*:\\n$CIRCLE_PROJECT_REPONAME"
+                            },
+                            {
+                              "type": "mrkdwn",
+                              "text": "*When*:\\n$(date +'%m/%d/%Y %T')"
+                            },
+                            {
+                              "type": "mrkdwn",
+                              "text": "*Tag*:\\n$CIRCLE_TAG"
+                            }
+                          ],
+                          "accessory": {
+                            "type": "image",
+                            "image_url": "https://assets.brandfolder.com/otz5mn-bw4j2w-6jzqo8/original/circle-logo-badge-black.png",
+                            "alt_text": "CircleCI logo"
+                          }
+                        },
+                        {
+                          "type": "actions",
+                          "elements": [
+                            {
+                              "type": "button",
+                              "text": {
+                                "type": "plain_text",
+                                "text": "View Job"
+                              },
+                              "url": "${CIRCLE_BUILD_URL}"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+            name: Slack - Sending Notification
+            when: always
+
 
 executors:
   default:
