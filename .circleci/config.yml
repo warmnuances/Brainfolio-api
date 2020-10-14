@@ -154,7 +154,7 @@ jobs:
 workflows:
   build:
     jobs:
-      - build:
+      - test:
           filters: 
             branches:
               only: staging
