@@ -188,14 +188,14 @@ jobs:
 workflows:
   build:
     jobs:
-      - test:
-          filters: 
-            branches:
-              only: staging
       - deploy:
           requires:
             - test
           filters:
+            branches:
+              only: testBranch
+      - test:
+          filters: 
             branches:
               only: testBranch
  
