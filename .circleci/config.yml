@@ -93,9 +93,7 @@ jobs:
               exit 1
             else
               echo "Heroku API key found."
-            <<#parameters.print-whoami>>
               heroku auth:whoami
-            <</parameters.print-whoami>>
             fi
 
       - run: 
