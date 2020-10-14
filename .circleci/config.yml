@@ -144,11 +144,6 @@ jobs:
           command: |
             npm run test:e2e
 
-
-      - slack/notify:
-          color: "#9EFD38"
-          message: Execute e2e Test
-
       - slack/notify:
           channel: github-build
           event: fail
@@ -160,13 +155,31 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*Successfully build and deployed application* ❌😢🍀🍀🍀",
+                      "text": "*Test failed * ❌😢🍀🍀🍀",
                       "emoji": true
                     }
                   ]
                 }
               ]
             }
+      
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*e2e Test Success!* ✅🤗🔥🔥🔥",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: pass
           
 
       - run: 
@@ -249,6 +262,24 @@ jobs:
             }
           event: pass
 
+      - slack/notify:
+          channel: github-build
+          event: fail
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Build failed * ❌😢🍀🍀🍀",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
 
 
         
