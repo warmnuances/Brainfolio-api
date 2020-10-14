@@ -144,17 +144,17 @@ jobs:
             npm run test:e2e
 
       - run: 
-          name: Set Commit message as Env variable
-          command: |
-           export GIT_COMMIT_DESC=$(git log --format=oneline -n 1 $CIRCLE_SHA1)
-           echo $GIT_COMMIT_DESC
-
-      - run:
-          name: Push to master branch
+          name: Configure git and Set Commit message as Env variable
           command: |
             git config credential.helper 'cache --timeout=120'
             git config user.email "hlynn@student.unimelb.edu.au"
             git config user.name "hlynn"
+            export GIT_COMMIT_DESC=$(git log --format=oneline -n 1 $CIRCLE_SHA1)
+            echo $GIT_COMMIT_DESC
+
+      - run:
+          name: Push to master branch
+          command: |
             git checkout testBranch
             git merge staging -m "Test Passed! $GIT_COMMIT_DESC"
             git push -q https://${GITHUB_PERSONAL_TOKEN}@github.com/warmnuances/Brainfolio-prod.git testBranch
