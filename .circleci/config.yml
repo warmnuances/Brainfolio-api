@@ -443,12 +443,11 @@ executors:
             type: string
 
 jobs:
-  test:
-    docker:
-      - image: circleci/node:12.18.4
-    working_directory: ~/repo
+  build-test-and-notify:
+    executor: default
     steps:
-      - slack/notify:
+       - slack/notify:
+          channel: github-build
           custom: |
             {
               "blocks": [
@@ -465,6 +464,12 @@ jobs:
               ]
             }
           event: always
+
+  test:
+    docker:
+      - image: circleci/node:12.18.4
+    working_directory: ~/repo
+    steps:
       - checkout
       - restore_cache:
           keys:
