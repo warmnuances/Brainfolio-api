@@ -60,6 +60,10 @@ commands:
       app-name: 
         default: testdockerprod123
         type: string
+      process-types:
+        default: web
+        description: Process types.
+        type: string
     steps:
       - run: 
           command: heroku container:login
@@ -141,7 +145,7 @@ jobs:
       - checkout
       - push-docker-image:
           app-name: testdockerprod123
-      -  release-docker-image:
+      - release-docker-image:
           app-name: testdockerprod123
           process-types: web
 
