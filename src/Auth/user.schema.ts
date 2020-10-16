@@ -9,11 +9,21 @@ export class User extends Document {
   @Prop({unique: true})
   email: string;
 
+  @Prop({unique: true})
+  username: string;
+
   @Prop()
   password: string;
 
   @Prop()
   salt: string;
+
+  @Prop()
+  visibility: string;
+
+  @Prop()
+  visibilitylist: string[];
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

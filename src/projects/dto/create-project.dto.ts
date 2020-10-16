@@ -1,16 +1,21 @@
 import { IsNotEmpty } from "class-validator";
 
 export class ProjectDto {
-    @IsNotEmpty()
+
+    readonly projectId: string;
+
     readonly title: string;
 
-    @IsNotEmpty()
+    readonly startDate: string;
+
+    readonly endDate: string;
+
+    readonly visibility: string;
+    
     readonly description: string;
 
-    @IsNotEmpty()
-    readonly projectFile: string;
-
-    @IsNotEmpty()
     readonly contributor: string;
+
+    
 
 }  

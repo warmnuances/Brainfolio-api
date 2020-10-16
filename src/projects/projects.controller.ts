@@ -1,78 +1,73 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, ValidationPipe, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ValidationPipe, UseInterceptors, UploadedFiles, UseGuards } from '@nestjs/common';
 import { ProjectDto } from './dto/create-project.dto';
 import { ProjectsService } from './projects.service'
 import { Project } from './interfaces/project.interface'
-import {FileFieldsInterceptor} from '@nestjs/platform-express'
+import {FileFieldsInterceptor, FilesInterceptor} from '@nestjs/platform-express'
+import { diskStorage } from 'multer';
+import { editFileName, imageFileFilter } from '../utils/file-uploading.utils';
+import {FileDto} from './dto/project-file.dto'
+
 
 import * as admin from 'firebase-admin';
+import * as request from 'request';
+import { DeleteFilesDto } from './dto/delete-file.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/Auth/get-user.decorator';
+import { User } from 'src/Auth/user.schema';
+
 
 @Controller('projects')
+@UseGuards(AuthGuard())
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService){}
 
     @Get()
-    findAll(): Promise<Project[]> {
-        return this.projectsService.findAll();
+    findAll(@GetUser() user: User): Promise<Project[]> {
+      return this.projectsService.findAll(user.username);
     } 
 
+
+    // Get a single project
     @Get(':id')
-    findOne(@Param() param): Promise<Project> {
-        return this.projectsService.findOne(param.id);
-    }
+    findOne(@GetUser() user: User, @Param() param):Promise<Project> { 
 
-    @Post()
-    create(@Body(ValidationPipe) createProjectDto: ProjectDto): Promise<Project> {
-        return this.projectsService.create(createProjectDto);
+      var result = this.projectsService.findOne(param.id,user.username);
+      return result
     }
     
-    @Post('upload')
-    @UseInterceptors(FileFieldsInterceptor([
-      { name: 'avatar', maxCount: 1 },
-      { name: 'background', maxCount: 1 },
-    ]))
-
-
-    uploadFile(@UploadedFiles() files, @Body() theRest: String) {
-
-        var bucket = admin.storage().bucket();
-
-        console.log(bucket);
-         
-        async function uploadFile() {
-            // Uploads a local file to the bucket
-            await bucket.upload(files, {
-              // Support for HTTP requests made with `Accept-Encoding: gzip`
-              gzip: true,
-              // By setting the option `destination`, you can change the name of the
-              // object you are uploading to a bucket.
-              metadata: {
-                // Enable long-lived HTTP caching headers
-                // Use only if the contents of the file will never change
-                // (If the contents will change, use cacheControl: 'no-cache')
-                cacheControl: 'public, max-age=31536000',
-              },
-            });
-        
-            // console.log(`${filename} uploaded to ${bucketName}.`);
-        }
-
-        uploadFile();
-        console.log(theRest);
-
-        
-        console.log(files);
+    // //Delete files only
+    @Delete('files')
+    deleteFiles(@GetUser() user: User, @Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project>{      
+      return this.projectsService.deleteFiles(user.username, deletionData);
     }
 
-    
-    
-
-    @Delete(':id')
-    delete(@Param() param): Promise<Project> {
-        return this.projectsService.delete(param.id);
+    //Delete all project
+    @Delete('project')
+    deleteProject(@GetUser() user: User, @Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project> {
+      var projectId = deletionData.projectId;
+      return this.projectsService.deleteProject(user.username, projectId);
     }
 
-    @Put(':id')
-    update(@Body() updateItemDto: ProjectDto, @Param() param): Promise<Project> {
-        return this.projectsService.update(param.id,updateItemDto);
+    //Save project without files
+    @Post('project')
+    update(@GetUser() user: User, @Body(ValidationPipe) project: ProjectDto): Promise<Project> {
+      return this.projectsService.createUpdateProject(project, user.username);
+    }
+
+    //Save project files only
+    @Post('files')
+    @UseInterceptors(FilesInterceptor('files',3,
+      {
+        storage: diskStorage({
+          destination: './files',
+          filename: editFileName,
+        }),
+        fileFilter: imageFileFilter,
+      }
+    ))
+    Create(@GetUser() user: User, @UploadedFiles() files:[FileDto], @Body(ValidationPipe) projectDto: ProjectDto): Promise<Project> { 
+      
+      var projectId = projectDto.projectId;
+      return this.projectsService.uploadFiles(files,projectId,user.username)
     }
 }

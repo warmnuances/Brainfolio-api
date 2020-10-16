@@ -35,3 +35,13 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# ENV
+.env
+
+# firebase Config json
+firebaseconfig.json
+serviceAccout.json
+
+# files
+/files
