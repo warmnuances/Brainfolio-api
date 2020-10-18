@@ -3,7 +3,7 @@ import { IsNotEmpty } from "class-validator";
 export class DeleteFilesDto {
 
     @IsNotEmpty()
-    readonly projectId: string;
+    readonly _id: string;
 
     readonly projectFileName: string[];    
 
