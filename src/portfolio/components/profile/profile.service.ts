@@ -12,8 +12,8 @@ export class ProfileService {
         const newprofile = new this.profileModel(profile);
         return newprofile.save();
       } 
-    async findAll(portfolioId: string): Promise<Profile[]> {
-        return this.profileModel.find({portfolioId : portfolioId}).exec();
+    async findAll(username:string): Promise<Profile[]> {
+        return this.profileModel.find({username : username}).exec();
     }
 
     async findOne(id: string): Promise<Profile> {

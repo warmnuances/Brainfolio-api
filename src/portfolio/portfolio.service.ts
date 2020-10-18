@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Portfolio } from './interfaces/portfolio.interface'
 import { PortfolioDto } from './dto/portfolio.dto';
-import { User } from 'src/User/user.schema';
 
 @Injectable()
 export class PortfolioService {
@@ -18,8 +17,8 @@ export class PortfolioService {
         return newportfolio.save();
       } 
     
-    async findAll(): Promise<Portfolio[]> {
-        return this.portfolioModel.find().exec();
+    async findAll(username:string): Promise<Portfolio[]> {
+        return this.portfolioModel.find({username:username}).exec();
     }
 
 
@@ -35,6 +34,5 @@ export class PortfolioService {
 
     async update(id: string, portfolio:PortfolioDto): Promise<Portfolio> {
         return await this.portfolioModel.findByIdAndUpdate(id, portfolio, {new: true})
-    }
-    
+    }    
 }

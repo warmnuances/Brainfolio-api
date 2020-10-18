@@ -12,8 +12,8 @@ export class SkillsService {
         const newskills = new this.skillsModel(skills);
         return newskills.save();
       } 
-    async findAll(portfolioId: string): Promise<Skills[]> {
-        return this.skillsModel.find({portfolioId : portfolioId}).exec();
+    async findAll(username:string): Promise<Skills[]> {
+        return this.skillsModel.find({username : username}).exec();
     }
 
     async findOne(id: string): Promise<Skills> {

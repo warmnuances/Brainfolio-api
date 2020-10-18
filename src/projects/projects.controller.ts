@@ -12,8 +12,8 @@ import * as admin from 'firebase-admin';
 import * as request from 'request';
 import { DeleteFilesDto } from './dto/delete-file.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from 'src/Auth/get-user.decorator';
-import { User } from 'src/Auth/user.schema';
+import { GetUser } from '../Auth/get-user.decorator';
+import { User } from '../Auth/user.schema';
 
 
 @Controller('projects')

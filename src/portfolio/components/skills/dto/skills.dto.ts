@@ -2,7 +2,7 @@ import { IsNotEmpty } from "class-validator";
 
 export class SkillsDto {
     @IsNotEmpty()
-    readonly portfolioId: string;
+    readonly username: string;
 
     @IsNotEmpty()
     readonly category: string;

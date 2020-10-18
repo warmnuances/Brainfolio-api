@@ -12,8 +12,8 @@ export class ExperienceService {
         const newexperience = new this.experienceModel(experience);
         return newexperience.save();
       } 
-    async findAll(portfolioId: string): Promise<Experience[]> {
-        return this.experienceModel.find({portfolioId : portfolioId}).exec();
+    async findAll(username:string): Promise<Experience[]> {
+        return this.experienceModel.find({username:username}).exec();
     }
 
     async findOne(id: string): Promise<Experience> {

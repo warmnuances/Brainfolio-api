@@ -5,7 +5,7 @@ import { Document } from 'mongoose';
 export class Education extends Document {
   
   @Prop({required: true })
-  portfolioId: String;
+  username: String;
 
   @Prop({ required: true })
   startDate: string;

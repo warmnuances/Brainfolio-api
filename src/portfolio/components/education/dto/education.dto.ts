@@ -3,7 +3,7 @@ import { IsNotEmpty} from "class-validator";
 
 
 export class EducationDto {
-    readonly portfolioId: string;
+    readonly username: string;
 
     readonly startDate: string;
 

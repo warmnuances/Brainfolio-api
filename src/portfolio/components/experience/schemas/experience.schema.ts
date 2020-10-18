@@ -5,7 +5,7 @@ import { Document } from 'mongoose';
 @Schema()
 export class Experience extends Document {
   @Prop()
-  portfolioId: String;
+  username: String;
 
   @Prop({ required: true })
   type: string;

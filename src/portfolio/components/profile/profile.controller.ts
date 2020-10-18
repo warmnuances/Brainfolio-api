@@ -1,16 +1,20 @@
-import { Controller , Get, Post, Put, Delete, Body, Param, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ValidationPipe, UseInterceptors, UploadedFiles, UseGuards } from '@nestjs/common';
 import { ProfileDto } from './dto/profile.dto';
 import { ProfileService } from './profile.service'
 import { Profile } from './interfaces/profile.interface'
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from '../../../Auth/get-user.decorator';
+import { User } from '../../../Auth/user.schema';
 
 @Controller('edit/profile')
+@UseGuards(AuthGuard())
 export class ProfileController {
     constructor(private readonly profileService: ProfileService){}
     // portfolio id missing
-    // @Get()
-    // findAll(): Promise<Education[]> {
-    //     return this.educationService.findAll();
-    // } 
+    @Get()
+    findAll(@GetUser() user: User): Promise<Profile[]> {
+        return this.profileService.findAll(user.username);
+    } 
 
     @Get(':id')
     findOne(@Param() param): Promise<Profile> {

@@ -5,7 +5,7 @@ import { Document } from 'mongoose';
 export class Skills extends Document {
 
     @Prop()
-    portfolioId: String;
+    username: String;
     
     @Prop()
     category: String;

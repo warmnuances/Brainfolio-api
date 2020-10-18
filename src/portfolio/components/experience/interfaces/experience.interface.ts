@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 
 export interface Experience extends Document{
-    portfolioId: string;
+    username: string;
     type: string;
     title: string;
     name: string;

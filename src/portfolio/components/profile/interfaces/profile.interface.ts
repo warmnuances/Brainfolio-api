@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 
 export interface Profile extends Document{
-    portfolioId: string;
+    username: string;
     fullName: string;
     address: string;
     email: string;

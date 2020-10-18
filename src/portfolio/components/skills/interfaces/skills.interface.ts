@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 
 export interface Skills extends Document{
-    portfolioId: string;
+    username: string;
     category: string;
     name: string;
     rating: string;

@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 
 export interface Education extends Document{
-    portfolioId: string;
+    username: string;
     startDate: string;
     endDate: string;
     degree: string;

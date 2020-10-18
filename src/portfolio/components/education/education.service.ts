@@ -12,8 +12,8 @@ export class EducationService {
         const neweducation = new this.educationModel(education);
         return neweducation.save();
       } 
-    async findAll(portfolioId: string): Promise<Education[]> {
-        return this.educationModel.find({portfolioId : portfolioId}).exec();
+    async findAll(username:string): Promise<Education[]> {
+        return this.educationModel.find({username:username}).exec();
     }
 
     async findOne(id: string): Promise<Education> {

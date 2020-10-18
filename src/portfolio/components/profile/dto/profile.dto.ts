@@ -2,7 +2,7 @@ import { IsNotEmpty } from "class-validator";
 
 export class ProfileDto {
     @IsNotEmpty()
-    readonly portfolioId: string;
+    readonly username: string;
 
     @IsNotEmpty()
     readonly fullName: string;
