@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     command: node dist/main
+    ## Image Tag
+    image: brainfolio-api_web
     env_file:
       - .env
     ports:
