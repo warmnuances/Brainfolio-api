@@ -9,8 +9,8 @@ export interface Profile extends Document{
     relevantLink: string;
     linkedIn: string;
     title:string;
-    profileImagName: string;
-    backgroundImageName: string;
+    profileImageName: [string];
+    backgroundImageName: [string];
     filetodelete: string;
 }
 

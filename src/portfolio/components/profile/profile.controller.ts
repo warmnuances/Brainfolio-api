@@ -5,14 +5,14 @@ import { Profile } from './interfaces/profile.interface'
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../../Auth/get-user.decorator';
 import { User } from '../../../Auth/user.schema';
-import { diskStorage } from 'multer';
+import { diskStorage , memoryStorage} from 'multer';
 import {profilebackgroundFileFilter ,editProfileImageName, editBackgroundImageName} from '../../../utils/file-uploading.utils';
 import {FileDto} from './dto/profile-file.dto';
 import {FileFieldsInterceptor, FilesInterceptor} from '@nestjs/platform-express'
 
 
 @Controller('edit/profile')
-// @UseGuards(AuthGuard())
+@UseGuards(AuthGuard())
 export class ProfileController {
     constructor(private readonly profileService: ProfileService){}
     // portfolio id missing
@@ -43,26 +43,13 @@ export class ProfileController {
     }
 
     @Post('save')
-//     @UseInterceptors(FilesInterceptor('profileImageToUpload',1,
-//       {
-//         storage: diskStorage({
-//           destination: './files',
-//           filename: editProfileImageName,
-//         }),
-//         fileFilter: profilebackgroundFileFilter,
-//       }
-//     ),FilesInterceptor('backgroundImageToUpload',1,
-//     {
-//       storage: diskStorage({
-//         destination: './files',
-//         filename: editBackgroundImageName,
-//       }),
-//       fileFilter: profilebackgroundFileFilter,
-//     }
-//   ))
-    saveProject(@Body() profile: ProfileDto, @UploadedFiles() profileImage:FileDto, @UploadedFiles() backgroundImage:FileDto): Promise<Profile> {  
-      
-      console.log('PROJECT BODY = ', profile);
-      return this.profileService.saveProject(profileImage,backgroundImage, profile, 'username')
+    @UseInterceptors(FileFieldsInterceptor([
+        { name: 'profileImage', maxCount: 1 },
+        { name: 'backgroundImage', maxCount: 1 },
+    ]))
+    saveProject(@UploadedFiles() image, @Body() profile, @GetUser() user:User):Promise<Profile>{  
+
+
+      return this.profileService.saveProject(image, profile, user.username)
     }
 }

@@ -33,7 +33,7 @@ export class ProfileService {
     }
 
 
-    async getFileNameAndLink(fileNames, username, _id) {
+    async getFileNameAndLink(fileNames, username, _id, type:string) {
 
         var fileNameAndLink = [];
         var bucket = admin.storage().bucket();
@@ -43,34 +43,46 @@ export class ProfileService {
         };
  
         for(let fileName of fileNames){
-            var fileNamePath = username + '/' + _id + '/'+ fileName;
+            var fileNamePath = username  + '/profile/' + _id + '/' + type + '/' + fileName;
+            
             var file = bucket.file(fileNamePath);
             var url = await file.getSignedUrl(config) 
             url.unshift(fileName)
             fileNameAndLink.push(url);
         }
-
-        return fileNameAndLink;
+        
+        return fileNameAndLink[0];
     }
 
     //Upload file to firebase Function and delete file on local
-    async uploadFile(fileNames, username, _id) {
-        var bucket = admin.storage().bucket();
+    async uploadFile(fileToUploadArray, username, _id, type:string) {
+        // var bucket = admin.storage().bucket().file(username + '/projects/' + _id + '/' +fileName);
 
-        for(let fileName of fileNames){
-            var filePath = './files/'+fileName
+        let fileToUpload = fileToUploadArray
+        // for(let fileToUpload of fileToUploadArray){
 
-            // Uploads a local file to the bucket
-            await bucket.upload(filePath, {
-                destination: username + '/profile/' + _id + '/' +fileName,
+            const fileName = fileToUpload.originalname;
+
+            const file = await admin.storage().bucket().file(username + '/profile/' + _id + '/' + type + '/' + fileName);
+
+
+            const fileStream = file.createWriteStream({
+              metadata: {
+                contentType: fileToUpload.mimetype
+              },
+              resumable: true
+            })
+
+            fileStream.on('error', function(err) {})
+
+            fileStream.on('finish', function() {
             });
 
-            try {
-                await fs.unlinkSync(filePath)
-            } catch(err) {
-                console.error(err)  
-            }
-        }
+            fileStream.end(fileToUpload.buffer);
+
+        // }
+
+
     }
 
     async deleteFile(username, _id,  fileName) {
@@ -84,7 +96,7 @@ export class ProfileService {
 
     }
     
-    async saveProject(profileImage: FileDto, backgroundImage: FileDto , profile:ProfileDto, username): Promise<Profile> {
+    async saveProject(image, profile:ProfileDto, username): Promise<Profile> {
 
         var _id = profile._id;
         var updateFileName = {}    
@@ -102,27 +114,33 @@ export class ProfileService {
         delete profile['projectFileName']
         delete profile['__v']
         var projectModel;
-        projectModel = await this.profileModel.findByIdAndUpdate(_id, profile, {new: true});
-
-        
-        var currentFile = projectModel.projectFileName;
-
         // Grabing fileNames
-        var fileToUpload = [];
-        fileToUpload.push(profileImage.filename);
-        fileToUpload.push(backgroundImage.filename);
 
-        //Upload files to firebase
-        await this.uploadFile(fileToUpload, username, _id).catch(console.error);
-        console.log('cuurenet = ', currentFile);
-        console.log('upload =', fileToUpload);
+        
+        if(image.profileImage != undefined){
+
+            
+            var profileImageName = image.profileImage[0];
+            
+            await this.uploadFile(profileImageName, username, _id, "profileImage").catch(console.error); 
+            
+            profile["profileImageName"] = [profileImageName.originalname];
+        }
+        if(image.backgroundImage != undefined){
+            var backgroundImageName = image.backgroundImage[0];
+            await this.uploadFile(backgroundImageName, username, _id, "backgroundImage").catch(console.error);
+            profile["backgroundImageName"]= [backgroundImageName.originalname];  
+        }
+       
+
+        projectModel = await this.profileModel.findByIdAndUpdate(_id, profile, {new: true});
         
         
-        updateFileName["projectFileName"] = currentFile.concat(fileToUpload);        
-        projectModel = await this.profileModel.findByIdAndUpdate(_id, updateFileName, {new: true});
-        updateFileName = projectModel.projectFileName;
         //Get link
-        projectModel.projectFileName = await this.getFileNameAndLink(updateFileName, username, _id);
+        projectModel.profileImageName = await this.getFileNameAndLink([projectModel.profileImageName], username, _id, "profileImage");
+        projectModel.backgroundImageName = await this.getFileNameAndLink([projectModel.backgroundImageName], username, _id, "backgroundImage");
+
+        
 
         return projectModel;
     } 

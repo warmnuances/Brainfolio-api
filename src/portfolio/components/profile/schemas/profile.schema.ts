@@ -28,11 +28,11 @@ export class Profile extends Document {
   title: string;
 
   @Prop()
-  profileImagName: string;
+  profileImageName: [string];
 
   @Prop()
-  backgroundImageName: string;
-
+  backgroundImageName: [string];
+  
 }
 
 export const ProfileSchema = SchemaFactory.createForClass(Profile);
