@@ -57,14 +57,14 @@ export class ProjectsService {
 
     }
 
-    async deleteFile(username, _id,  fileNamesArray) {
+    async deleteFile(username, _id,  fileName) {
         var bucket = admin.storage().bucket();
-        for(let fileName of fileNamesArray){
-            var fileNamePath = username + '/' + _id + '/' + fileName;
-            await bucket.file(fileNamePath)
-                .delete()
-                .catch(err => console.error(err));
-        }
+
+        var fileNamePath = username + '/projects/' + _id + '/' + fileName;
+        await bucket.file(fileNamePath)
+            .delete()
+            .catch(err => console.error(err));
+
 
     }
     
@@ -96,14 +96,14 @@ export class ProjectsService {
         //Delete file if any
         if(filesToDelete != undefined ){
             //Delete on Firebase
-            this.deleteFile(username, _id, filesToDelete)
-
+            
             //Delete on array
             for(let eachFile of filesToDelete){
                 var i = 0;
                 var fileLength = currentFile.length;
                 while(i < fileLength){
                     if(eachFile == currentFile[i]){
+                        this.deleteFile(username, _id, eachFile)
                         currentFile.splice(i, 1)
                         continue;
                     }
