@@ -7,7 +7,8 @@ export interface Project extends Document{
     endDate: string;
     visibility: string;
     description: string;
-    projectFileName: string[][];
-    // projectFileLink: [string];
-    contributor: string;
+    projectFileName: string[];
+
+    contributor: string[][];
+    // filesToDelete: string[];
 }

@@ -16,7 +16,7 @@ export class ProjectsService {
 
 
     // Will take filename and return the link to access the file
-    async getFileNameAndLink(fileNames, username, projectId) {
+    async getFileNameAndLink(fileNames, username, _id) {
 
         var fileNameAndLink = [];
         var bucket = admin.storage().bucket();
@@ -26,7 +26,7 @@ export class ProjectsService {
         };
  
         for(let fileName of fileNames){
-            var fileNamePath = username + '/' + projectId + '/'+ fileName;
+            var fileNamePath = username + '/' + _id + '/'+ fileName;
             var file = bucket.file(fileNamePath);
             var url = await file.getSignedUrl(config) 
             url.unshift(fileName)
@@ -37,7 +37,7 @@ export class ProjectsService {
     }
 
     //Upload file to firebase Function and delete file on local
-    async uploadFile(fileNames, username, projectId) {
+    async uploadFile(fileNames, username, _id) {
         var bucket = admin.storage().bucket();
 
         for(let fileName of fileNames){
@@ -45,7 +45,7 @@ export class ProjectsService {
 
             // Uploads a local file to the bucket
             await bucket.upload(filePath, {
-                destination: username + '/' + projectId + '/' +fileName,
+                destination: username + '/projects/' + _id + '/' +fileName,
             });
 
             try {
@@ -58,44 +58,78 @@ export class ProjectsService {
 
     }
 
-    async deleteFile(username, projectId,  fileNamesArray) {
+    async deleteFile(username, _id,  fileName) {
         var bucket = admin.storage().bucket();
 
-        for(let fileName of fileNamesArray){
-            var fileNamePath = username + '/' + projectId + '/' + fileName;
-            await bucket.file(fileNamePath).delete();
-        }
+        var fileNamePath = username + '/projects/' + _id + '/' + fileName;
+        await bucket.file(fileNamePath)
+            .delete()
+            .catch(err => console.error(err));
+
 
     }
     
+    async saveProject(files: [FileDto], project:ProjectDto, username): Promise<Project> {
 
-    async uploadFiles(files: [FileDto], projectId, username): Promise<Project> {
+        var _id = project._id;
+        var updateFileName = {}    
         
-        var updateModel = {}  
-
         //!!!!!!!!!! null or undefied or ''
-        
-        if(projectId === '' || projectId === undefined){
+        if(_id === '' || _id === undefined){
             const newProject = await new this.projectModel({username: username});
             await newProject.save();   
-            projectId = newProject.id;   
+            _id = newProject._id;
+    
         }
 
+        //Update database with new projectObject       
+        delete project['_id']
+        delete project['projectFileName']
+        delete project['__v']
+        var projectModel;
+        projectModel = await this.projectModel.findByIdAndUpdate(_id, project, {new: true});
+
+        
+        var currentFile = projectModel.projectFileName;
+        var filesToDelete = project.filesToDelete;
+        console.log('delete = ', filesToDelete);
+        
+        //Delete file if any
+        if(filesToDelete != undefined ){
+            //Delete on Firebase
+            
+            //Delete on array
+            for(let eachFile of filesToDelete){
+                var i = 0;
+                var fileLength = currentFile.length;
+                while(i < fileLength){
+                    if(eachFile == currentFile[i]){
+                        this.deleteFile(username, _id, eachFile)
+                        currentFile.splice(i, 1)
+                        continue;
+                    }
+                    i++;
+                }
+            }
+        }
+        
         // Grabing fileNames
-        var fileNames = [];
+        var fileToUpload = [];
         for(let file of files){
-            fileNames.push(file.filename)
+            fileToUpload.push(file.filename)
         };
 
         //Upload files to firebase
-        await this.uploadFile(fileNames, username, projectId).catch(console.error);
-
-        //Update database with fileNames
-        updateModel["projectFileName"] = fileNames;
-        var projectModel = await this.projectModel.findByIdAndUpdate(projectId, updateModel, {new: true});
+        await this.uploadFile(fileToUpload, username, _id).catch(console.error);
+        console.log('cuurenet = ', currentFile);
+        console.log('upload =', fileToUpload);
         
+        
+        updateFileName["projectFileName"] = currentFile.concat(fileToUpload);        
+        projectModel = await this.projectModel.findByIdAndUpdate(_id, updateFileName, {new: true});
+        updateFileName = projectModel.projectFileName;
         //Get link
-        projectModel.projectFileName = await this.getFileNameAndLink(fileNames, username, projectId);
+        projectModel.projectFileName = await this.getFileNameAndLink(updateFileName, username, _id);
 
         return projectModel;
     } 
@@ -104,81 +138,23 @@ export class ProjectsService {
         return this.projectModel.find({username:username}).exec();
     }
 
-    async findOne(projectId: string, username:string ): Promise<Project> {
+    async findOne(_id: string, username:string ): Promise<Project> {
         //Grabing model data
-        var projectModel = await this.projectModel.findOne({_id: projectId});
+        var projectModel = await this.projectModel.findOne({_id: _id});
         var fileNames = projectModel.projectFileName;
         
         // Grab filename and Link to access
-        projectModel.projectFileName = await this.getFileNameAndLink(fileNames, username, projectId);
-
+        projectModel.projectFileName = await this.getFileNameAndLink(fileNames, username, _id);
         return projectModel;
     }
 
-
-    async deleteFiles(username:string, deletionData): Promise<Project> {
-        
-        const projectId = deletionData.projectId;
-        const deleteFiles = deletionData.projectFileNames;
-        var updateModel = {}
-
-        var projectModel = await this.projectModel.findOne({_id: projectId});
-        var oldFileNames = projectModel.projectFileName;
-
-        var updateFileName = []
-        oldFileNames.forEach(element => updateFileName.push(element));
-
-        
-        for(let deleteFile of deleteFiles){            
-            updateFileName = updateFileName.filter(i => i !== deleteFile);
-        }
-
-        this.deleteFile(username, projectId, deleteFiles) 
-      
-        updateModel["projectFileName"] = updateFileName;
-        
-        // Delete files given
-        var projectModel = await this.projectModel.findByIdAndUpdate(projectId, updateModel, {new: true});
-        projectModel.projectFileName = await this.getFileNameAndLink(projectModel.projectFileName, username, projectId);
-
-        return projectModel;
-
-        
-    }
-    
-    async deleteProject(username: string, projectId: string): Promise<Project> {
-
+    async deleteProject(username: string, _id: string): Promise<Project> {
         // Delete old file
-        var oldModel = await this.projectModel.findOne({ _id: projectId});
+        var oldModel = await this.projectModel.findOne({ _id: _id});
         var oldDataName = oldModel.projectFileName;
-        
-        await this.deleteFile(username, projectId, oldDataName).catch(console.error);
+        await this.deleteFile(username, _id, oldDataName).catch(console.error);
 
-        return await this.projectModel.findByIdAndRemove(projectId)
-        
+        //Delete Mongo
+        return await this.projectModel.findByIdAndRemove(_id)
     }
-
-    async createUpdateProject(project:ProjectDto, username:string): Promise<Project> {
-
-        var projectId = project.projectId;
-        var projectModel;
-        
-        // undefined or null or ''
-        if(projectId === '' || projectId === undefined){
-            
-            project['username'] = username;
-            projectModel = await new this.projectModel(project);
-            await projectModel.save();
-        } else{
-            projectModel = await this.projectModel.findByIdAndUpdate(projectId, project, {new: true})
-        }    
-
-        const fileNames = projectModel.projectFileName;
-
-        projectModel.projectFileName = await this.getFileNameAndLink(fileNames, projectId, username);
-        return projectModel;
-        
-    }
-    
-
 }

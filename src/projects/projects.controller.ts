@@ -17,46 +17,32 @@ import { User } from '../Auth/user.schema';
 
 
 @Controller('projects')
-@UseGuards(AuthGuard())
+// @UseGuards(AuthGuard())
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService){}
 
     @Get()
-    findAll(@GetUser() user: User): Promise<Project[]> {
-      return this.projectsService.findAll(user.username);
+    findAll(): Promise<Project[]> {
+      return this.projectsService.findAll('username');
     } 
-
 
     // Get a single project
     @Get(':id')
-    findOne(@GetUser() user: User, @Param() param):Promise<Project> { 
-
-      var result = this.projectsService.findOne(param.id,user.username);
+    findOne( @Param() param):Promise<Project> { 
+      var result = this.projectsService.findOne(param.id,'username');
       return result
     }
     
-    // //Delete files only
-    @Delete('files')
-    deleteFiles(@GetUser() user: User, @Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project>{      
-      return this.projectsService.deleteFiles(user.username, deletionData);
-    }
-
     //Delete all project
     @Delete('project')
-    deleteProject(@GetUser() user: User, @Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project> {
-      var projectId = deletionData.projectId;
-      return this.projectsService.deleteProject(user.username, projectId);
-    }
-
-    //Save project without files
-    @Post('project')
-    update(@GetUser() user: User, @Body(ValidationPipe) project: ProjectDto): Promise<Project> {
-      return this.projectsService.createUpdateProject(project, user.username);
+    deleteProject( @Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project> {
+      var _id = deletionData._id;
+      return this.projectsService.deleteProject('username', _id);
     }
 
     //Save project files only
-    @Post('files')
-    @UseInterceptors(FilesInterceptor('files',3,
+    @Post('save')
+    @UseInterceptors(FilesInterceptor('filesToUpload',3,
       {
         storage: diskStorage({
           destination: './files',
@@ -65,9 +51,9 @@ export class ProjectsController {
         fileFilter: imageFileFilter,
       }
     ))
-    Create(@GetUser() user: User, @UploadedFiles() files:[FileDto], @Body(ValidationPipe) projectDto: ProjectDto): Promise<Project> { 
+    saveProject( @UploadedFiles() files:[FileDto], @Body(ValidationPipe) project: ProjectDto): Promise<Project> {  
       
-      var projectId = projectDto.projectId;
-      return this.projectsService.uploadFiles(files,projectId,user.username)
+      console.log('PROJECT BODY = ', project);
+      return this.projectsService.saveProject(files, project, 'username')
     }
 }
