@@ -1,10 +1,8 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty , IsArray} from "class-validator";
 
 export class ProfileDto {
-    @IsNotEmpty()
+    _id: string;
     readonly username: string;
-
-    @IsNotEmpty()
     readonly fullName: string;
 
     readonly address: string;
@@ -18,9 +16,6 @@ export class ProfileDto {
     readonly linkedIn: string;
 
     readonly title: string;
-
-    //Profile Image insert
-    //Background Image insert
 
 }  
 
