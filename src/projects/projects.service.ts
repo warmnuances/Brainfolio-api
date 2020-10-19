@@ -25,7 +25,7 @@ export class ProjectsService {
         };
  
         for(let fileName of fileNames){
-            var fileNamePath = username + '/' + _id + '/'+ fileName;
+            var fileNamePath = username + '/projects/' + _id + '/'+ fileName;
             var file = bucket.file(fileNamePath);
             var url = await file.getSignedUrl(config) 
             url.unshift(fileName)
@@ -36,23 +36,36 @@ export class ProjectsService {
     }
 
     //Upload file to firebase Function and delete file on local
-    async uploadFile(fileNames, username, _id) {
-        var bucket = admin.storage().bucket();
+    async uploadFile(fileToUploadArray, username, _id) {
+        // var bucket = admin.storage().bucket().file(username + '/projects/' + _id + '/' +fileName);
 
-        for(let fileName of fileNames){
-            var filePath = './files/'+fileName
+        let fileToUpload = fileToUploadArray
+        // for(let fileToUpload of fileToUploadArray){
 
-            // Uploads a local file to the bucket
-            await bucket.upload(filePath, {
-                destination: username + '/projects/' + _id + '/' +fileName,
+            const fileName = fileToUpload.originalname;
+
+            
+            const file = await admin.storage().bucket().file(username + '/projects/' + _id + '/' +fileName);
+
+            
+
+            const fileStream = file.createWriteStream({
+              metadata: {
+                contentType: fileToUpload.mimetype
+              },
+              resumable: true
+            })
+        
+            fileStream.on('error', function(err) {})
+        
+            fileStream.on('finish', function() {
+                
+                // The file upload is complete.
             });
-
-            try {
-                await fs.unlinkSync(filePath)
-            } catch(err) {
-                console.error(err)  
-            }
-        }
+        
+            fileStream.end(fileToUpload.buffer);
+        
+        // }
 
 
     }
@@ -68,7 +81,7 @@ export class ProjectsService {
 
     }
     
-    async saveProject(files: [FileDto], project:ProjectDto, username): Promise<Project> {
+    async saveProject(fileToUploadArray, project:ProjectDto, username): Promise<Project> {
 
         var _id = project._id;
         var updateFileName = {}    
@@ -91,7 +104,6 @@ export class ProjectsService {
         
         var currentFile = projectModel.projectFileName;
         var filesToDelete = project.filesToDelete;
-        console.log('delete = ', filesToDelete);
         
         //Delete file if any
         if(filesToDelete != undefined ){
@@ -113,18 +125,19 @@ export class ProjectsService {
         }
         
         // Grabing fileNames
-        var fileToUpload = [];
-        for(let file of files){
-            fileToUpload.push(file.filename)
+        var filenameToUpload = [];
+        for(let file of fileToUploadArray){
+            filenameToUpload.push(file.originalname)
         };
 
         //Upload files to firebase
-        await this.uploadFile(fileToUpload, username, _id).catch(console.error);
-        console.log('cuurenet = ', currentFile);
-        console.log('upload =', fileToUpload);
+        for(let fileToUpload of fileToUploadArray){
+            await this.uploadFile(fileToUpload, username, _id).catch(console.error);
+        }
+
         
         
-        updateFileName["projectFileName"] = currentFile.concat(fileToUpload);        
+        updateFileName["projectFileName"] = currentFile.concat(filenameToUpload);        
         projectModel = await this.projectModel.findByIdAndUpdate(_id, updateFileName, {new: true});
         updateFileName = projectModel.projectFileName;
         //Get link
@@ -151,7 +164,12 @@ export class ProjectsService {
         // Delete old file
         var oldModel = await this.projectModel.findOne({ _id: _id});
         var oldDataName = oldModel.projectFileName;
-        await this.deleteFile(username, _id, oldDataName).catch(console.error);
+
+        
+        for(let fileName of oldDataName){
+            await this.deleteFile(username, _id, fileName).catch(console.error);
+        }
+        
 
         //Delete Mongo
         return await this.projectModel.findByIdAndRemove(_id)

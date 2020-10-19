@@ -2,9 +2,9 @@ import { Controller, Get, Post, Put, Delete, Body, Param, ValidationPipe, UseInt
 import { ProjectDto } from './dto/create-project.dto';
 import { ProjectsService } from './projects.service'
 import { Project } from './interfaces/project.interface'
-import {FileFieldsInterceptor, FilesInterceptor} from '@nestjs/platform-express'
-import { diskStorage } from 'multer';
-import { editFileName, imageFileFilter } from '../utils/file-uploading.utils';
+import { FilesInterceptor} from '@nestjs/platform-express'
+import { memoryStorage } from 'multer';
+import { imageFileFilter } from '../utils/file-uploading.utils';
 import {FileDto} from './dto/project-file.dto'
 
 
@@ -27,33 +27,30 @@ export class ProjectsController {
     } 
 
     // Get a single project
-    @Get(':id')
+    @Get('item/:id')
     findOne( @Param() param):Promise<Project> { 
       var result = this.projectsService.findOne(param.id,'username');
       return result
     }
     
     //Delete all project
-    @Delete('project')
-    deleteProject( @Body(ValidationPipe) deletionData:DeleteFilesDto): Promise<Project> {
-      var _id = deletionData._id;
-      return this.projectsService.deleteProject('username', _id);
+    @Delete(':id')
+    deleteProject( @Param() param): Promise<Project> {
+
+      
+      return this.projectsService.deleteProject('username',param.id);
     }
 
     //Save project files only
     @Post('save')
     @UseInterceptors(FilesInterceptor('filesToUpload',3,
       {
-        storage: diskStorage({
-          destination: './files',
-          filename: editFileName,
-        }),
+        storage: memoryStorage(),
         fileFilter: imageFileFilter,
       }
     ))
-    saveProject( @UploadedFiles() files:[FileDto], @Body(ValidationPipe) project: ProjectDto): Promise<Project> {  
-      
-      console.log('PROJECT BODY = ', project);
+    saveProject( @UploadedFiles() files, @Body(ValidationPipe) project: ProjectDto): Promise<Project> {  
+
       return this.projectsService.saveProject(files, project, 'username')
     }
 }
