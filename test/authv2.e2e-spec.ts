@@ -22,7 +22,8 @@ describe('AuthControllerV2 (e2e)', () => {
     await mongoose.connect(process.env.TEST_MONGO, MongooseConfig)
     await mongoose.connection.db.dropDatabase();
     
-
+    console.log(process.env.FIREBASE_APPLICATION_CREDENTIALS)
+    
     admin.initializeApp({
       credential: admin.credential.cert(process.env.FIREBASE_APPLICATION_CREDENTIALS),
       storageBucket: "brainfolio-1faf6.appspot.com"
