@@ -20,19 +20,28 @@ import { Document } from 'mongoose';
 export class Project extends Document {
 
     @Prop()
-    id: String;
+    username: String;
 
     @Prop()
-    title: String;
+    title: string;
 
     @Prop()
-    description: String;
+    startDate: string;
 
     @Prop()
-    projectFile: String;
+    endDate: string;
 
     @Prop()
-    contributor: String;
+    visibility : string;
+
+    @Prop()
+    description : string;
+
+    @Prop()
+    projectFileName: string[];
+
+    @Prop()
+    contributor: string[][];
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

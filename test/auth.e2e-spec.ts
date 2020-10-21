@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import * as mongoose from 'mongoose';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 import { SignInDto } from 'src/Auth/dto/sign-in-dto';
 import { CreateUserDto } from 'src/Auth/dto/create-user-dto';
 
-describe('AppController (e2e)', () => {
+describe('AuthController (e2e) ', () => {
 
   let app: INestApplication;
 
@@ -122,7 +122,6 @@ describe('AppController (e2e)', () => {
       .get('/test/authenticated')
       .set("Authorization", `Bearer ${token}`)
       .then(response => {
-        console.log(response.body)
         expect(HttpStatus.OK)
         done();
       })

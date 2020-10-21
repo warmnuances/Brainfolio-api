@@ -23,7 +23,6 @@ export class HealthCheckController {
   })
   @Get("authenticated")
   async isAuthenticated(@GetUser() user: User){
-    console.log(user)
   
     return user;
   }

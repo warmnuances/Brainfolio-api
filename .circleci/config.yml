@@ -491,11 +491,15 @@ jobs:
           command: |
             bash scripts/getEnv.sh
       
-
+      
       - run: 
           name: Get Service Account Key from environment Variables
           command: |
-            bash scripts/getServiceAccount.sh
+            source scripts/getServiceAccount.sh
+            pwd
+            ls -a
+            echo $FIREBASE_APPLICATION_CREDENTIALS
+
 
 
       - run: 
@@ -592,7 +596,8 @@ jobs:
       - run: 
           name: Get Service Account Key from environment Variables
           command: |
-            bash scripts/getServiceAccount.sh
+            source scripts/getServiceAccount.sh
+            echo $FIREBASE_APPLICATION_CREDENTIALS
 
       - push-docker-image:
           app-name: testdockerprod123
