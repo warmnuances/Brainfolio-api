@@ -6,7 +6,7 @@ import { AppModule } from '../src/app.module';
 import { SignInDto } from 'src/Auth/dto/sign-in-dto';
 import { CreateUserDto } from 'src/Auth/dto/create-user-dto';
 
-describe('AppController (e2e)', () => {
+describe('AuthController (e2e) ', () => {
 
   let app: INestApplication;
 
