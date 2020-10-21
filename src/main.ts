@@ -14,10 +14,10 @@ async function bootstrap() {
 
   console.log(process.env.FIREBASE_APPLICATION_CREDENTIALS)
 
-  // admin.initializeApp({
-  //   credential: admin.credential.cert(process.env.FIREBASE_APPLICATION_CREDENTIALS),
-  //   storageBucket: "brainfolio-1faf6.appspot.com"
-  // });
+  admin.initializeApp({
+    credential: admin.credential.cert(process.env.FIREBASE_APPLICATION_CREDENTIALS),
+    storageBucket: "brainfolio-1faf6.appspot.com"
+  });
 
   app.enableCors();
 
@@ -26,7 +26,7 @@ async function bootstrap() {
   const options = new DocumentBuilder()
   .setTitle('API endpoints')
   .setDescription('Brainfolio API description')
-  .setVersion('1.0')
+  .setVersion('2.0')
   .addTag('Brainfolio')
   .build();
   const document = SwaggerModule.createDocument(app, options);
