@@ -1,16 +1,26 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsArray } from "class-validator";
 
 export class ProjectDto {
-    @IsNotEmpty()
+
+     _id: string;
+
     readonly title: string;
 
-    @IsNotEmpty()
+    readonly startDate: string;
+
+    readonly endDate: string;
+
+    readonly visibility: string;
+    
     readonly description: string;
 
-    @IsNotEmpty()
-    readonly projectFile: string;
+    readonly contributor: string[][];
 
-    @IsNotEmpty()
-    readonly contributor: string;
+    @IsArray()
+    readonly filesToDelete: string[];
+
+    // readonly files: string[][];
+
+    
 
 }  
