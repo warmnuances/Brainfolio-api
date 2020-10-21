@@ -491,11 +491,13 @@ jobs:
           command: |
             bash scripts/getEnv.sh
       
-
+      
       - run: 
           name: Get Service Account Key from environment Variables
           command: |
-            bash scripts/getServiceAccount.sh
+            source scripts/getServiceAccount.sh
+            echo $FIREBASE_APPLICATION_CREDENTIALS
+
 
 
       - run: 
