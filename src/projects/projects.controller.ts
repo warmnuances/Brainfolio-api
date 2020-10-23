@@ -23,15 +23,13 @@ export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService){}
 
     @Get()
-    findAll(@GetUser() user:User): Promise<Project[]> {
-      console.log(user);
-      
+    findAll(): Promise<Project[]> {
       return this.projectsService.findAll('username');
     } 
 
     // Get a single project
     @Get('item/:id')
-    @UseGuards(RulesGuard)
+    // @UseGuards(RulesGuard)
     findOne( @Param() param):Promise<Project> { 
       var result = this.projectsService.findOne(param.id,'username');
       return result
