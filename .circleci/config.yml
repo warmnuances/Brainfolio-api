@@ -505,6 +505,7 @@ jobs:
       - run: 
           name: Run e2e test
           command: |
+            echo $FIREBASE_APPLICATION_CREDENTIALS
             npm run test:e2e
 
       - run: 
