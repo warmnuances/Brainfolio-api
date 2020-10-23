@@ -7,15 +7,18 @@ import { PortfolioDto } from './dto/portfolio.dto';
 @Injectable()
 export class PortfolioService {
     constructor(@InjectModel('Portfolio') private readonly portfolioModel: Model<Portfolio>) {}
-
+    // async create(portfolio: PortfolioDto, user: User): Promise<Portfolio> {
 
     async create(portfolio: PortfolioDto): Promise<Portfolio> {
         const newportfolio = new this.portfolioModel(portfolio);
+        // console.log(user._id);
+        // newportfolio.userId = user._id;
+
         return newportfolio.save();
       } 
     
-    async findAll(): Promise<Portfolio[]> {
-        return this.portfolioModel.find().exec();
+    async findAll(username:string): Promise<Portfolio[]> {
+        return this.portfolioModel.find({username:username}).exec();
     }
 
 
@@ -31,7 +34,5 @@ export class PortfolioService {
 
     async update(id: string, portfolio:PortfolioDto): Promise<Portfolio> {
         return await this.portfolioModel.findByIdAndUpdate(id, portfolio, {new: true})
-        
-    }
-
+    }    
 }

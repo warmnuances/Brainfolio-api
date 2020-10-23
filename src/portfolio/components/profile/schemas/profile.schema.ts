@@ -3,16 +3,19 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Profile extends Document {
-  @Prop({ required: true })
+  @Prop()
+  username: String;
+  
+  @Prop({ required: false })
   fullName: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   address: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   email: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   phone: string;
 
   @Prop({ required: false })
@@ -24,8 +27,12 @@ export class Profile extends Document {
   @Prop({ required: false })
   title: string;
 
-  //Profile Image insert
-  //Background Image insert
+  @Prop()
+  profileImageName: [string];
+
+  @Prop()
+  backgroundImageName: [string];
+  
 }
 
 export const ProfileSchema = SchemaFactory.createForClass(Profile);

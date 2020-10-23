@@ -2,14 +2,17 @@ import { Controller , Get, Post, Put, Delete, Body, Param, ValidationPipe } from
 import { PortfolioDto } from './dto/portfolio.dto';
 import { PortfolioService } from './portfolio.service'
 import { Portfolio } from './interfaces/portfolio.interface'
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from '../Auth/get-user.decorator';
+import { User } from '../Auth/user.schema';
 
 @Controller('portfolio')
 export class PortfolioController {
     constructor(private readonly portfolioService: PortfolioService){}
 
     @Get()
-    findAll(): Promise<Portfolio[]> {
-        return this.portfolioService.findAll();
+    findAll(@GetUser() user: User): Promise<Portfolio[]> {
+        return this.portfolioService.findAll(user.username);
     } 
 
     @Get(':id')

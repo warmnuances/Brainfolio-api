@@ -15,6 +15,20 @@ export const imageFileFilter = (req, file, callback) => {
   callback(null, true);
 };
 
+
+export const profilebackgroundFileFilter = (req, file, callback) => {
+  if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+    return callback(
+      new HttpException(
+        'Only image files are allowed!',
+        HttpStatus.BAD_REQUEST,
+      ),
+      false,
+    );
+  }
+  callback(null, true);
+};
+
 export const editFileName = (req, file, callback) => {
   const name = file.originalname.split('.')[0];
   const fileExtName = extname(file.originalname);
@@ -23,4 +37,23 @@ export const editFileName = (req, file, callback) => {
     .map(() => Math.round(Math.random() * 10).toString(10))
     .join('');
   callback(null, `${name}${fileExtName}`);
+};
+
+export const editProfileImageName = (req, file, callback) => {
+  const name = file.originalname.split('.')[0];
+  const fileExtName = extname(file.originalname);
+  const randomName = Array(4)
+    .fill(null)
+    .map(() => Math.round(Math.random() * 10).toString(10))
+    .join('');
+  callback(null, `profileImage${fileExtName}`);
+};
+export const editBackgroundImageName = (req, file, callback) => {
+  const name = file.originalname.split('.')[0];
+  const fileExtName = extname(file.originalname);
+  const randomName = Array(4)
+    .fill(null)
+    .map(() => Math.round(Math.random() * 10).toString(10))
+    .join('');
+  callback(null, `backgroundImage${fileExtName}`);
 };

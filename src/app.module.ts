@@ -6,7 +6,7 @@ import { HealthcheckModule } from './Healthcheck/healthcheck.module';
 import { MongooseConfig } from './Config/mongoose.config';
 import { ProjectsModule } from './projects/projects.module';
 import { AuthV2Module } from './Authv2/authv2.module';
-
+import {PortfolioModule} from './portfolio/portfolio.module';
 // import { ProjectsModule } from './projects/projects.module';
 
 //TODO: (Optional) Create ConfigServiceto deserialise vars
@@ -23,7 +23,8 @@ import { AuthV2Module } from './Authv2/authv2.module';
     AuthV2Module,
     HealthcheckModule,
     ProjectsModule,
-  ]
+    PortfolioModule
+  ],
 })
 
 

@@ -3,6 +3,10 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Education extends Document {
+  
+  @Prop({required: true })
+  username: String;
+
   @Prop({ required: true })
   startDate: string;
 

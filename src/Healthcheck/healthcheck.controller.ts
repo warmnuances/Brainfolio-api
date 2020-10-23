@@ -8,7 +8,6 @@ import { User } from '../Auth/user.schema';
 
 
 @Controller("/test")
-
 export class HealthCheckController {
   private start: number;
 
