@@ -478,8 +478,9 @@ jobs:
             echo $FIREBASE_APPLICATION_CREDENTIALS
             if [ -z "${FIREBASE_APPLICATION_CREDENTIALS}" ];then
                 echo "FIREBASE_APPLICATION_CREDENTIALS is unset"
+                exit 1
             fi
-            exit 1
+        
       - checkout
       - restore_cache:
           keys:

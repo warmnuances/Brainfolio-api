@@ -147,7 +147,13 @@ export class ProjectsService {
     } 
     
     async findAll(username:string): Promise<Project[]> {
-        return this.projectModel.find({username:username}).exec();
+        try{
+            return this.projectModel.find({username:username}).exec();
+        }
+        catch{
+            
+        }
+        
     }
 
     async findOne(_id: string, username:string ): Promise<Project> {

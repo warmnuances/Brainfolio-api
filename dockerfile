@@ -11,6 +11,7 @@ RUN ls -a
 
 
 FROM node:current-slim as production
+ENV FIREBASE_APPLICATION_CREDENTIALS=/home/circleci/project/google-credentials.json
 WORKDIR /usr/src/app
 RUN ls -a
 
