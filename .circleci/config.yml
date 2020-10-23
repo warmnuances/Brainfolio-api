@@ -670,12 +670,16 @@ jobs:
 workflows:
   build:
     jobs:
+      - build-test-and-notify:
+          context: slack-secrets
       - deploy:
+          context: slack-secrets
           filters:
             branches:
               only: 
                 - testBranch
       - test:
+          context: slack-secrets
           filters: 
             branches:
               only: 
