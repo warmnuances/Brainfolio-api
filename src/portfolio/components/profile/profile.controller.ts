@@ -48,7 +48,8 @@ export class ProfileController {
         { name: 'backgroundImage', maxCount: 1 }
     ], {fileFilter: profilebackgroundFileFilter}
     ))
-    saveProject(@UploadedFiles() image, @Body() profile, @GetUser() user:User):Promise<Profile>{  
+    // @GetUser() user:User
+    saveProject(@UploadedFiles() image, @Body() profile):Promise<Profile>{  
 
 
       return this.profileService.saveProject(image, profile, "username")
