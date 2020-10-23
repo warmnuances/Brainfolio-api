@@ -14,20 +14,24 @@ import { DeleteFilesDto } from './dto/delete-file.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../Auth/get-user.decorator';
 import { User } from '../Auth/user.schema';
+import { RulesGuard } from './authRule.guard'
 
 
 @Controller('projects')
-// @UseGuards(AuthGuard())
+// @UseGuards(AuthGuard())  
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService){}
 
     @Get()
-    findAll(): Promise<Project[]> {
+    findAll(@GetUser() user:User): Promise<Project[]> {
+      console.log(user);
+      
       return this.projectsService.findAll('username');
     } 
 
     // Get a single project
     @Get('item/:id')
+    @UseGuards(RulesGuard)
     findOne( @Param() param):Promise<Project> { 
       var result = this.projectsService.findOne(param.id,'username');
       return result
