@@ -11,7 +11,7 @@ services:
     env_file:
       - .env
     environment:
-     - FIREBASE_APPLICATION_CREDENTIALS=/home/circleci/project/google-credentials.json
+     - FIREBASE_APPLICATION_CREDENTIALS=/usr/src/app/google-credentials.json
     ports:
       - "5000:5000"
     
