@@ -10,6 +10,8 @@ services:
     image: brainfolio-api_web
     env_file:
       - .env
+    environment:
+     - FIREBASE_APPLICATION_CREDENTIALS=/home/circleci/project/google-credentials.json
     ports:
       - "5000:5000"
     
