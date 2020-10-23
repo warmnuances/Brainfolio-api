@@ -450,20 +450,72 @@ jobs:
           channel: github-build
           custom: |
             {
-              "blocks": [
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "plain_text",
-                      "text": "*Slack Test*",
-                      "emoji": true
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "🎉🎉㊗️ *[Testing Started]* $CIRCLE_BRANCH"
                     }
-                  ]
-                }
-              ]
+                  },
+                  {
+                    "type": "divider"
+                  },
+                  {
+                    "type": "context",
+                    "elements": [
+                      {
+                        "type": "image",
+                        "image_url": "https://pbs.twimg.com/profile_images/648595819847782400/Gjf4zGyg_400x400.png",
+                        "alt_text": "CircleCI Logo"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*CircleCI* build started"
+                      }
+                    ]
+                  }
+                ]
+              }
+          event: always
+
+  test-success-and-notify:
+    executor: default
+    steps:
+       - slack/notify:
+          channel: github-build
+          custom: |
+            {
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "✅🤗👏🔥 *[Testing Succesful]* $CIRCLE_BRANCH"
+                    }
+                  },
+                  {
+                    "type": "divider"
+                  },
+                  {
+                    "type": "context",
+                    "elements": [
+                      {
+                        "type": "image",
+                        "image_url": "https://pbs.twimg.com/profile_images/648595819847782400/Gjf4zGyg_400x400.png",
+                        "alt_text": "CircleCI lOGO"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*CircleCI* Deployment started"
+                      }
+                    ]
+                  }
+                ]
             }
           event: always
+
+     
 
   test:
     docker:
@@ -472,6 +524,8 @@ jobs:
     environment:
       FIREBASE_APPLICATION_CREDENTIALS: /home/circleci/repo/google-credentials.json
     steps:
+
+
       - run:
           name: Check if context set environment variable
           command: |
@@ -536,24 +590,6 @@ jobs:
             git push -q https://${GITHUB_PERSONAL_TOKEN}@github.com/warmnuances/Brainfolio-prod.git testBranch
 
       - slack/notify:
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "plain_text",
-                      "text": "*Running build Test*",
-                      "emoji": true
-                    }
-                  ]
-                }
-              ]
-            }
-          event: always
-
-      - slack/notify:
           event: fail
           custom: |
             {
@@ -605,7 +641,7 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*e2e Test Success!* ✅🤗🔥🔥🔥",
+                      "text": "*Successfully built and deployed application* ✅🤗🔥🔥🔥",
                       "emoji": true
                     }
                   ]
@@ -613,6 +649,7 @@ jobs:
               ]
             }
           event: pass
+
 
       - setup_remote_docker:
           version: 19.03.13
@@ -641,24 +678,6 @@ jobs:
           app-name: testdockerprod123
           process-types: web
 
-      - slack/notify:
-          channel: github-build
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Successfully build and deployed application* ✅🤗🔥🔥🔥",
-                      "emoji": true
-                    }
-                  ]
-                }
-              ]
-            }
-          event: pass
 
       - slack/notify:
           event: fail
@@ -697,6 +716,10 @@ workflows:
             branches:
               only: 
                 - testBranch
+      - test-success-and-notify:
+          context: slack-secrets
+          requires:
+            - test
       - test:
           context: slack-secrets
           filters: 
