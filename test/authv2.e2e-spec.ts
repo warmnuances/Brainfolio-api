@@ -21,8 +21,7 @@ describe('AuthControllerV2 (e2e)', () => {
   beforeAll(async () => {
     await mongoose.connect(process.env.TEST_MONGO, MongooseConfig)
     await mongoose.connection.db.dropDatabase();
-    
-    console.log(process.env.FIREBASE_APPLICATION_CREDENTIALS)
+  
     
     admin.initializeApp({
       credential: admin.credential.cert(process.env.FIREBASE_APPLICATION_CREDENTIALS),
