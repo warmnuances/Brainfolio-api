@@ -44,7 +44,6 @@ export class ProfileService {
  
         for(let fileName of fileNames){
             var fileNamePath = username  + '/profile/' + _id + '/' + type + '/' + fileName;
-            
             var file = bucket.file(fileNamePath);
             var url = await file.getSignedUrl(config) 
             url.unshift(fileName)

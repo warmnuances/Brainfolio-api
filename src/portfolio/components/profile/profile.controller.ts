@@ -6,13 +6,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../../Auth/get-user.decorator';
 import { User } from '../../../Auth/user.schema';
 import { diskStorage , memoryStorage} from 'multer';
-import {profilebackgroundFileFilter ,editProfileImageName, editBackgroundImageName} from '../../../utils/file-uploading.utils';
+import {profilebackgroundFileFilter ,editProfileImageName, editBackgroundImageName, imageFileFilter} from '../../../utils/file-uploading.utils';
 import {FileDto} from './dto/profile-file.dto';
 import {FileFieldsInterceptor, FilesInterceptor} from '@nestjs/platform-express'
 
 
 @Controller('edit/profile')
-@UseGuards(AuthGuard())
+// @UseGuards(AuthGuard())
 export class ProfileController {
     constructor(private readonly profileService: ProfileService){}
     // portfolio id missing
@@ -44,12 +44,13 @@ export class ProfileController {
 
     @Post('save')
     @UseInterceptors(FileFieldsInterceptor([
-        { name: 'profileImage', maxCount: 1 },
-        { name: 'backgroundImage', maxCount: 1 },
-    ]))
+        { name: 'profileImage', maxCount: 1},
+        { name: 'backgroundImage', maxCount: 1 }
+    ], {fileFilter: profilebackgroundFileFilter}
+    ))
     saveProject(@UploadedFiles() image, @Body() profile, @GetUser() user:User):Promise<Profile>{  
 
 
-      return this.profileService.saveProject(image, profile, user.username)
+      return this.profileService.saveProject(image, profile, "username")
     }
 }
