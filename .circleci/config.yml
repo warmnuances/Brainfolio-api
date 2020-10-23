@@ -473,6 +473,7 @@ jobs:
       - run:
           name: Check if context set environment variable
           command: |
+            echo $FIREBASE_APPLICATION_CREDENTIALS
             if [ -z "${FIREBASE_APPLICATION_CREDENTIALS}" ];then
                 echo "FIREBASE_APPLICATION_CREDENTIALS is unset"
             fi
@@ -667,13 +668,15 @@ workflows:
   build:
     jobs:
       - deploy:
-          context: FIREBASE_PROD_CREDENTIAL 
+          context:
+            - FIREBASE_PROD_CREDENTIAL 
           filters:
             branches:
               only: 
                 - testBranch
       - test:
-          context: FIREBASE_TEST_CREDENTIAL
+          context:
+            - FIREBASE_PROD_CREDENTIAL 
           filters: 
             branches:
               only: 
