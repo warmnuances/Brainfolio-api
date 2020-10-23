@@ -3,7 +3,7 @@ import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProfileSchema } from './schemas/profile.schema';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../../../auth/auth.module';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'Profile', schema: ProfileSchema }]), 

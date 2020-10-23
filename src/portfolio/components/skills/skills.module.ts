@@ -3,7 +3,7 @@ import { SkillsController } from './skills.controller';
 import { SkillsService } from './skills.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SkillsSchema } from './schemas/skills.schema';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../../../auth/auth.module';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'Skills', schema: SkillsSchema }]), 
