@@ -19,22 +19,18 @@ export class HTTPStrategy extends PassportStrategy(Strategy) {
 
   async validate(jwtPayload: string): Promise<Userv2> | null  {
     let result = null;
-    
-    await admin.auth()
-      .verifyIdToken(jwtPayload)
-      .then(decodedToken => {
 
-        const decoded = { uid: decodedToken.uid, email:decodedToken.email}
-        result =  this.authV2Service.getUserFromDatabase(decoded);
+    try{
+      const decodedToken = await admin.auth().verifyIdToken(jwtPayload)
+      
+      const decoded = { uid: decodedToken.uid, email:decodedToken.email}
+      result =  await this.authV2Service.getUserFromDatabase(decoded);
+      return result;
 
-      })
-      .catch(function(error) {
-        console.log('Error creating custom token: ', error);
-        throw new UnauthorizedException("Invalid Token")
-      });
-    
-
-    return result     
+    }
+    catch(e){
+      throw new UnauthorizedException("(Passport Valdidate) Invalid Token: " + e)
+    }
   }
 
 }

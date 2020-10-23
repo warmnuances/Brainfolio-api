@@ -18,33 +18,26 @@ export class AuthV2Service {
   /** Create a user from token if not exists
    *  @param {IFirebasePayload}
    * **/
-  async getUserFromDatabase(payload: IFirebasePayload){
+  async getUserFromDatabase(payload: IFirebasePayload): Promise<Userv2>{
     const { uid, email } = payload;
+    try{
+      let user = await this.userModel.findOne({uid: uid});
+      
+      if(!user){
+        user = new this.userModel();
 
-    const options = {
-      upsert: true,
-      new: true,
-      setDefaultsOnInsert: true
-    }
-
-    const update = {
-      $setOnInsert: {
-        uid: uid,
-        email: email,
-        isCompleted: false,
+        user.uid = uid;
+        user.email = email;
+        user.isCompleted = false;
+        user.save();
       }
+      
+      return user;
+     
     }
-
-    const query = {uid: uid}
-
-    const result = await this.userModel
-      .findOneAndUpdate(query,update,options)
-      .catch(err => {
-        throw new InternalServerErrorException("message", err)
-      });
-
-
-    return result;
+    catch(e){
+      throw new InternalServerErrorException("(GetUserFromDatabase) Failed to create user:" + e)
+    }
   }
 
   async checkUniqueUsername(body :CheckUsernameDto){
@@ -66,6 +59,7 @@ export class AuthV2Service {
   async setUsername(signUpDto: SignUpDto, payload:IFirebasePayload){
     const { uid } = payload;
     const { username } = signUpDto;
+    
 
     try{
       const result = await this.userModel.findOne({uid: uid})

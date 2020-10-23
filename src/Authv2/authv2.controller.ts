@@ -23,6 +23,7 @@ export class AuthV2Controller {
   @Post('/set/username')
   @UseGuards(AuthGuard())
   async setUsername(@Body(ValidationPipe) signUpDto: SignUpDto, @GetUser() user:Userv2){
+   
     return this.authService.setUsername(signUpDto,user);
   }
 

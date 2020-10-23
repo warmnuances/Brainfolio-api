@@ -11,13 +11,13 @@ export class Userv2 extends Document {
   @Prop()
   fullname: string;
 
-  @Prop({unique: true})
+  @Prop({unique: true, required: true})
   uid: string;
 
-  @Prop({unique: true})
+  @Prop({unique: true, sparse: true})
   email: string;
 
-  @Prop({unique: true})
+  @Prop({unique: true, sparse: true})
   username: string;
 
   @Prop()

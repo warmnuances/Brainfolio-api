@@ -11,13 +11,15 @@ RUN ls -a
 
 
 FROM node:current-slim as production
-ENV FIREBASE_APPLICATION_CREDENTIALS=/home/circleci/project/google-credentials.json
+ENV FIREBASE_APPLICATION_CREDENTIALS=/usr/src/app/google-credentials.json
 WORKDIR /usr/src/app
 RUN ls -a
+RUN pwd
 
 COPY --from=development /usr/src/app/package*.json ./
 COPY --from=development /usr/src/app/node_modules ./node_modules 
 COPY --from=development /usr/src/app/dist ./dist
+COPY --from=development /usr/src/app/google-credentials.json ./google-credentials.json
 RUN ls -a
 COPY  .env ./
 CMD ["node", "dist/main"]
