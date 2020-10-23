@@ -520,7 +520,7 @@ jobs:
           name: Push to master branch
           command: |
             git checkout testBranch
-            git merge staging -m "Test Passed! $GIT_COMMIT_DESC"
+            git merge staging -m "Test Passed! $CIRCLE_BRANCH"
             git push -q https://${GITHUB_PERSONAL_TOKEN}@github.com/warmnuances/Brainfolio-prod.git testBranch
 
       - slack/notify:
@@ -595,8 +595,12 @@ jobs:
       
       - run: 
           name: Get Service Account Key from environment Variables
+          environment: 
+            FIREBASE_APPLICATION_CREDENTIALS: /home/circleci/project/google-credentials.json
           command: |
             source scripts/getServiceAccount.sh
+            pwd
+            ls -a
             echo $FIREBASE_APPLICATION_CREDENTIALS
 
       - push-docker-image:
