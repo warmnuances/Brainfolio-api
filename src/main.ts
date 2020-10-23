@@ -6,12 +6,13 @@ import * as admin from 'firebase-admin';
 import { SwaggerModule } from '@nestjs/swagger/dist/swagger-module';
 import { DocumentBuilder } from '@nestjs/swagger/dist/document-builder';
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  console.log(process.env.FIREBASE_APPLICATION_CREDENTIALS);
+
+
 
   admin.initializeApp({
     credential: admin.credential.cert(process.env.FIREBASE_APPLICATION_CREDENTIALS),
