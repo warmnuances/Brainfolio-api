@@ -136,8 +136,8 @@ export class ProfileService {
         
         
         //Get link
-        projectModel.profileImageName = await this.getFileNameAndLink([projectModel.profileImageName], username, _id, "profileImage");
-        projectModel.backgroundImageName = await this.getFileNameAndLink([projectModel.backgroundImageName], username, _id, "backgroundImage");
+        projectModel.profileImageName = await this.getFileNameAndLink(projectModel.profileImageName, username, _id, "profileImage");
+        projectModel.backgroundImageName = await this.getFileNameAndLink(projectModel.backgroundImageName, username, _id, "backgroundImage");
 
         
 
