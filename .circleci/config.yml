@@ -469,6 +469,8 @@ jobs:
     docker:
       - image: circleci/node:12.18.4
     working_directory: ~/repo
+    environment:
+      FIREBASE_APPLICATION_CREDENTIALS: /home/circleci/repo/google-credentials.json
     steps:
       - run:
           name: Check if context set environment variable
@@ -668,15 +670,11 @@ workflows:
   build:
     jobs:
       - deploy:
-          context:
-            - FIREBASE_PROD_CREDENTIAL 
           filters:
             branches:
               only: 
                 - testBranch
       - test:
-          context:
-            - FIREBASE_PROD_CREDENTIAL 
           filters: 
             branches:
               only: 
