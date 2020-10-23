@@ -667,13 +667,13 @@ workflows:
   build:
     jobs:
       - deploy:
-          context: FIREBASE_TEST_CREDENTIAL
+          context: FIREBASE_PROD_CREDENTIAL 
           filters:
             branches:
               only: 
                 - testBranch
       - test:
-          context: FIREBASE_PROD_CREDENTIAL
+          context: FIREBASE_TEST_CREDENTIAL
           filters: 
             branches:
               only: 
