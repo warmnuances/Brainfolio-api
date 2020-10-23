@@ -469,6 +469,7 @@ jobs:
     docker:
       - image: circleci/node:12.18.4
     working_directory: ~/repo
+    context: FIREBASE_TEST_CREDENTIAL
     steps:
       - checkout
       - restore_cache:
@@ -576,6 +577,7 @@ jobs:
     description: |
       Quickly and easily take the changes to this branch and deploy them to Heroku automatically with this job.
     executor: default
+    context: FIREBASE_PROD_CREDENTIAL
     parameters: 
       app-name:
         default: testdockerprod123
@@ -595,13 +597,12 @@ jobs:
       
       - run: 
           name: Get Service Account Key from environment Variables
-          environment: 
-            FIREBASE_APPLICATION_CREDENTIALS: /home/circleci/project/google-credentials.json
           command: |
             source scripts/getServiceAccount.sh
             pwd
             ls -a
             echo $FIREBASE_APPLICATION_CREDENTIALS
+
 
       - push-docker-image:
           app-name: testdockerprod123
