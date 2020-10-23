@@ -466,10 +466,10 @@ jobs:
           event: always
 
   test:
+    context: FIREBASE_TEST_CREDENTIAL
     docker:
       - image: circleci/node:12.18.4
     working_directory: ~/repo
-    context: FIREBASE_TEST_CREDENTIAL
     steps:
       - checkout
       - restore_cache:
@@ -574,10 +574,10 @@ jobs:
   
   
   deploy:
+    context: FIREBASE_PROD_CREDENTIAL
     description: |
       Quickly and easily take the changes to this branch and deploy them to Heroku automatically with this job.
     executor: default
-    context: FIREBASE_PROD_CREDENTIAL
     parameters: 
       app-name:
         default: testdockerprod123
