@@ -5,67 +5,70 @@ import * as admin from 'firebase-admin';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Project } from './interfaces/project.interface';
-import { Userv2 } from 'src/Authv2/userv2.schema';
+import { AuthV2Service } from '../Authv2/authv2.service';
+import { Userv2 } from '../Authv2/userv2.schema';
+
+
 
 @Injectable()
 export class RulesGuard implements CanActivate {
-    constructor(@InjectModel('Project') private readonly projectModel: Model<Project>) {}
+    constructor(
+      @InjectModel('Project') private readonly projectModel: Model<Project>,
+      private readonly authV2Service: AuthV2Service
+      ) {}
     
 
-  canActivate(
+  canActivate( 
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
 
     const request = context.switchToHttp().getRequest();
-    var token = request.headers.authorization;
+    var authString = request.headers.authorization;
+    var token = authString.split(" ")[1]
+    
     var username = request.params.username;
 
-
-    console.log(token);
     
-    
-    console.log(this.projectModel.findOne({username: username}));
+    // console.log(this.projectModel.findOne({username: username}));
   
-
-
     // console.log(userModel);
 
-    var user = validate(token);
+    var user = this.validate(token);
     console.log(user);
     
     return false;
   }
+
+
+
+  private async validate(jwtPayload: string): Promise<string> | null  {
+    let result = null;
+    
+    await admin.auth()
+      .verifyIdToken(jwtPayload)
+      .then(async decodedToken => {
+  
+        
+        const decoded = { uid: decodedToken.uid, email:decodedToken.email}
+        console.log(decoded);
+
+        result = await this.authV2Service.getUserFromDatabase(decoded);
+        console.log(result);
+        
+        result = decodedToken.uid;
+  
+      })
+      .catch(function(error) {
+        console.log('Error creating custom token: ', error);
+        throw new UnauthorizedException("Invalid Token")
+      });
+    
+  
+    return result     
+  }
 }
 
 
-async function validate(jwtPayload: string): Promise<Userv2> | null  {
-  let result = null;
-  
-  await admin.auth()
-    .verifyIdToken(jwtPayload)
-    .then(decodedToken => {
 
-      const decoded = { uid: decodedToken.uid, email:decodedToken.email}
-      result =  this.authV2Service.getUserFromDatabase(decoded);
 
-    })
-    .catch(function(error) {
-      console.log('Error creating custom token: ', error);
-      throw new UnauthorizedException("Invalid Token")
-    });
-  
 
-  return result     
-}
-
-// import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-// import { Observable } from 'rxjs';
-
-// @Injectable()
-// export class RolesGuard implements CanActivate {
-//   canActivate(
-//     context: ExecutionContext,
-//   ): boolean | Promise<boolean> | Observable<boolean> {
-//     return true;
-//   }
-// }

@@ -15,32 +15,32 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../Auth/get-user.decorator';
 import { User } from '../Auth/user.schema';
 import { RulesGuard } from './authRule.guard'
-
+import { Userv2 } from '../Authv2/userv2.schema';
 
 @Controller('projects')
-// @UseGuards(AuthGuard())  
+@UseGuards(AuthGuard())  
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService){}
 
     @Get()
-    findAll(): Promise<Project[]> {
-      return this.projectsService.findAll('username');
+    findAll(@GetUser() user:Userv2): Promise<Project[]> {
+      const username = user.username;
+      return this.projectsService.findAll(username);
     } 
 
     // Get a single project
     @Get('item/:id')
-    // @UseGuards(RulesGuard)
-    findOne( @Param() param):Promise<Project> { 
-      var result = this.projectsService.findOne(param.id,'username');
+    findOne(@GetUser() user:Userv2, @Param() param):Promise<Project> {
+      const username = user.username; 
+      var result = this.projectsService.findOne(param.id,username);
       return result
     }
     
     //Delete all project
     @Delete(':id')
-    deleteProject( @Param() param): Promise<Project> {
-
-      
-      return this.projectsService.deleteProject('username',param.id);
+    deleteProject(@GetUser() user:Userv2, @Param() param): Promise<Project> {
+      const username = user.username;
+      return this.projectsService.deleteProject(username,param.id);
     }
 
     //Save project files only
@@ -51,8 +51,8 @@ export class ProjectsController {
         fileFilter: imageFileFilter,
       }
     ))
-    saveProject( @UploadedFiles() files, @Body(ValidationPipe) project: ProjectDto): Promise<Project> {  
-
-      return this.projectsService.saveProject(files, project, 'username')
+    saveProject(@GetUser() user:Userv2, @UploadedFiles() files, @Body(ValidationPipe) project: ProjectDto): Promise<Project> {  
+      const username = user.username; 
+      return this.projectsService.saveProject(files, project, username)
     }
 }

@@ -41,34 +41,18 @@ export class ProjectsService {
         // var bucket = admin.storage().bucket().file(username + '/projects/' + _id + '/' +fileName);
 
         let fileToUpload = fileToUploadArray
-        // for(let fileToUpload of fileToUploadArray){
-
-            const fileName = fileToUpload.originalname;
-
-            
-            const file = await admin.storage().bucket().file(username + '/projects/' + _id + '/' +fileName);
-
-            
-
-            const fileStream = file.createWriteStream({
-              metadata: {
-                contentType: fileToUpload.mimetype
-              },
-              resumable: true
-            })
-        
-            fileStream.on('error', function(err) {})
-        
-            fileStream.on('finish', function() {
-                
-                // The file upload is complete.
-            });
-        
-            fileStream.end(fileToUpload.buffer);
-        
-        // }
-
-
+        const fileName = fileToUpload.originalname;
+        const file = await admin.storage().bucket().file(username + '/projects/' + _id + '/' +fileName);
+        const fileStream = file.createWriteStream({
+            metadata: {
+            contentType: fileToUpload.mimetype
+            },
+            resumable: true
+        })
+        fileStream.on('error', function(err) {})
+        fileStream.on('finish', function() {
+        });
+        fileStream.end(fileToUpload.buffer);
     }
 
     async deleteFile(username, _id,  fileName) {
@@ -78,8 +62,6 @@ export class ProjectsService {
         await bucket.file(fileNamePath)
             .delete()
             .catch(err => console.error(err));
-
-
     }
     
     async saveProject(fileToUploadArray, project:ProjectDto, username): Promise<Project> {
@@ -148,13 +130,7 @@ export class ProjectsService {
     } 
     
     async findAll(username:string): Promise<Project[]> {
-        try{
-            return this.projectModel.find({username:username}).exec();
-        }
-        catch{
-            
-        }
-        
+        return this.projectModel.find({username:username}).exec();
     }
 
     async findOne(_id: string, username:string ): Promise<Project> {
@@ -176,7 +152,6 @@ export class ProjectsService {
         for(let fileName of oldDataName){
             await this.deleteFile(username, _id, fileName).catch(console.error);
         }
-        
 
         //Delete Mongo
         return await this.projectModel.findByIdAndRemove(_id)

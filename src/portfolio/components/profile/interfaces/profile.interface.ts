@@ -12,7 +12,7 @@ export interface Profile extends Document{
     profileImageName: [string];
     backgroundImageName: [string];
     filetodelete: string;
-    private: boolean;
+    isPublic: boolean;
     dark: boolean;
 
 }

@@ -17,7 +17,7 @@ export class ProfileDto {
 
     readonly title: string;
     
-    readonly private: boolean;
+    readonly isPublic: boolean;
     
     readonly dark: boolean;
 

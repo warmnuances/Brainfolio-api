@@ -28,7 +28,7 @@ export class Profile extends Document {
   title: string;
   
   @Prop()
-  private: boolean;
+  isPublic: boolean;
 
   @Prop()
   dark: boolean;

@@ -5,7 +5,7 @@ export interface Project extends Document{
     title: string;
     startDate: string;
     endDate: string;
-    visibility: string;
+    isPublic: boolean;
     description: string;
     projectFileName: string[];
 

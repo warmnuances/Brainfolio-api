@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsArray } from "class-validator";
+import { IsNotEmpty, IsArray, IsBoolean } from "class-validator";
 
 export class ProjectDto {
 
@@ -10,7 +10,8 @@ export class ProjectDto {
 
     readonly endDate: string;
 
-    readonly visibility: string;
+    @IsBoolean()
+    readonly isPublic: boolean;
     
     readonly description: string;
 

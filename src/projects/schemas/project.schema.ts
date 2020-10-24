@@ -32,7 +32,7 @@ export class Project extends Document {
     endDate: string;
 
     @Prop()
-    visibility : string;
+    isPublic : boolean;
 
     @Prop()
     description : string;
