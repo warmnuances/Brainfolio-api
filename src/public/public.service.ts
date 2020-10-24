@@ -18,8 +18,11 @@ export class PublicService {
         @InjectModel('Profile') private readonly profileModel: Model<Profile>
     ) {}
 
-    async findProject(username:string): Promise<Project[]> {
+    async findAllProject(username:string): Promise<Project[]> {
         return await this.projectModel.find({username:username, isPublic:true}).exec();
+    }
+    async findProject(username:string, id:string): Promise<Project> {
+        return await this.projectModel.findOne({username:username, isPublic:true, _id:id}).exec();
     }
     async findSkills(username:string): Promise<Skills[]> {
         return await this.skillsModel.find({username : username}).exec();

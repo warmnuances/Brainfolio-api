@@ -13,10 +13,17 @@ import { UsernameCheck } from './usernameCheck.guard'
 export class PublicController {
     constructor(private readonly publicService: PublicService){}
 
-    @Get('project/:username')
+    @Get('allproject/:username')
     findProjectAll(@Param() param): Promise<Project[]> {
       const username = param.username;      
-      return this.publicService.findProject(username);
+      return this.publicService.findAllProject(username);
+    } 
+
+    @Get('project/:username/:id')
+    findSingleProject(@Param() param): Promise<Project> {
+      const username = param.username;   
+      const id = param.id;   
+      return this.publicService.findProject(username, id);
     } 
 
     // @Get('portfolio/:username')
