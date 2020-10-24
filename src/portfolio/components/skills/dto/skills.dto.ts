@@ -11,8 +11,6 @@ export class SkillsDto {
 
     readonly rating: string;
 
-    readonly priority: string;
-
 }  
 
 // portfolioId: string;

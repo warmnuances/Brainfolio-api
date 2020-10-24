@@ -16,8 +16,6 @@ export class Skills extends Document {
     @Prop({ required: true })
     rating : string;
 
-    @Prop({ required: true })
-    priority: string;
 }
 
 export const SkillsSchema = SchemaFactory.createForClass(Skills);
