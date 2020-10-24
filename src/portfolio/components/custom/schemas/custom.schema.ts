@@ -11,7 +11,7 @@ export class Custom extends Document {
   type: string;
 
   @Prop({ })
-  itemTitle : Date;
+  itemTitle : string;
 
   @Prop({ })
   itemSubTitle: string;
