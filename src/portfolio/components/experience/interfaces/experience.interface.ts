@@ -5,9 +5,10 @@ export interface Experience extends Document{
     type: string;
     title: string;
     name: string;
-    startDate: string;
-    endDate: string;
+    startDate: Date;
+    endDate: Date;
     description: string;
+    onGoing: boolean;
 }
 
 

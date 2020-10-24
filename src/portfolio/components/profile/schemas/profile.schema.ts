@@ -26,6 +26,12 @@ export class Profile extends Document {
 
   @Prop({ required: false })
   title: string;
+  
+  @Prop()
+  private: boolean;
+
+  @Prop()
+  dark: boolean;
 
   @Prop()
   profileImageName: [string];

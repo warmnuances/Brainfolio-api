@@ -17,13 +17,16 @@ export class Experience extends Document {
   name: string;
 
   @Prop({ required: true })
-  startDate: string;
+  startDate: Date;
 
   @Prop({ required: true })
-  endDate: string;
+  endDate: Date;
 
   @Prop({ required: false })
   description: string;
+
+  @Prop({required: false})
+  onGoing: boolean;
 }
 
 export const ExperienceSchema = SchemaFactory.createForClass(Experience);

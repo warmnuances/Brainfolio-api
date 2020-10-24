@@ -5,13 +5,13 @@ import { Document } from 'mongoose';
 export class Education extends Document {
   
   @Prop({required: true })
-  username: String;
+  username: string;
 
   @Prop({ required: true })
-  startDate: string;
+  startDate: Date;
 
   @Prop({ required: true })
-  endDate : string;
+  endDate : Date;
 
   @Prop({ required: true })
   degree: string;
@@ -24,6 +24,9 @@ export class Education extends Document {
 
   @Prop({ required: false })
   score: string;
+
+  @Prop({required: false})
+  onGoing: boolean;
 }
 
 export const EducationSchema = SchemaFactory.createForClass(Education);

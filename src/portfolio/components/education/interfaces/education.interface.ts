@@ -2,12 +2,13 @@ import { Document } from 'mongoose';
 
 export interface Education extends Document{
     username: string;
-    startDate: string;
-    endDate: string;
+    startDate: Date;
+    endDate: Date;
     degree: string;
     institution: string;
     location: string;
     score: string;
+    onGoing: boolean;
 }
 
 

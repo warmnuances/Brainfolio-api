@@ -5,9 +5,9 @@ import { IsNotEmpty} from "class-validator";
 export class EducationDto {
     readonly username: string;
 
-    readonly startDate: string;
+    readonly startDate: Date;
 
-    readonly endDate: string;
+    readonly endDate: Date;
 
     readonly degree: string;
 
@@ -16,6 +16,8 @@ export class EducationDto {
     readonly location: string;
 
     readonly score: string;
+
+    readonly onGoing: boolean;
 
 }  
 

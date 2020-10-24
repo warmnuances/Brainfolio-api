@@ -12,6 +12,9 @@ export interface Profile extends Document{
     profileImageName: [string];
     backgroundImageName: [string];
     filetodelete: string;
+    private: boolean;
+    dark: boolean;
+
 }
 
 // @Prop()

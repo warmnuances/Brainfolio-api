@@ -16,6 +16,10 @@ export class ProfileDto {
     readonly linkedIn: string;
 
     readonly title: string;
+    
+    readonly private: boolean;
+    
+    readonly dark: boolean;
 
 }  
 

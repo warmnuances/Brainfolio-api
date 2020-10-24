@@ -14,13 +14,14 @@ export class ExperienceDto {
     readonly name: string;
 
     @IsNotEmpty()
-    readonly startDate: string;
+    readonly startDate: Date;
 
     @IsNotEmpty()
-    readonly endDate: string;
+    readonly endDate: Date;
 
     readonly description: string;
 
+    readonly onGoing: boolean;
 }  
 
 //     portfolioId: string;
