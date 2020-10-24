@@ -5,7 +5,6 @@ import { Project } from './interfaces/project.interface'
 import { ProjectDto } from './dto/create-project.dto';
 import { FileDto } from './dto/project-file.dto';
 
-
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 
@@ -134,7 +133,7 @@ export class ProjectsService {
     }
 
     async findOne(_id: string, username:string ): Promise<Project> {
-        //Grabing model data    
+        //Grabing model data
         var projectModel = await this.projectModel.findOne({_id: _id});
         var fileNames = projectModel.projectFileName;
         

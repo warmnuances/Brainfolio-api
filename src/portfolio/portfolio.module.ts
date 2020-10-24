@@ -8,6 +8,7 @@ import { EducationModule } from './components/education/education.module';
 import { ExperienceModule } from './components/experience/experience.module';
 import { ProfileModule } from './components/profile/profile.module';
 import { SkillsModule } from './components/skills/skills.module';
+import { CustomModule } from './components/custom/custom.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { SkillsModule } from './components/skills/skills.module';
     EducationModule, 
     ExperienceModule, 
     ProfileModule, 
-    SkillsModule
+    SkillsModule,
+    CustomModule,
   ],
   controllers: [PortfolioController],
   providers: [PortfolioService],
