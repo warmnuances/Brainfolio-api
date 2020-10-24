@@ -12,7 +12,7 @@ import {FileFieldsInterceptor, FilesInterceptor} from '@nestjs/platform-express'
 
 
 @Controller('edit/profile')
-// @UseGuards(AuthGuard())
+@UseGuards(AuthGuard())
 export class ProfileController {
     constructor(private readonly profileService: ProfileService){}
     // portfolio id missing
@@ -49,9 +49,9 @@ export class ProfileController {
     ], {fileFilter: profilebackgroundFileFilter}
     ))
     // @GetUser() user:User
-    saveProject(@UploadedFiles() image, @Body() profile):Promise<Profile>{  
+    saveProject(@UploadedFiles() image, @Body() profile, @GetUser() user:User):Promise<Profile>{  
 
 
-      return this.profileService.saveProject(image, profile, "username")
+      return this.profileService.saveProject(image, profile, user.username)
     }
 }
