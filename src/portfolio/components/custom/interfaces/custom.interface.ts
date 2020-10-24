@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 export interface Custom extends Document{
   username: string;
   type: string;
-  itemTitle : Date;
+  itemTitle : string;
   itemSubTitle: string;
   description: string;
 }
