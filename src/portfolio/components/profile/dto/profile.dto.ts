@@ -20,6 +20,8 @@ export class ProfileDto {
     readonly isPublic: boolean;
     
     readonly dark: boolean;
+    readonly profileToDelete: string;
+    readonly backgroundToDelete: string;
 
 }  
 

@@ -37,10 +37,10 @@ export class ProfileController {
         return this.profileService.delete(param.id);
     }
 
-    @Put(':id')
-    update(@Body() updateProfileDto: Profile, @Param() param): Promise<Profile> {
-        return this.profileService.update(param.id,updateProfileDto);
-    }
+    // @Put(':id')
+    // update(@Body() updateProfileDto: Profile, @Param() param): Promise<Profile> {
+    //     return this.profileService.update(param.id,updateProfileDto);
+    // }
 
     @Post('save')
     @UseInterceptors(FileFieldsInterceptor([

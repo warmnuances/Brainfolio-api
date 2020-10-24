@@ -84,16 +84,15 @@ export class ProfileService {
 
     }
 
-    async deleteFile(username, _id,  fileName) {
+    async deleteFile(username, _id,  fileName, type) {
         var bucket = admin.storage().bucket();
 
-        var fileNamePath = username + '/projects/' + _id + '/' + fileName;
+        var fileNamePath = username + '/projects/' + _id + '/'  + '/' + type + '/' + fileName;
         await bucket.file(fileNamePath)
             .delete()
             .catch(err => console.error(err));
-
-
     }
+    
     
     async saveProject(image, profile:ProfileDto, username): Promise<Profile> {
 
@@ -112,10 +111,10 @@ export class ProfileService {
         delete profile['_id']
         delete profile['projectFileName']
         delete profile['__v']
-        var projectModel;
+        var profileModel;
         // Grabing fileNames
 
-        
+
         if(image.profileImage != undefined){
 
             
@@ -132,16 +131,28 @@ export class ProfileService {
         }
        
 
-        projectModel = await this.profileModel.findByIdAndUpdate(_id, profile, {new: true});
-        
+        profileModel = await this.profileModel.findByIdAndUpdate(_id, profile, {new: true});
+
+
+        var profileToDelete = profile.profileToDelete;
+        var backgroundToDelete = profile.backgroundToDelete;
+        //Delete file if any
+        if(profileToDelete != undefined ){
+            //Delete on Firebase
+            this.deleteFile(username, _id, profileToDelete, "profileImage") 
+        }
+        if(backgroundToDelete != undefined ){
+            //Delete on Firebase
+            this.deleteFile(username, _id, backgroundToDelete, "backgroundImage") 
+        }
         
         //Get link
-        projectModel.profileImageName = await this.getFileNameAndLink(projectModel.profileImageName, username, _id, "profileImage");
-        projectModel.backgroundImageName = await this.getFileNameAndLink(projectModel.backgroundImageName, username, _id, "backgroundImage");
+        profileModel.profileImageName = await this.getFileNameAndLink(profileModel.profileImageName, username, _id, "profileImage");
+        profileModel.backgroundImageName = await this.getFileNameAndLink(profileModel.backgroundImageName, username, _id, "backgroundImage");
 
         
 
-        return projectModel;
+        return profileModel;
     } 
 
 }
