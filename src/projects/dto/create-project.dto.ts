@@ -10,8 +10,8 @@ export class ProjectDto {
 
     readonly endDate: string;
 
-    @IsBoolean()
-    readonly isPublic: boolean;
+
+    isPublic: boolean;
     
     readonly description: string;
 

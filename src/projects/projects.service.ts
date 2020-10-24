@@ -81,6 +81,8 @@ export class ProjectsService {
         delete project['projectFileName']
         delete project['__v']
         var projectModel;
+
+        project.isPublic = Boolean(project.isPublic)
         projectModel = await this.projectModel.findByIdAndUpdate(_id, project, {new: true});
 
         
