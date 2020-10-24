@@ -18,8 +18,10 @@ export class ProfileDto {
     readonly title: string;
     
     readonly private: boolean;
-    
+
     readonly dark: boolean;
+    readonly profileToDelete: string;
+    readonly backgroundToDelete: string;
 
 }  
 
