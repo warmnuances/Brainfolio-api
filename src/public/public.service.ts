@@ -46,29 +46,63 @@ export class PublicService {
         return await this.projectModel.find({username:username, isPublic:true}).exec();
     }
     async findProject(username:string, id:string): Promise<Project> {
-        var projectModel = await this.projectModel.findOne({username:username, isPublic:true, _id:id}).exec();
+        const projectModel = await this.projectModel.findOne({username:username, isPublic:true, _id:id}).exec();
         var fileNames = projectModel.projectFileName;
         let _id = projectModel._id;
         // Grab filename and Link to access
-        projectModel.projectFileName = await this.getFileNameAndLink(fileNames, username, _id);
-        return projectModel;
+        try{
+            projectModel.projectFileName = await this.getFileNameAndLink(fileNames, username, _id);
+            return projectModel;
+        }catch(e){
+            throw new Error("Mongoose Error" + e)
+        }
+
     }
     async findSkills(username:string): Promise<Skills[]> {
-        return await this.skillsModel.find({username : username}).exec();
+        try{
+            return await this.skillsModel.find({username : username}).exec();
+        }catch(e){
+            throw new Error("Mongoose Error" + e)
+        }
+        
     }
     async findProfile(username:string): Promise<Profile> {
-        return await this.profileModel.findOne({username : username}).exec();
+        try{
+            return await this.profileModel.findOne({username : username}).exec();
+        }catch(e){
+            throw new Error("Mongoose Error" + e)
+        }
+        
     }
     async findExperience(username:string): Promise<Experience[]> {
-        return await this.experienceModel.find({username:username}).exec();
+        try{
+            return await this.experienceModel.find({username:username}).exec();
+        }catch(e){
+            throw new Error("Mongoose Error" + e)
+        }
+        
     }
     async findEducation(username:string): Promise<Education[]> {
-        return await this.educationModel.find({username:username}).exec();
+        try{
+            return await this.educationModel.find({username:username}).exec();
+        }catch(e){
+            throw new Error("Mongoose Error" + e)
+        }
+        
     }
 
     async portfolioIsPublic(username:string) {
-        const model = await this.profileModel.findOne({username : username}).exec();
-        return model.isPublic;
+        try{
+            const model = await this.profileModel.findOne({username : username}).exec();
+            if(model){
+                return false;
+            }else{
+                return model.isPublic
+            }
+        }catch(e){
+            throw new Error("Mongoose Error" + e)
+        }
+
     }
 
 
