@@ -6,11 +6,12 @@ export class ProjectDto {
 
     readonly title: string;
 
-    readonly startDate: string;
+    startDate: Date;
 
-    readonly endDate: string;
+    endDate: Date;
 
-
+    onGoing: boolean;
+    
     isPublic: boolean;
     
     readonly description: string;
