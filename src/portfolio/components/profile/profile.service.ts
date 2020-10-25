@@ -16,12 +16,29 @@ export class ProfileService {
         const newprofile = new this.profileModel(profile);
         return newprofile.save();
       } 
-    async findAll(username:string): Promise<Profile[]> {
-        return this.profileModel.find({username : username}).exec();
-    }
+    // async findAll(username:string): Promise<Profile[]> {
+    //     return this.profileModel.find({username : username}).exec();
+    // }
 
-    async findOne(id: string): Promise<Profile> {
-        return await this.profileModel.findOne({_id: id})
+    async findOne(username: string): Promise<Profile> {
+        var profileModel = await this.profileModel.findOne({username: username});
+        const _id = profileModel._id;
+        
+        //Get link'
+        let profileArray = []
+        profileArray = profileModel.profileImageName;
+        if(profileArray.length != 0){
+            profileModel.profileImageName = await this.getFileNameAndLink(profileArray, username, _id, "profileImage");
+        }
+
+        let backgroundArray = []
+        backgroundArray = profileModel.backgroundImageName;
+        if(backgroundArray.length != 0){
+            profileModel.backgroundImageName = await this.getFileNameAndLink(backgroundArray, username, _id, "backgroundImage");
+        }
+
+
+        return profileModel;
 
     }
     async delete(id: string): Promise<Profile> {
