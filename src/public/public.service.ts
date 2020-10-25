@@ -95,9 +95,9 @@ export class PublicService {
         try{
             const model = await this.profileModel.findOne({username : username}).exec();
             if(model){
-                return false;
+                return model.isPublic;
             }else{
-                return model.isPublic
+                return false;
             }
         }catch(e){
             throw new Error("Mongoose Error" + e)
