@@ -90,7 +90,7 @@ export class ProfileService {
         var fileNamePath = username + '/projects/' + _id + '/'  + '/' + type + '/' + fileName;
         await bucket.file(fileNamePath)
             .delete()
-            .catch(err => console.error(err));
+            // .catch(err => console.error(err));
     }
     
     
@@ -116,7 +116,8 @@ export class ProfileService {
 
         //Update database with new projectObject       
         delete profile['_id']
-        delete profile['projectFileName']
+        delete profile['profileImageName']
+        delete profile['backgroundImageName']
         delete profile['__v']
         var profileModel;
         // Grabing fileNames
@@ -131,21 +132,29 @@ export class ProfileService {
             
             profile["profileImageName"] = [profileImageName.originalname];
         }
+        else{
+            profile["profileImageName"] = null;
+        }
         if(image.backgroundImage != undefined){
             var backgroundImageName = image.backgroundImage[0];
             await this.uploadFile(backgroundImageName, username, _id, "backgroundImage").catch(console.error);
             profile["backgroundImageName"]= [backgroundImageName.originalname];  
         }
-       
+        else{
+            profile["backgroundImageName"] = null;
+        }
 
         profileModel = await this.profileModel.findByIdAndUpdate(_id, profile, {new: true});
-
-
+        
         var profileToDelete = profile.profileToDelete;
         var backgroundToDelete = profile.backgroundToDelete;
+        console.log("KONTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOL");
+        console.log(profileToDelete);
+        console.log("KONTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOL");
         //Delete file if any
         if(profileToDelete != undefined ){
             //Delete on Firebase
+            
             this.deleteFile(username, _id, profileToDelete, "profileImage") 
         }
         if(backgroundToDelete != undefined ){
@@ -153,11 +162,20 @@ export class ProfileService {
             this.deleteFile(username, _id, backgroundToDelete, "backgroundImage") 
         }
         
-        //Get link
-        profileModel.profileImageName = await this.getFileNameAndLink(profileModel.profileImageName, username, _id, "profileImage");
-        profileModel.backgroundImageName = await this.getFileNameAndLink(profileModel.backgroundImageName, username, _id, "backgroundImage");
-
-        
+        //Get link'
+     
+        if(profileModel.profileImageName != null){
+            profileModel.profileImageName = await this.getFileNameAndLink(profileModel.profileImageName, username, _id, "profileImage");
+        }
+        else{
+            profileModel["profileImageName"] = []
+        }
+        if(profileModel.backgroundImageName != null){
+            profileModel.backgroundImageName = await this.getFileNameAndLink(profileModel.backgroundImageName, username, _id, "backgroundImage");
+        }
+        else{
+            profileModel["backgroundImageName"] = []
+        }
 
         return profileModel;
     } 
