@@ -102,9 +102,16 @@ export class ProfileService {
         //!!!!!!!!!! null or undefied or ''
         if(_id === '' || _id === undefined){
             const newProject = await new this.profileModel({username: username});
-            await newProject.save();   
-            _id = newProject._id;
-    
+            const existingProfile = await this.profileModel.find({username:username});
+            if(existingProfile.length == 0){
+                await newProject.save();
+                _id = newProject._id;
+            }
+            else{
+                await this.delete(existingProfile[0]._id);
+                await newProject.save();
+                _id = newProject._id;
+            }
         }
 
         //Update database with new projectObject       
