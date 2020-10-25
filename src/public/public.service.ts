@@ -6,6 +6,7 @@ import { Experience } from '../portfolio/components/experience/interfaces/experi
 import { Profile } from '../portfolio/components/profile/interfaces/profile.interface';
 import { Skills } from '../portfolio/components/skills/interfaces/skills.interface';
 import { Project } from '../projects/interfaces/project.interface';
+import * as admin from 'firebase-admin';
 
 @Injectable()
 export class PublicService {
@@ -18,11 +19,39 @@ export class PublicService {
         @InjectModel('Profile') private readonly profileModel: Model<Profile>
     ) {}
 
+
+
+    async getFileNameAndLink(fileNames, username, _id) {
+
+        var fileNameAndLink = [];
+        var bucket = admin.storage().bucket();
+        const config = {
+            action: "read" as const,
+            expires: Date.now() + 1000 * 60 * 5, // 5 minutes
+        };
+ 
+        for(let fileName of fileNames){
+            var fileNamePath = username + '/projects/' + _id + '/'+ fileName;
+            var file = bucket.file(fileNamePath);
+            var url = await file.getSignedUrl(config) 
+            url.unshift(fileName)
+            fileNameAndLink.push(url);
+        }
+
+        return fileNameAndLink;
+    }
+
+
     async findAllProject(username:string): Promise<Project[]> {
         return await this.projectModel.find({username:username, isPublic:true}).exec();
     }
     async findProject(username:string, id:string): Promise<Project> {
-        return await this.projectModel.findOne({username:username, isPublic:true, _id:id}).exec();
+        var projectModel = await this.projectModel.findOne({username:username, isPublic:true, _id:id}).exec();
+        var fileNames = projectModel.projectFileName;
+        let _id = projectModel._id;
+        // Grab filename and Link to access
+        projectModel.projectFileName = await this.getFileNameAndLink(fileNames, username, _id);
+        return projectModel;
     }
     async findSkills(username:string): Promise<Skills[]> {
         return await this.skillsModel.find({username : username}).exec();
@@ -41,6 +70,8 @@ export class PublicService {
         const model = await this.profileModel.findOne({username : username}).exec();
         return model.isPublic;
     }
+
+
 
 
 }
