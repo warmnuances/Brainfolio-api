@@ -21,7 +21,7 @@ export class PublicService {
 
 
 
-    async getFileNameAndLink(fileNames, username, _id) {
+    async getFileNameAndLink(directory, fileNames) {
 
         var fileNameAndLink = [];
         var bucket = admin.storage().bucket();
@@ -31,7 +31,9 @@ export class PublicService {
         };
  
         for(let fileName of fileNames){
-            var fileNamePath = username + '/projects/' + _id + '/'+ fileName;
+            var fileNamePath = directory + '/'+ fileName;
+            console.log(fileNamePath);
+            
             var file = bucket.file(fileNamePath);
             var url = await file.getSignedUrl(config) 
             url.unshift(fileName)
@@ -41,36 +43,20 @@ export class PublicService {
         return fileNameAndLink;
     }
 
-    async getProfileFileNameAndLink(fileNames, username, _id, type:string) {
-
-        var fileNameAndLink = [];
-        var bucket = admin.storage().bucket();
-        const config = {
-            action: "read" as const,
-            expires: Date.now() + 1000 * 60 * 5, // 5 minutes
-        };
- 
-        for(let fileName of fileNames){
-            var fileNamePath = username  + '/profile/' + _id + '/' + type + '/' + fileName;
-            var file = bucket.file(fileNamePath);
-            var url = await file.getSignedUrl(config) 
-            url.unshift(fileName)
-            fileNameAndLink.push(url);
-        }
-        
-        return fileNameAndLink[0];
-    }
-
     async findAllProject(username:string): Promise<Project[]> {
         return await this.projectModel.find({username:username, isPublic:true}).exec();
     }
+
     async findProject(username:string, id:string): Promise<Project> {
         const projectModel = await this.projectModel.findOne({username:username, isPublic:true, _id:id}).exec();
         var fileNames = projectModel.projectFileName;
         let _id = projectModel._id;
+        console.log('tolo');
+        
         // Grab filename and Link to access
         try{
-            projectModel.projectFileName = await this.getFileNameAndLink(fileNames, username, _id);
+            const directory = username + '/projects/' + _id;
+            projectModel.projectFileName = await this.getFileNameAndLink(directory, fileNames);
             return projectModel;
         }catch(e){
             throw new Error("Mongoose Error" + e)
@@ -93,8 +79,10 @@ export class PublicService {
         let profileArray = []
         profileArray = profileModel.profileImageName;
         if(profileArray.length != 0){
-            try{
-                profileModel.profileImageName = await this.getProfileFileNameAndLink(profileArray, username, _id, "profileImage");
+            try{               
+                const directory = username + '/profile/' + _id + '/profileImage'
+                const imageLink = await this.getFileNameAndLink(directory, profileArray)
+                profileModel.profileImageName = imageLink[0];
             }
             catch(e){
                 throw new Error("Mongoose Error" + e)
@@ -105,7 +93,9 @@ export class PublicService {
         backgroundArray = profileModel.backgroundImageName;
         if(backgroundArray.length != 0){
             try{
-                profileModel.backgroundImageName = await this.getProfileFileNameAndLink(backgroundArray, username, _id, "backgroundImage");
+                const directory = username + '/profile/' + _id + '/backgroundImage'
+                const imageLink =  await this.getFileNameAndLink(directory, backgroundArray);                
+                profileModel.backgroundImageName = imageLink[0]
             }
             catch(e){
                 throw new Error("Mongoose Error" + e)

@@ -64,7 +64,6 @@ export class ProjectsService {
     }
     
     async saveProject(fileToUploadArray, project:ProjectDto, username): Promise<Project> {
-
         var _id = project._id;
         var updateFileName = {}    
         
@@ -81,14 +80,28 @@ export class ProjectsService {
         delete project['projectFileName']
         delete project['__v']
         var projectModel;
-
-
-        project.startDate = new Date(project.startDate)
-        project.endDate = new Date(project.endDate)
-        project.onGoing = Boolean(project.onGoing)
-        project.isPublic = Boolean(project.isPublic)
+        
+        //Parsing Datas
+        if(project.startDate){
+            project.startDate = new Date(project.startDate)           
+        }else{
+            delete project['startDate']   
+        }
+        if(project.endDate){
+            project.endDate = new Date(project.endDate)
+        }else{
+            delete project['endDate'] 
+        }
+        if(project.onGoing){
+            project.onGoing = Boolean(project.onGoing)
+        }
+        if(project.isPublic){
+            project.isPublic = Boolean(project.isPublic)
+        }
+        
         projectModel = await this.projectModel.findByIdAndUpdate(_id, project, {new: true});
 
+        
         
         var currentFile = projectModel.projectFileName;
         var filesToDelete = project.filesToDelete;
@@ -130,7 +143,7 @@ export class ProjectsService {
         updateFileName = projectModel.projectFileName;
         //Get link
         projectModel.projectFileName = await this.getFileNameAndLink(updateFileName, username, _id);
-
+        
         return projectModel;
     } 
     

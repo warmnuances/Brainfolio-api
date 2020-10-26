@@ -44,6 +44,9 @@ export class Project extends Document {
     projectFileName: string[];
 
     @Prop()
+    youtubeLink: string;
+    
+    @Prop()
     contributor: string[][];
 }
 

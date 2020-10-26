@@ -4,7 +4,7 @@ export class ProjectDto {
 
      _id: string;
 
-    readonly title: string;
+    
 
     startDate: Date;
 
@@ -13,10 +13,14 @@ export class ProjectDto {
     onGoing: boolean;
     
     isPublic: boolean;
+
+    readonly title: string;
     
     readonly description: string;
 
     readonly contributor: string[][];
+
+    readonly youtubeLink : string;
 
     @IsArray()
     readonly filesToDelete: string[];
