@@ -22,20 +22,28 @@ export class ProfileService {
 
     async findOne(username: string): Promise<Profile> {
         var profileModel = await this.profileModel.findOne({username: username});
-        const _id = profileModel._id;
-        
-        //Get link'
-        let profileArray = []
-        profileArray = profileModel.profileImageName;
-        if(profileArray.length != 0){
-            profileModel.profileImageName = await this.getFileNameAndLink(profileArray, username, _id, "profileImage");
-        }
 
-        let backgroundArray = []
-        backgroundArray = profileModel.backgroundImageName;
-        if(backgroundArray.length != 0){
-            profileModel.backgroundImageName = await this.getFileNameAndLink(backgroundArray, username, _id, "backgroundImage");
+        
+        if(profileModel != null){           
+            const _id = profileModel._id;
+
+            //Get link'
+            let profileArray = []
+            profileArray = profileModel.profileImageName;
+            if(profileArray.length != 0){
+                profileModel.profileImageName = await this.getFileNameAndLink(profileArray, username, _id, "profileImage");
+            }
+    
+            let backgroundArray = []
+            backgroundArray = profileModel.backgroundImageName;
+            if(backgroundArray.length != 0){
+                profileModel.backgroundImageName = await this.getFileNameAndLink(backgroundArray, username, _id, "backgroundImage");
+            }
         }
+        
+        
+        
+
 
 
         return profileModel;
@@ -203,10 +211,6 @@ export class ProfileService {
             profileModel.backgroundImageName = await this.getFileNameAndLink(backgroundArray, username, _id, "backgroundImage");
         }
 
-        
-        
-
-        console.log('FINAL = ', profileModel);
         
         return profileModel;
     } 
