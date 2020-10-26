@@ -16,14 +16,15 @@ import {FileFieldsInterceptor, FilesInterceptor} from '@nestjs/platform-express'
 export class ProfileController {
     constructor(private readonly profileService: ProfileService){}
     // portfolio id missing
-    @Get()
-    findAll(@GetUser() user: User): Promise<Profile[]> {
-        return this.profileService.findAll(user.username);
-    } 
+    // @Get()
+    // findAll(@GetUser() user: User): Promise<Profile[]> {
+    //     return this.profileService.findAll(user.username);
+    // } 
 
-    @Get(':id')
-    findOne(@Param() param): Promise<Profile> {
-        return this.profileService.findOne(param.id);
+    @Get()
+    findOne(@GetUser() user: User): Promise<Profile> {
+        const username = user.username;
+        return this.profileService.findOne(username);
     }
 
     @Post()

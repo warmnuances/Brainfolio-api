@@ -69,7 +69,7 @@ export class ProjectsService {
         var updateFileName = {}    
         
         //!!!!!!!!!! null or undefied or ''
-        if(_id === '' || _id === undefined){
+        if(_id === '' || _id == undefined || _id == null){
             const newProject = await new this.projectModel({username: username});
             await newProject.save();   
             _id = newProject._id;
@@ -82,6 +82,10 @@ export class ProjectsService {
         delete project['__v']
         var projectModel;
 
+
+        project.startDate = new Date(project.startDate)
+        project.endDate = new Date(project.endDate)
+        project.onGoing = Boolean(project.onGoing)
         project.isPublic = Boolean(project.isPublic)
         projectModel = await this.projectModel.findByIdAndUpdate(_id, project, {new: true});
 
@@ -90,7 +94,7 @@ export class ProjectsService {
         var filesToDelete = project.filesToDelete;
         
         //Delete file if any
-        if(filesToDelete != undefined ){
+        if(Array.isArray(filesToDelete)){
             //Delete on Firebase
             
             //Delete on array
