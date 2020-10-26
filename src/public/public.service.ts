@@ -40,6 +40,7 @@ export class PublicService {
 
         return fileNameAndLink;
     }
+
     async getProfileFileNameAndLink(fileNames, username, _id, type:string) {
 
         var fileNameAndLink = [];
@@ -85,22 +86,33 @@ export class PublicService {
         
     }
     async findProfile(username:string): Promise<Profile> {
-        try{
-            let profileModel = await this.profileModel.findOne({username : username}).exec();
-            const profileFileNames = profileModel.profileImageName;
-            const backgroundFileNames = profileModel.backgroundImageName;
-            let _id = profileModel._id;
-
-            if(profileModel.profileImageName != null){
-                profileModel.profileImageName = await this.getProfileFileNameAndLink(profileFileNames, username, _id, "profileImage");
+        var profileModel = await this.profileModel.findOne({username: username});
+        const _id = profileModel._id;
+        
+        //Get link'
+        let profileArray = []
+        profileArray = profileModel.profileImageName;
+        if(profileArray.length != 0){
+            try{
+                profileModel.profileImageName = await this.getProfileFileNameAndLink(profileArray, username, _id, "profileImage");
             }
-            if(profileModel.backgroundImageName != null){
-                profileModel.backgroundImageName = await this.getProfileFileNameAndLink(backgroundFileNames, username, _id, "backgroundImage");
+            catch(e){
+                throw new Error("Mongoose Error" + e)
             }
-            return profileModel;
-        }catch(e){
-            throw new Error("Mongoose Error" + e)
         }
+
+        let backgroundArray = []
+        backgroundArray = profileModel.backgroundImageName;
+        if(backgroundArray.length != 0){
+            try{
+                profileModel.backgroundImageName = await this.getProfileFileNameAndLink(backgroundArray, username, _id, "backgroundImage");
+            }
+            catch(e){
+                throw new Error("Mongoose Error" + e)
+            }
+        }
+        return profileModel;
+        
     }
     async findExperience(username:string): Promise<Experience[]> {
         try{
