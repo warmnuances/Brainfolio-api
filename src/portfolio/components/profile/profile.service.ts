@@ -148,9 +148,6 @@ export class ProfileService {
         
         var profileToDelete = profile.profileToDelete;
         var backgroundToDelete = profile.backgroundToDelete;
-        console.log("KONTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOL");
-        console.log(profileToDelete);
-        console.log("KONTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOL");
         //Delete file if any
         if(profileToDelete != undefined ){
             //Delete on Firebase

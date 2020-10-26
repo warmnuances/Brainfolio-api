@@ -40,7 +40,25 @@ export class PublicService {
 
         return fileNameAndLink;
     }
+    async getProfileFileNameAndLink(fileNames, username, _id, type:string) {
 
+        var fileNameAndLink = [];
+        var bucket = admin.storage().bucket();
+        const config = {
+            action: "read" as const,
+            expires: Date.now() + 1000 * 60 * 5, // 5 minutes
+        };
+ 
+        for(let fileName of fileNames){
+            var fileNamePath = username  + '/profile/' + _id + '/' + type + '/' + fileName;
+            var file = bucket.file(fileNamePath);
+            var url = await file.getSignedUrl(config) 
+            url.unshift(fileName)
+            fileNameAndLink.push(url);
+        }
+        
+        return fileNameAndLink[0];
+    }
 
     async findAllProject(username:string): Promise<Project[]> {
         return await this.projectModel.find({username:username, isPublic:true}).exec();
@@ -68,11 +86,21 @@ export class PublicService {
     }
     async findProfile(username:string): Promise<Profile> {
         try{
-            return await this.profileModel.findOne({username : username}).exec();
+            let profileModel = await this.profileModel.findOne({username : username}).exec();
+            const profileFileNames = profileModel.profileImageName;
+            const backgroundFileNames = profileModel.backgroundImageName;
+            let _id = profileModel._id;
+
+            if(profileModel.profileImageName != null){
+                profileModel.profileImageName = await this.getProfileFileNameAndLink(profileFileNames, username, _id, "profileImage");
+            }
+            if(profileModel.backgroundImageName != null){
+                profileModel.backgroundImageName = await this.getProfileFileNameAndLink(backgroundFileNames, username, _id, "backgroundImage");
+            }
+            return profileModel;
         }catch(e){
             throw new Error("Mongoose Error" + e)
         }
-        
     }
     async findExperience(username:string): Promise<Experience[]> {
         try{
