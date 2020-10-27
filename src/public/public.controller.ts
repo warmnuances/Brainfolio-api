@@ -7,7 +7,7 @@ import { Project } from '../projects/interfaces/project.interface';
 import { PublicService } from './public.service';
 import { Portfolio } from './interfaces/portfolio.interfaces'
 import { UsernameCheck } from './usernameCheck.guard'
-import { MongoExceptionFilter } from 'src/utils/MongoFilter';
+import { MongoExceptionFilter } from '../utils/MongoFilter';
 
 @Controller('public')
 @UseFilters(MongoExceptionFilter)

@@ -42,33 +42,22 @@ export class PublicService {
         return fileNameAndLink;
     }
 
+
     async findAllProject(username:string): Promise<Project[]> {
-        try{
-            const result = await this.projectModel.find({username:username, isPublic:true}).exec();
-            if(!result){
-                console.log(result)
-                throw new NotFoundException("(FindAllProject): Resource not found");
-            }
-            return result;
+        const result = await this.projectModel.find({username:username, isPublic:true}).exec();
+        if(!result){
+            console.log(result)
+            throw new NotFoundException("(FindAllProject): Resource not found");
         }
-        catch(e){
-            throw new InternalServerErrorException("(FindAllProject): Mongo Error")
-        }
+        return result;
     }
 
     async findProject(username:string, id:string): Promise<Project> {
         const projectModel = await this.projectModel.findOne({username:username, isPublic:true, _id:id}).exec();
-<<<<<<< HEAD
         const fileNames = projectModel.projectFileName;
         const _id = projectModel._id;
         
-
-=======
-        var fileNames = projectModel.projectFileName;
-        let _id = projectModel._id;
-        console.log('tolo');
         
->>>>>>> cae058667ae43f223ab95422db7367943a99c5b1
         // Grab filename and Link to access
         try{
             const directory = username + '/projects/' + _id;
@@ -79,42 +68,18 @@ export class PublicService {
         }
 
     }
+
     async findSkills(username:string): Promise<Skills[]> {
-        try{
-            return await this.skillsModel.find({username : username}).exec();
-        }catch(e){
-            throw new Error("Mongoose Error" + e)
+        const result = await this.skillsModel.find({username:username}).exec();
+        if(!result){
+            throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
         }
+
+        return result
         
     }
     async findProfile(username:string): Promise<Profile> {
-<<<<<<< HEAD
-        const result = await this.profileModel.findOne({username : username}).exec();
-        if(!result){
-            throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
-        }
-
-        return result
-
-    }
-    async findExperience(username:string): Promise<Experience[]> {
-        const result = await this.experienceModel.find({username:username}).exec();
-        if(!result){
-            throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
-        }
-
-        return result
-    }
-    async findEducation(username:string): Promise<Education[]> {
-
-        const result = await this.educationModel.find({username:username}).exec();
-        if(!result){
-            throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
-        }
-
-        return result
-=======
-        var profileModel = await this.profileModel.findOne({username: username});
+        const profileModel = await this.profileModel.findOne({username: username});
         const _id = profileModel._id;
         
         //Get link'
@@ -127,7 +92,7 @@ export class PublicService {
                 profileModel.profileImageName = imageLink[0];
             }
             catch(e){
-                throw new Error("Mongoose Error" + e)
+                throw new InternalServerErrorException("Mongoose Error" + e)
             }
         }
 
@@ -143,26 +108,30 @@ export class PublicService {
                 throw new Error("Mongoose Error" + e)
             }
         }
+
         return profileModel;
-        
     }
+ 
     async findExperience(username:string): Promise<Experience[]> {
-        try{
-            return await this.experienceModel.find({username:username}).exec();
-        }catch(e){
-            throw new Error("Mongoose Error" + e)
+        const result = await this.experienceModel.find({username:username}).exec();
+        if(!result){
+            throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
         }
-        
+
+        return result
     }
+
+    
     async findEducation(username:string): Promise<Education[]> {
-        try{
-            return await this.educationModel.find({username:username}).exec();
-        }catch(e){
-            throw new Error("Mongoose Error" + e)
+
+        const result = await this.educationModel.find({username:username}).exec();
+        if(!result){
+            throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
         }
-        
->>>>>>> cae058667ae43f223ab95422db7367943a99c5b1
+
+        return result
     }
+   
 
     async portfolioIsPublic(username:string) {
         try{
