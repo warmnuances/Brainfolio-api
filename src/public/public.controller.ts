@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseFilters, UseGuards } from '@nestjs/common';
 import { Education } from '../portfolio/components/education/interfaces/education.interface';
 import { Experience } from '../portfolio/components/experience/interfaces/experience.interface';
 import { Profile } from '../portfolio/components/profile/interfaces/profile.interface';
@@ -7,8 +7,10 @@ import { Project } from '../projects/interfaces/project.interface';
 import { PublicService } from './public.service';
 import { Portfolio } from './interfaces/portfolio.interfaces'
 import { UsernameCheck } from './usernameCheck.guard'
+import { MongoExceptionFilter } from 'src/utils/MongoFilter';
 
 @Controller('public')
+@UseFilters(MongoExceptionFilter)
 // @UseGuards(UsernameCheck)
 export class PublicController {
     constructor(private readonly publicService: PublicService){}

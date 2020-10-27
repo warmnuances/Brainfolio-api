@@ -1,6 +1,7 @@
 import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Profile } from '../portfolio/components/profile/schemas/profile.schema';
 import { CheckUsernameDto } from './dto/check-username-dto';
 import { SignUpDto } from './dto/sign-up-dto';
 import { IFirebasePayload } from './interface/firebase-payload.interface';
@@ -13,6 +14,7 @@ import { Userv2 } from './userv2.schema';
 export class AuthV2Service {
   constructor(
     @InjectModel(Userv2.name) private userModel: Model<Userv2>,
+    @InjectModel(Profile.name) private profileModel: Model<Profile>,
   ){}
   
   /** Create a user from token if not exists
@@ -31,9 +33,15 @@ export class AuthV2Service {
         user.isCompleted = false;
         user.save();
       }
+      let profile = await this.profileModel.findOne({username: user.username})
+      if(!profile){
+        profile = new this.profileModel();
+        profile.email = user.email;
+        profile.fullName = user.fullname;
+        profile.save();
+      }
       
       return user;
-     
     }
     catch(e){
       throw new InternalServerErrorException("(GetUserFromDatabase) Failed to create user:" + e)

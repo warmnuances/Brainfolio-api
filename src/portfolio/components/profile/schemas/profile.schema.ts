@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 @Schema()
 export class Profile extends Document {
   @Prop()
-  username: String;
+  username: string;
   
   @Prop({ required: false })
   fullName: string;
