@@ -4,18 +4,23 @@ export class ProjectDto {
 
      _id: string;
 
-    readonly title: string;
+    
 
-    readonly startDate: string;
+    startDate: Date;
 
-    readonly endDate: string;
+    endDate: Date;
 
-
+    onGoing: boolean;
+    
     isPublic: boolean;
+
+    readonly title: string;
     
     readonly description: string;
 
     readonly contributor: string[][];
+
+    readonly youtubeLink : string;
 
     @IsArray()
     readonly filesToDelete: string[];

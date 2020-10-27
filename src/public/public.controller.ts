@@ -55,6 +55,8 @@ export class PublicController {
       const username = param.username;
       if(this.publicService.portfolioIsPublic(username)){
           return this.publicService.findSkills(username);
+      } else {
+        return null;
       }
     
       
@@ -69,6 +71,8 @@ export class PublicController {
       const username = param.username;
       if(this.publicService.portfolioIsPublic(username)){
         return this.publicService.findExperience(username);
+      } else {
+        return null;
       }
     } 
 
@@ -77,6 +81,8 @@ export class PublicController {
       const username = param.username;
       if(this.publicService.portfolioIsPublic(username)){
           return this.publicService.findEducation(username);
+      } else {
+        return null;
       }
 
 

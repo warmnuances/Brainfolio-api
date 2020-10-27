@@ -16,12 +16,37 @@ export class ProfileService {
         const newprofile = new this.profileModel(profile);
         return newprofile.save();
       } 
-    async findAll(username:string): Promise<Profile[]> {
-        return this.profileModel.find({username : username}).exec();
-    }
+    // async findAll(username:string): Promise<Profile[]> {
+    //     return this.profileModel.find({username : username}).exec();
+    // }
 
-    async findOne(id: string): Promise<Profile> {
-        return await this.profileModel.findOne({_id: id})
+    async findOne(username: string): Promise<Profile> {
+        var profileModel = await this.profileModel.findOne({username: username});
+
+        
+        if(profileModel != null){           
+            const _id = profileModel._id;
+
+            //Get link'
+            let profileArray = []
+            profileArray = profileModel.profileImageName;
+            if(profileArray.length != 0){
+                profileModel.profileImageName = await this.getFileNameAndLink(profileArray, username, _id, "profileImage");
+            }
+    
+            let backgroundArray = []
+            backgroundArray = profileModel.backgroundImageName;
+            if(backgroundArray.length != 0){
+                profileModel.backgroundImageName = await this.getFileNameAndLink(backgroundArray, username, _id, "backgroundImage");
+            }
+        }
+        
+        
+        
+
+
+
+        return profileModel;
 
     }
     async delete(id: string): Promise<Profile> {
@@ -87,71 +112,106 @@ export class ProfileService {
     async deleteFile(username, _id,  fileName, type) {
         var bucket = admin.storage().bucket();
 
-        var fileNamePath = username + '/projects/' + _id + '/'  + '/' + type + '/' + fileName;
+        var fileNamePath = username + '/profile/' + _id + '/' + type + '/' + fileName;
+
+        
         await bucket.file(fileNamePath)
             .delete()
             .catch(err => console.error(err));
+            
     }
     
     
     async saveProject(image, profile:ProfileDto, username): Promise<Profile> {
-
+        
         var _id = profile._id;
         var updateFileName = {}    
         
         //!!!!!!!!!! null or undefied or ''
         if(_id === '' || _id === undefined){
             const newProject = await new this.profileModel({username: username});
-            await newProject.save();   
-            _id = newProject._id;
-    
+            const existingProfile = await this.profileModel.find({username:username});
+            if(existingProfile.length == 0){
+                await newProject.save();
+                _id = newProject._id;
+            }
+            else{
+                await this.delete(existingProfile[0]._id);
+                await newProject.save();
+                _id = newProject._id;
+            }
         }
 
         //Update database with new projectObject       
         delete profile['_id']
-        delete profile['projectFileName']
+        delete profile['profileImageName']
+        delete profile['backgroundImageName']
         delete profile['__v']
         var profileModel;
-        // Grabing fileNames
-
-
-        if(image.profileImage != undefined){
-
-            
-            var profileImageName = image.profileImage[0];
-            
-            await this.uploadFile(profileImageName, username, _id, "profileImage").catch(console.error); 
-            
-            profile["profileImageName"] = [profileImageName.originalname];
-        }
-        if(image.backgroundImage != undefined){
-            var backgroundImageName = image.backgroundImage[0];
-            await this.uploadFile(backgroundImageName, username, _id, "backgroundImage").catch(console.error);
-            profile["backgroundImageName"]= [backgroundImageName.originalname];  
-        }
-       
+        
 
         profileModel = await this.profileModel.findByIdAndUpdate(_id, profile, {new: true});
 
-
         var profileToDelete = profile.profileToDelete;
         var backgroundToDelete = profile.backgroundToDelete;
+
         //Delete file if any
-        if(profileToDelete != undefined ){
+        if(profileToDelete != '' ){            
             //Delete on Firebase
-            this.deleteFile(username, _id, profileToDelete, "profileImage") 
+            await this.deleteFile(username, _id, profileToDelete, "profileImage")
+            profileModel.profileImageName = []
+            
         }
-        if(backgroundToDelete != undefined ){
+        if(backgroundToDelete != '' ){
             //Delete on Firebase
-            this.deleteFile(username, _id, backgroundToDelete, "backgroundImage") 
+            await this.deleteFile(username, _id, backgroundToDelete, "backgroundImage") 
+            profileModel.backgroundImageName = []
+        }       
+
+        //Updating ProfileImage
+        if(image.profileImage != undefined){
+
+            //Delete existing file
+            let existingProfileImage = profileModel.profileImageName[0]
+            if(existingProfileImage){
+                await this.deleteFile(username, _id, existingProfileImage, "profileImage") 
+            }
+
+            //Upload File
+            let profileImageName = image.profileImage[0];
+            await this.uploadFile(profileImageName, username, _id, "profileImage").catch(console.error); 
+            profileModel["profileImageName"] = [profileImageName.originalname];
         }
+
+        //Update BackgroundImage
+        if(image.backgroundImage != undefined){
+
+            //Delete existing file
+            let existingBackgroundImage = profileModel.backgroundImageName[0]
+            if(existingBackgroundImage){
+                await this.deleteFile(username, _id, existingBackgroundImage, "backgroundImage") 
+            }
+
+            //Upload new Image
+            let backgroundImageName = image.backgroundImage[0];
+            await this.uploadFile(backgroundImageName, username, _id, "backgroundImage").catch(console.error);
+            profileModel["backgroundImageName"]= [backgroundImageName.originalname];  
+        }
+    
+        profileModel = await this.profileModel.findByIdAndUpdate(_id, profileModel, {new: true});
         
-        //Get link
-        profileModel.profileImageName = await this.getFileNameAndLink(profileModel.profileImageName, username, _id, "profileImage");
-        profileModel.backgroundImageName = await this.getFileNameAndLink(profileModel.backgroundImageName, username, _id, "backgroundImage");
+        //Get link'
+        let profileArray = profileModel.profileImageName;
+        if(profileArray.length != 0){
+            profileModel.profileImageName = await this.getFileNameAndLink(profileArray, username, _id, "profileImage");
+        }
+
+        let backgroundArray = profileModel.backgroundImageName;
+        if(backgroundArray.length != 0){
+            profileModel.backgroundImageName = await this.getFileNameAndLink(backgroundArray, username, _id, "backgroundImage");
+        }
 
         
-
         return profileModel;
     } 
 

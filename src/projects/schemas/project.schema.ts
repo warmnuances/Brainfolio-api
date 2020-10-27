@@ -26,10 +26,13 @@ export class Project extends Document {
     title: string;
 
     @Prop()
-    startDate: string;
+    startDate: Date;
 
     @Prop()
-    endDate: string;
+    endDate: Date;
+
+    @Prop()
+    onGoing: boolean;
 
     @Prop()
     isPublic : boolean;
@@ -40,6 +43,9 @@ export class Project extends Document {
     @Prop()
     projectFileName: string[];
 
+    @Prop()
+    youtubeLink: string;
+    
     @Prop()
     contributor: string[][];
 }
