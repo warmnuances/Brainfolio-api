@@ -31,7 +31,6 @@ export class ProjectsService {
             url.unshift(fileName)
             fileNameAndLink.push(url);
         }
-
         return fileNameAndLink;
     }
 
@@ -48,8 +47,13 @@ export class ProjectsService {
             },
             resumable: true
         })
-        fileStream.on('error', function(err) {})
+        fileStream.on('error', function(err) {
+            console.log(err);
+            
+        })
         fileStream.on('finish', function() {
+            console.log('uploaded');
+            
         });
         fileStream.end(fileToUpload.buffer);
     }
@@ -68,11 +72,12 @@ export class ProjectsService {
         var updateFileName = {}    
         
         //!!!!!!!!!! null or undefied or ''
-        if(_id === '' || _id == undefined || _id == null){
+        //if(_id === '' || _id == undefined || _id == null){
+        if(!_id){
+            
             const newProject = await new this.projectModel({username: username});
             await newProject.save();   
             _id = newProject._id;
-    
         }
 
         //Update database with new projectObject       
@@ -98,22 +103,36 @@ export class ProjectsService {
         if(project.isPublic){
             project.isPublic = Boolean(project.isPublic)
         }
+        if(project.contributor){
+            if(!Array.isArray(project.contributor)){
+                project.contributor = [project.contributor]
+            }
+            let contributorArray = []
+            for(let contributor of project.contributor){
+                contributorArray.push(contributor.split(','))
+            }
+            project["contributor"] = contributorArray;
+            
+        }
+
         
         projectModel = await this.projectModel.findByIdAndUpdate(_id, project, {new: true});
 
         
+        let currentFile = projectModel.projectFileName;
+        let filesToDelete = project.filesToDelete;
         
-        var currentFile = projectModel.projectFileName;
-        var filesToDelete = project.filesToDelete;
         
-        //Delete file if any
-        if(Array.isArray(filesToDelete)){
-            //Delete on Firebase
-            
+        //Delete on Firebase
+        if(filesToDelete){
+            if(!Array.isArray(filesToDelete)){
+                filesToDelete = [filesToDelete];
+            }
+
             //Delete on array
             for(let eachFile of filesToDelete){
-                var i = 0;
-                var fileLength = currentFile.length;
+                let i = 0;
+                let fileLength = currentFile.length;
                 while(i < fileLength){
                     if(eachFile == currentFile[i]){
                         this.deleteFile(username, _id, eachFile)
@@ -123,6 +142,7 @@ export class ProjectsService {
                     i++;
                 }
             }
+
         }
         
         // Grabing fileNames
@@ -133,10 +153,10 @@ export class ProjectsService {
 
         //Upload files to firebase
         for(let fileToUpload of fileToUploadArray){
+            console.log('try to upload: ', fileToUpload.originalname);
+            
             await this.uploadFile(fileToUpload, username, _id).catch(console.error);
         }
-
-        
         
         updateFileName["projectFileName"] = currentFile.concat(filenameToUpload);        
         projectModel = await this.projectModel.findByIdAndUpdate(_id, updateFileName, {new: true});

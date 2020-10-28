@@ -4,65 +4,104 @@
 // import * as mongoose from 'mongoose';
 // import { ProjectsModule } from '../src/projects/projects.module';
 // import { ProjectDto } from '../src/projects/dto/create-project.dto'
-// import { AppModule } from './../src/app.module';
+// import { AppModule } from '../src/app.module';
+// import * as admin from 'firebase-admin';
+// import { MongooseConfig } from '../src/Config/mongoose.config';
+// import Axios from 'axios';
+// var FormData = require('form-data');
+
 
 // describe('ProjectController (e2e)', () => {
-//   let app: INestApplication;
+    
+//     // Constants for testing
+//     const idpUrl = `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=${process.env.FIREBASE_API_KEY}`
+//     const testUid = "OqeZshgUhlch84UvjorRhVVntxj1";
 
-//   beforeAll(async () => {
-//     await mongoose.connect(process.env.TEST_MONGO, 
-//       {useNewUrlParser: true, useUnifiedTopology: true})
-//     await mongoose.connection.db.dropDatabase();
-//   })
+//     //Token for testing
+//     let globalIdToken;
 
-//   beforeEach(async () => {
-//     const moduleFixture: TestingModule = await Test.createTestingModule({
-//       imports: [AppModule],
-//     }).compile();
+//     // App
+//     let app: INestApplication;
 
-//     app = moduleFixture.createNestApplication();
-//     await app.init(); 
-//   });
+//     beforeAll(async () => {
+//         await mongoose.connect(process.env.TEST_MONGO, MongooseConfig)
+//         await mongoose.connection.db.dropDatabase();
+    
+//         console.log(process.env.FIREBASE_APPLICATION_CREDENTIALS)
+//         admin.initializeApp({
+//         credential: admin.credential.cert(process.env.FIREBASE_APPLICATION_CREDENTIALS),
+//         storageBucket: "brainfolio-1faf6.appspot.com"
+//         }); 
 
-//   afterAll(async done => {
-//     await mongoose.disconnect(done);
-//     await app.close()
-//   })
-
-  
-//   const project = {
-//     _id: "",
-//     title: "The Only Project",
-//     startDate: "14 December 2020",
-//     endDate: "25 December 2020",
-//     visibility: "Public",
-//     description: "The only project I have ever made.",
-//     contributor: [["jack", "jack@nutz.com"]],
-//     filesToDelete: [],
-//     files:[]
-//   }
-
-//   it('should create a new project', async (done) => {
-  
-//     return request(app.getHttpServer())
-//       .post('/projects/save')
-//       .send(project)
-//       .expect(response => {
-//         response
+//         const customToken = await admin.auth().createCustomToken(testUid);
+//         await Axios.post(idpUrl,{
+//         token: customToken,
+//         returnSecureToken: true
+//         })
+//         .then(async ({data}) => {
+//         const { idToken } = data;
+//         globalIdToken = idToken;
         
-//         // expect(response).toBeDefined()
-//         // expect(response.body._id).toBeDefined();
-//         // expect(response.body.title).toBeDefined();
-//         // expect(response.body.startDate).toBeDefined();
-//         // expect(response.body.endDate).toBeDefined();
-//         // expect(response.body.visibility).toBeDefined();
-//         // expect(response.body.description).toBeUndefined();
-//         // expect(response.body.contributor).toBeUndefined();
-//         // expect(response.body.filesToDelete).toBeUndefined();
-//         // expect(HttpStatus.CREATED)
-//         // done()
-        
-//       })
+
+//         }).catch(err => {
+//         console.log(err)
+//         })
+//     })
+
+//     beforeEach(async () => {
+//         const moduleFixture: TestingModule = await Test.createTestingModule({
+//         imports: [AppModule],
+//         }).compile();
+
+//         app = moduleFixture.createNestApplication();
+//         await app.init(); 
+//     });
+
+//     afterAll(async done => {
+//         await mongoose.disconnect(done);
+//         await app.close()
+//     })
+
+
+
+//     var mockProjectData = new FormData();
+//     mockProjectData.append('_id', '')
+//     mockProjectData.append('title',"The Only Project" )
+//     mockProjectData.append('startDate', "14 December 2020")
+//     mockProjectData.append('endDate',  "25 December 2020")
+//     mockProjectData.append('isPublic', 'true')
+//     mockProjectData.append('description', "The only project I have ever made.")
+//     mockProjectData.append('contributor', "jack,jack@nutz.com")
+//     mockProjectData.append('filesToDelete','')
+//     mockProjectData.append('filesToDelete','')
+//     console.log(mockProjectData);
+    
+    
+
+//     it('should create a new project', async (done) => {
+    
+//         return request(app.getHttpServer())
+//         .post('/projects/save')
+//         .set('Authorization', `Bearer ${globalIdToken}`)
+//         .set('Content-Type', 'multipart/form-data')
+//         .send(mockProjectData)
+//         .expect(response => {
+//             console.log(response);
+            
+            
+//             // expect(response).toBeDefined()
+//             // expect(response.body._id).toBeDefined();
+//             // expect(response.body.title).toBeDefined();
+//             // expect(response.body.startDate).toBeDefined();
+//             // expect(response.body.endDate).toBeDefined();
+//             // expect(response.body.visibility).toBeDefined();
+//             // expect(response.body.description).toBeUndefined();
+//             // expect(response.body.contributor).toBeUndefined();
+//             // expect(response.body.filesToDelete).toBeUndefined();
+//             // expect(HttpStatus.CREATED)
+//             // done()
+            
+//         })
 //     });
 
 

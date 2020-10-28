@@ -4,7 +4,7 @@ export class ProjectDto {
 
      _id: string;
 
-    
+    contributor //accept 2d array
 
     startDate: Date;
 
@@ -18,11 +18,8 @@ export class ProjectDto {
     
     readonly description: string;
 
-    readonly contributor: string[][];
-
     readonly youtubeLink : string;
 
-    @IsArray()
     readonly filesToDelete: string[];
 
     // readonly files: string[][];
