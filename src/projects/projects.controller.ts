@@ -52,7 +52,6 @@ export class ProjectsController {
       }
     ))
     saveProject(@GetUser() user:Userv2, @UploadedFiles() files, @Body(ValidationPipe) project: ProjectDto): Promise<Project> {
-
       
       const username = user.username; 
       return this.projectsService.saveProject(files, project, username)

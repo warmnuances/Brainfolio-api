@@ -67,61 +67,60 @@ export class ProjectsService {
             .catch(err => console.error(err));
     }
     
-    async saveProject(fileToUploadArray, project:ProjectDto, username): Promise<Project> {
-        var _id = project._id;
-        var updateFileName = {}    
-        
-        //!!!!!!!!!! null or undefied or ''
+    async saveProject(fileToUploadArray, projectDTO:ProjectDto, username): Promise<Project> {
+        let projectModel = new this.projectModel();
+
+
+        let _id = projectDTO._id;
         //if(_id === '' || _id == undefined || _id == null){
         if(!_id){
-            
-            const newProject = await new this.projectModel({username: username});
-            await newProject.save();   
-            _id = newProject._id;
+            const projectModel = new this.projectModel();
+            await projectModel.save();   
+            _id = projectModel._id;
+        }else{
+            projectModel = await this.projectModel.findById(_id);
         }
-
-        //Update database with new projectObject       
-        delete project['_id']
-        delete project['projectFileName']
-        delete project['__v']
-        var projectModel;
         
         //Parsing Datas
-        if(project.startDate){
-            project.startDate = new Date(project.startDate)           
-        }else{
-            delete project['startDate']   
+        if(projectDTO.startDate){
+            projectModel.startDate = new Date(projectDTO.startDate)           
         }
-        if(project.endDate){
-            project.endDate = new Date(project.endDate)
-        }else{
-            delete project['endDate'] 
+        if(projectDTO.endDate){
+            projectModel.endDate = new Date(projectDTO.endDate)
         }
-        if(project.onGoing){
-            project.onGoing = Boolean(project.onGoing)
+        if(projectDTO.onGoing){
+            projectModel.onGoing = Boolean(projectDTO.onGoing)
         }
-        if(project.isPublic){
-            project.isPublic = Boolean(project.isPublic)
+        if(projectDTO.isPublic){
+            projectModel.isPublic = Boolean(projectDTO.isPublic)
         }
-        if(project.contributor){
-            if(!Array.isArray(project.contributor)){
-                project.contributor = [project.contributor]
+        if(projectDTO.contributor){
+            if(!Array.isArray(projectDTO.contributor)){
+                projectDTO.contributor = [projectDTO.contributor]
             }
             let contributorArray = []
-            for(let contributor of project.contributor){
-                contributorArray.push(contributor.split(','))
+            // for(let contributor of project.contributor){
+            //     contributorArray.push(contributor.split(','))
+            // }
+            for(let contributor of projectDTO.contributor){
+                contributorArray.push(JSON.parse(contributor))
             }
-            project["contributor"] = contributorArray;
+            console.log('hasil parse', contributorArray);
+            
+            projectModel.contributor = contributorArray;
+
+            console.log('modelnya', projectModel);
             
         }
 
+        projectModel.username= username;
+        projectModel.title= projectDTO.title;
+        projectModel.description = projectDTO.description;
+        projectModel.youtubeLink = projectDTO.youtubeLink;
         
-        projectModel = await this.projectModel.findByIdAndUpdate(_id, project, {new: true});
-
-        
+        //Files        
         let currentFile = projectModel.projectFileName;
-        let filesToDelete = project.filesToDelete;
-        
+        let filesToDelete = projectDTO.filesToDelete;
         
         //Delete on Firebase
         if(filesToDelete){
@@ -144,7 +143,6 @@ export class ProjectsService {
             }
 
         }
-        
         // Grabing fileNames
         var filenameToUpload = [];
         for(let file of fileToUploadArray){
@@ -158,9 +156,10 @@ export class ProjectsService {
             await this.uploadFile(fileToUpload, username, _id).catch(console.error);
         }
         
-        updateFileName["projectFileName"] = currentFile.concat(filenameToUpload);        
-        projectModel = await this.projectModel.findByIdAndUpdate(_id, updateFileName, {new: true});
-        updateFileName = projectModel.projectFileName;
+        projectModel.projectFileName = currentFile.concat(filenameToUpload);        
+        await projectModel.save()
+        
+        let updateFileName = projectModel.projectFileName;
         //Get link
         projectModel.projectFileName = await this.getFileNameAndLink(updateFileName, username, _id);
         

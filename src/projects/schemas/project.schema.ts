@@ -46,8 +46,13 @@ export class Project extends Document {
     @Prop()
     youtubeLink: string;
     
+    // @Prop()
+    // contributor: string[][];
     @Prop()
-    contributor: string[][];
+    contributor:{
+        name: string,
+        email: string,
+    }[];
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

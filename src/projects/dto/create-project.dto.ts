@@ -4,7 +4,7 @@ export class ProjectDto {
 
      _id: string;
 
-    contributor //accept 2d array
+    contributor: string[];
 
     startDate: Date;
 

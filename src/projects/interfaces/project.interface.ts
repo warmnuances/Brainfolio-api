@@ -9,7 +9,10 @@ export interface Project extends Document{
     isPublic: boolean;
     description: string;
     projectFileName: string[];
-    contributor: string[][];
+    contributor: {
+        name:string,
+        email:string,
+    }[];
     youtubeLink: string;
     // filesToDelete: string[];
 }
