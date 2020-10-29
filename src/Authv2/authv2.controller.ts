@@ -4,7 +4,7 @@ import { AuthV2Service } from './authv2.service';
 import { CheckUsernameDto } from './dto/check-username-dto';
 import { SignUpDto } from './dto/sign-up-dto';
 import { GetUser } from './get-user.decorator';
-import { Userv2 } from './userv2.schema';
+import { Userv2 } from '../schema/userv2.schema';
 
 
 
@@ -13,6 +13,8 @@ export class AuthV2Controller {
   constructor(
     private authService: AuthV2Service,
   ) {}
+
+
 
   @Post('/check/username')
   @HttpCode(HttpStatus.OK)

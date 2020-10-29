@@ -8,7 +8,7 @@ import { ExperienceSchema } from '../portfolio/components/experience/schemas/exp
 import { ProfileSchema } from '../portfolio/components/profile/schemas/profile.schema';
 import { SkillsSchema } from '../portfolio/components/skills/schemas/skills.schema';
 import { AuthV2Module } from '../Authv2/authv2.module';
-import { Userv2, Userv2Schema } from '../Authv2/userv2.schema';
+import { Userv2, Userv2Schema } from '../schema/userv2.schema';
 
 @Module({
   imports: [

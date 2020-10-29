@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt/dist/jwt.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { User } from './user.schema';
+import { User } from '../schema/user.schema';
 import { ISignInResponse } from './interfaces/sign-in-response.interface';
 import { IJwtPayload } from './interfaces/jwt-payload.interface';
 import * as bcrypt from 'bcrypt';

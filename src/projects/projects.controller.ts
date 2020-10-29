@@ -13,9 +13,9 @@ import * as request from 'request';
 import { DeleteFilesDto } from './dto/delete-file.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../Auth/get-user.decorator';
-import { User } from '../Auth/user.schema';
+import { User } from '../schema/user.schema';
 import { RulesGuard } from './authRule.guard'
-import { Userv2 } from '../Authv2/userv2.schema';
+import { Userv2 } from '../schema/userv2.schema';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 
 @Controller('projects')

@@ -4,7 +4,7 @@ import { ProfileService } from './profile.service'
 import { Profile } from './interfaces/profile.interface'
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../../Auth/get-user.decorator';
-import { User } from '../../../Auth/user.schema';
+import { User } from '../../../schema/user.schema';
 import { diskStorage , memoryStorage} from 'multer';
 import {profilebackgroundFileFilter ,editProfileImageName, editBackgroundImageName, imageFileFilter} from '../../../utils/file-uploading.utils';
 import {FileDto} from './dto/profile-file.dto';

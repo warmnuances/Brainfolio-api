@@ -1,10 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { PassportStrategy } from '@nestjs/passport';
-import { Model } from 'mongoose';
 import { Strategy } from 'passport-http-bearer';
 import { AuthV2Service } from '../authv2.service';
-import { Userv2 } from '../userv2.schema';
+import { Userv2 } from '../../schema/userv2.schema';
 import * as admin from 'firebase-admin';
 
 

@@ -2,3 +2,5 @@ node_modules
 docker-compose.yml
 .template.env
 README.md
+scripts/getFirebaseToken.ps1
+message.json

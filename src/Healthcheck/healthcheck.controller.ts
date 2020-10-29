@@ -4,7 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiHeader, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import { Connection } from 'mongoose';
 import { GetUser } from '../Auth/get-user.decorator';
-import { User } from '../Auth/user.schema';
+import { User } from '../schema/user.schema';
 
 
 @Controller("/test")

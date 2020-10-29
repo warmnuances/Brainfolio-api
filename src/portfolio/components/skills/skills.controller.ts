@@ -4,7 +4,7 @@ import { SkillsService } from './skills.service'
 import { Skills } from './interfaces/skills.interface'
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../../Auth/get-user.decorator';
-import { User } from '../../../Auth/user.schema';
+import { User } from '../../../schema/user.schema';
 
 @Controller('edit/skills')
 @UseGuards(AuthGuard())

@@ -7,10 +7,14 @@ import * as admin from 'firebase-admin';
 import { MongooseConfig } from "../src/Config/mongoose.config";
 import  Axios from 'axios';
 
+
+
+
+
 describe('AuthControllerV2 (e2e)', () => {
   // Constants for testing
   const idpUrl = `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=${process.env.FIREBASE_API_KEY}`
-  const testUid = "OqeZshgUhlch84UvjorRhVVntxj1";
+  const testUid = "fxj9h8LVoebVmbBN1OegXOsrIVg1";
 
   //Token for testing
   let globalIdToken;

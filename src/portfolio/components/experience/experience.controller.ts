@@ -4,7 +4,7 @@ import { ExperienceService } from './experience.service'
 import { Experience } from './interfaces/experience.interface'
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../../Auth/get-user.decorator';
-import { User } from '../../../Auth/user.schema';
+import { User } from '../../../schema/user.schema';
 
 @Controller('edit/experience')
 @UseGuards(AuthGuard())
