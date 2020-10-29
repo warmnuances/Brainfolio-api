@@ -16,6 +16,7 @@ import { GetUser } from '../Auth/get-user.decorator';
 import { User } from '../Auth/user.schema';
 import { RulesGuard } from './authRule.guard'
 import { Userv2 } from '../Authv2/userv2.schema';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 
 @Controller('projects')
 @UseGuards(AuthGuard())  
@@ -51,8 +52,9 @@ export class ProjectsController {
         fileFilter: imageFileFilter,
       }
     ))
+    @ApiConsumes('multipart/form-data')
     saveProject(@GetUser() user:Userv2, @UploadedFiles() files, @Body(ValidationPipe) project: ProjectDto): Promise<Project> {
-      
+
       const username = user.username; 
       return this.projectsService.saveProject(files, project, username)
     }

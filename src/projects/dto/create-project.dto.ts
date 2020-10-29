@@ -1,25 +1,36 @@
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsNotEmpty, IsArray, IsBoolean } from "class-validator";
 
 export class ProjectDto {
 
-     _id: string;
+    @ApiPropertyOptional()
+    readonly _id: string;
 
+    @ApiPropertyOptional()
     contributor: string[];
 
-    startDate: Date;
+    @ApiPropertyOptional()
+    readonly startDate: Date;
 
-    endDate: Date;
+    @ApiPropertyOptional()
+    readonly endDate: Date;
 
-    onGoing: boolean;
+    @ApiPropertyOptional()
+    readonly onGoing: boolean;
     
-    isPublic: boolean;
+    @ApiPropertyOptional()
+    readonly isPublic: boolean;
 
+    @ApiPropertyOptional()
     readonly title: string;
     
+    @ApiPropertyOptional()
     readonly description: string;
 
+    @ApiPropertyOptional()
     readonly youtubeLink : string;
 
+    @ApiPropertyOptional()
     readonly filesToDelete: string[];
 
     // readonly files: string[][];
