@@ -68,8 +68,7 @@ export class ProjectsService {
             let _id = projectDTO._id;
             //if(_id === '' || _id == undefined || _id == null){
             if(!_id){
-                projectModel = new this.projectModel();
-                await projectModel.save();   
+                projectModel = new this.projectModel();  
                 _id = projectModel._id;
             }else{
                 projectModel = await this.projectModel.findById(_id);
