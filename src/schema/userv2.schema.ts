@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Profilev2 } from './profilev2.schema';
+
 
 @Schema()
 export class Userv2 extends Document {
@@ -24,7 +26,10 @@ export class Userv2 extends Document {
   visibility: string;
 
   @Prop()
-  visibilitylist: string[];
+  visibilityList: string[];
+
+  @Prop()
+  profile: Profilev2
 
 }
 

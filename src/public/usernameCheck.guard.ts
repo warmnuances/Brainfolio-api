@@ -2,9 +2,7 @@ import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from
 import { Observable } from 'rxjs';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-
-import { Userv2 } from '../Authv2/userv2.schema';
-import { response } from 'express';
+import { Userv2 } from '../schema/userv2.schema';
 
 
 

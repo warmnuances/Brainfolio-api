@@ -1,20 +1,20 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Profile } from '../portfolio/components/profile/schemas/profile.schema';
 import { CheckUsernameDto } from './dto/check-username-dto';
 import { SignUpDto } from './dto/sign-up-dto';
 import { IFirebasePayload } from './interface/firebase-payload.interface';
-import { Userv2 } from './userv2.schema';
+import { Userv2 } from '../schema/userv2.schema';
+import { Profilev2 } from '../schema/profilev2.schema';
 
-
+import { from } from 'rxjs';
 
 
 @Injectable()
 export class AuthV2Service {
   constructor(
     @InjectModel(Userv2.name) private userModel: Model<Userv2>,
-    @InjectModel(Profile.name) private profileModel: Model<Profile>,
+    @InjectModel(Profilev2.name) private profileModel: Model<Profilev2>,
   ){}
   
   /** Create a user from token if not exists
@@ -31,14 +31,15 @@ export class AuthV2Service {
         user.uid = uid;
         user.email = email;
         user.isCompleted = false;
-        user.save();
-      }
-      let profile = await this.profileModel.findOne({username: user.username})
-      if(!profile){
-        profile = new this.profileModel();
-        profile.email = user.email;
-        profile.fullName = user.fullname;
-        profile.save();
+      
+        const profile = new this.profileModel();
+        profile.isPublic = true;
+        profile.displayEmail = email;
+
+
+        user.profile = profile;
+        await user.save();
+
       }
       
       return user;
@@ -59,7 +60,6 @@ export class AuthV2Service {
       }
 
     }catch(err){
-      console.log(err)
       throw new InternalServerErrorException("Error with Database: ", err)
     } 
   }
@@ -69,32 +69,25 @@ export class AuthV2Service {
     const { username } = signUpDto;
     
 
-    try{
-      const result = await this.userModel.findOne({uid: uid})
-      
+    const result = await this.userModel.findOne({uid: uid})
+    
 
-      if(!result.username){
+    if(!result.username){
 
-        result.username = username;
-        result.markModified("username")
-        result.isCompleted = true;
-        result.markModified("isCompleted")
+      result.username = username;
+      result.markModified("username")
+      result.isCompleted = true;
+      result.markModified("isCompleted")
 
 
-        await result.save(err => {
-          if(err){
-            throw new InternalServerErrorException("Error in Database: ", err);
-          }
-        })
+      await result.save()
 
-      }else{
-        throw new ConflictException("Username exists!")
-      }
-
-        return result;
+    }else{
+      throw new ConflictException("Username exists!")
     }
-    catch(err){
-      throw new InternalServerErrorException("Error in Database: ", err);
-    }
+
+    return result.username;
+    
   }
+
 }

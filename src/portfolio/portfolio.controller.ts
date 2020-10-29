@@ -4,7 +4,7 @@ import { PortfolioService } from './portfolio.service'
 import { Portfolio } from './interfaces/portfolio.interface'
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../Auth/get-user.decorator';
-import { User } from '../Auth/user.schema';
+import { User } from '../schema/user.schema';
 
 @Controller('portfolio')
 export class PortfolioController {

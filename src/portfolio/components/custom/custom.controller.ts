@@ -7,7 +7,7 @@ import { CustomTitleDto } from './dto/custom.title.dto';
 import { CustomTitle } from './interfaces/custom.title.interface'
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../../Auth/get-user.decorator';
-import { User } from '../../../Auth/user.schema';
+import { User } from '../../../schema/user.schema';
 
 @Controller('edit/custom')
 @UseGuards(AuthGuard())

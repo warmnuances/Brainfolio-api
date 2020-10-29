@@ -43,6 +43,10 @@ lerna-debug.log*
 firebaseconfig.json
 serviceAccout.json
 google-credentials.json
+scripts/getFirebaseToken.ps1
+message.json
+
+src/Portfoliov2
 
 # files
 /files

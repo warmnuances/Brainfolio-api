@@ -80,6 +80,11 @@ export class PublicService {
     }
     async findProfile(username:string): Promise<Profile> {
         const profileModel = await this.profileModel.findOne({username: username});
+        if(!profileModel){
+            throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
+        }
+
+
         const _id = profileModel._id;
         
         //Get link'
