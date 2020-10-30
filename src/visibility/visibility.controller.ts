@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from 'src/Auth/get-user.decorator';
-import { Userv2 } from 'src/Authv2/userv2.schema';
+import { GetUser } from '../Auth/get-user.decorator';
+import { Userv2 } from '../schema/userv2.schema';
 import { createTokenDto } from './dto/create-token.dto';
 import { Visibility } from './interface/visibility.interface';  
 import { VisibilityService } from './visibility.service';
