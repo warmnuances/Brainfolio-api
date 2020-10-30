@@ -25,7 +25,7 @@ export class AuthV2Service {
     const { uid, email } = payload;
     try{
       let user = await this.userModel.findOne({uid: uid});
-      
+
       if(!user){
         user = new this.userModel();
 
@@ -40,7 +40,6 @@ export class AuthV2Service {
 
         user.profile = profile;
         await user.save();
-
       }
       
       return user;
@@ -103,22 +102,22 @@ export class AuthV2Service {
   }
 
   async uploadImages(files: any, payload:IFirebasePayload){
+
     const { uid } = payload;
     const user = await this.userModel.findOne({uid: uid});
     
     if(!user) throw new NotFoundException("User not found!");
-    
-    const avatar = files.avatar[0] ?? null ;
-    const background = files.background[0] ?? null;
 
-    if(avatar){
+
+    if(files.avatar){
+      const avatar =  files.avatar[0]
       const filePath = await this.uploadUserImage(avatar,user);
       user.profile.profileImage = filePath;
       user.markModified("profile");
-      // user.profile.markModified("profileImage")
     }
 
-    if(background){
+    if(files.background){
+      const background = files.background[0]
       const filePath = await this.uploadUserImage(background,user);
       user.profile.backgroundImage = filePath;
       user.markModified("profile");
