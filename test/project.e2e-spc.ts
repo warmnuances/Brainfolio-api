@@ -65,16 +65,15 @@
 
 
 //     var mockProjectData = new FormData();
-//     mockProjectData.append('_id', '')
+//     mockProjectData.append('_id', 'fd')
 //     mockProjectData.append('title',"The Only Project" )
 //     mockProjectData.append('startDate', "14 December 2020")
 //     mockProjectData.append('endDate',  "25 December 2020")
 //     mockProjectData.append('isPublic', 'true')
 //     mockProjectData.append('description', "The only project I have ever made.")
 //     mockProjectData.append('contributor', "jack,jack@nutz.com")
-//     mockProjectData.append('filesToDelete','')
-//     mockProjectData.append('filesToDelete','')
-//     console.log(mockProjectData);
+//     mockProjectData.append('filesToDelete','f')
+//     mockProjectData.append('filesToDelete','f')
     
     
 

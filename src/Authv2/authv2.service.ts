@@ -1,13 +1,14 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Mongoose } from 'mongoose';
 import { CheckUsernameDto } from './dto/check-username-dto';
 import { SignUpDto } from './dto/sign-up-dto';
 import { IFirebasePayload } from './interface/firebase-payload.interface';
 import { Userv2 } from '../schema/userv2.schema';
 import { Profilev2 } from '../schema/profilev2.schema';
-
-import { from } from 'rxjs';
+import { DarkModeDto } from './dto/dark-mode-dto';
+import * as admin from 'firebase-admin';
+import {format} from "util";
 
 
 @Injectable()
@@ -51,17 +52,11 @@ export class AuthV2Service {
 
   async checkUniqueUsername(body :CheckUsernameDto){
     const { username } = body;
-
-    try{
-      const result = await this.userModel.findOne({username: username});
-    
-      return {
-        isUnique: result? false : true
-      }
-
-    }catch(err){
-      throw new InternalServerErrorException("Error with Database: ", err)
-    } 
+    const result = await this.userModel.findOne({username: username});
+  
+    return {
+      isUnique: result? false : true
+    }
   }
 
   async setUsername(signUpDto: SignUpDto, payload:IFirebasePayload){
@@ -70,7 +65,7 @@ export class AuthV2Service {
     
 
     const result = await this.userModel.findOne({uid: uid})
-    
+    if(!result) throw new NotFoundException("User Not Found");
 
     if(!result.username){
 
@@ -86,8 +81,87 @@ export class AuthV2Service {
       throw new ConflictException("Username exists!")
     }
 
-    return result.username;
+    return {username: result.username};
     
   }
 
+  async setDarkMode( mode: DarkModeDto, payload:IFirebasePayload){
+    const { uid } = payload;
+    const { isDarkMode } = mode;
+    
+    const result = await this.userModel.findOne({uid: uid})
+
+    if(result){
+      result.darkMode = isDarkMode;
+      result.markModified("darkMode")
+
+      await result.save()
+    }else{
+      throw new NotFoundException("User does not exists!")
+    }
+    return {darkMode: result.darkMode};
+  }
+
+  async uploadImages(files: any, payload:IFirebasePayload){
+    const { uid } = payload;
+    const user = await this.userModel.findOne({uid: uid});
+    
+    if(!user) throw new NotFoundException("User not found!");
+    
+    const avatar = files.avatar[0] ?? null ;
+    const background = files.background[0] ?? null;
+
+    if(avatar){
+      const filePath = await this.uploadUserImage(avatar,user);
+      user.profile.profileImage = filePath;
+      user.markModified("profile");
+      // user.profile.markModified("profileImage")
+    }
+
+    if(background){
+      const filePath = await this.uploadUserImage(background,user);
+      user.profile.backgroundImage = filePath;
+      user.markModified("profile");
+    }
+    user.save();
+  }
+
+ 
+
+  //Takes in a single file and upload and returns filepath in firebase
+  private async uploadUserImage(file:any, user:Userv2):Promise<string>{
+    const { _id,username } = user;
+    const key = file.fieldname;
+    const extension = file.originalname.split('.').pop();
+    const filePath = `${username}/profile/${_id}/${key}.${extension}`
+    const fileUpload =  admin.storage().bucket().file(filePath);
+   
+
+    const fileStream = fileUpload.createWriteStream({
+      metadata: {
+      contentType: file.mimetype
+      },
+      resumable: true
+    })
+    fileStream.on('error', function(err) {
+        console.log(err);
+        throw new InternalServerErrorException(err, "Failed to upload file")
+    })
+    fileStream.on('finish', function() {
+        console.log('File Uploaded Succesfully');
+    });
+    fileStream.end(file.buffer);
+
+    return filePath;
+  }
+
+
+   // Get the image path from firebase and generate an image Url
+   private async getImagePublicUrl(imageUrl:string){
+    const config = {
+      action: "read" as const,
+      expires: Date.now() + 1000 * 60 * 5, // 5 minutes
+    };
+    // const pubUrl = await fileUpload.getSignedUrl(config)
+  }
 }

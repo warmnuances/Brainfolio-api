@@ -101,7 +101,10 @@ describe('AuthControllerV2 (e2e)', () => {
       expect(response.body).toBeDefined()
       expect(response.body.uid).toBeDefined();
       expect(response.body.email).toBeDefined();
-      expect(response.body.visibilitylist).toBeDefined();
+      expect(response.body.visibilityList).toBeDefined();
+      expect(response.body.isCompleted).toBe(false);
+      expect(response.body.profile.isPublic).toBeDefined();
+      expect(response.body.profile.displayEmail).toBeDefined();
       expect(HttpStatus.OK)
     })
     await done()
@@ -115,14 +118,11 @@ describe('AuthControllerV2 (e2e)', () => {
       username: "random_username"
     })
     .expect(response => {
-      expect(response.body).toBeDefined()
-      expect(response.body.uid).toBeDefined();
-      expect(response.body.email).toBeDefined();
-      expect(response.body.visibilitylist).toBeDefined();
       expect(response.body.username).toBeDefined();
       expect(HttpStatus.OK)
       done()
     })
+    
 
     await done()
   });
@@ -138,13 +138,48 @@ describe('AuthControllerV2 (e2e)', () => {
       expect(response.body).toBeDefined()
       expect(response.body.uid).toBeUndefined();
       expect(response.body.email).toBeUndefined();
-      expect(response.body.visibilitylist).toBeUndefined();
+      expect(response.body.visibilityList).toBeUndefined();
       expect(response.body.username).toBeUndefined();
       expect(HttpStatus.CONFLICT)
       done()
     })
     await done()
   });
+
+  it('POST /set/darkmode should set darkMode true', async (done) => {
+    await request(app.getHttpServer())
+    .post('/v2/auth/set/darkmode')
+    .set('Authorization', `Bearer ${globalIdToken}`)
+    .send({
+      isDarkMode: true
+    })
+    .expect(response => {
+      expect(response.body.darkMode).toBe(true);
+      expect(HttpStatus.OK)
+      done()
+    })
+    
+
+    await done()
+  });
+
+  it('POST /set/darkmode should set darkMode true', async (done) => {
+    await request(app.getHttpServer())
+    .post('/v2/auth/set/darkmode')
+    .set('Authorization', `Bearer ${globalIdToken}`)
+    .send({
+      isDarkMode: false
+    })
+    .expect(response => {
+      expect(response.body.darkMode).toBe(false);
+      expect(HttpStatus.OK)
+      done()
+    })
+    
+
+    await done()
+  });
+
 
   it('POST /check/username should be false', async(done) => {
     await request(app.getHttpServer())
