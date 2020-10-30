@@ -26,6 +26,9 @@ export class Userv2 extends Document {
   visibility: string;
 
   @Prop()
+  darkMode: boolean;
+
+  @Prop()
   visibilityList: string[];
 
   @Prop()
