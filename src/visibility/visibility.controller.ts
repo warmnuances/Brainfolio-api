@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../Auth/get-user.decorator';
 import { Userv2 } from '../schema/userv2.schema';
 import { createTokenDto } from './dto/create-token.dto';
-import { Visibility } from './interface/visibility.interface';  
+import { Visibility } from '../schema/visibility.schema';  
 import { VisibilityService } from './visibility.service';
 
 @Controller('token')
@@ -11,14 +11,6 @@ import { VisibilityService } from './visibility.service';
 export class VisibilityController {
     constructor(private readonly visibilityService: VisibilityService){}
 
-
-    @Get('verify/:username/:token')
-    findToken(@Param() param):Promise<boolean>{
-       
-        const username = param.username;
-        const token = param.token;
-        return this.visibilityService.findToken(username, token);
-    }
     @Post()
     insertToken(@GetUser() user: Userv2, @Body(ValidationPipe) body:createTokenDto):Promise<Visibility>{
         const username = user.username;
@@ -31,7 +23,6 @@ export class VisibilityController {
         const token = param.token;
         const username = user.username;
         return this.visibilityService.deleteToken(username,token);
-
     }
 
 

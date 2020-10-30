@@ -9,6 +9,7 @@ import { ProfileSchema } from '../portfolio/components/profile/schemas/profile.s
 import { SkillsSchema } from '../portfolio/components/skills/schemas/skills.schema';
 import { AuthV2Module } from '../Authv2/authv2.module';
 import { Userv2, Userv2Schema } from '../schema/userv2.schema';
+import { VisibilitySchema } from '../schema/visibility.schema';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { Userv2, Userv2Schema } from '../schema/userv2.schema';
       { name: 'Experience', schema: ExperienceSchema },
       { name: 'Profile', schema: ProfileSchema },
       { name: 'Skills', schema: SkillsSchema },
+      { name: 'Visibility', schema: VisibilitySchema },
       { name: Userv2.name, schema: Userv2Schema }
     ]),
     

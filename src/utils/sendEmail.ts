@@ -19,11 +19,13 @@ export const sendEmail = async (fromName:string, sendName:string, email: string,
     to: email, // list of receivers
     subject: 'Portfolio Invitation', // Subject line
     text: 'Hello world?', // plain text body
-    html: `Hi <b>${sendName}</b>, \n
-            You are invited to see ${fromName} portfolio page by clicking this following link!\n          
-            <a href="${link}">${link}</a>\n`         
+    html: `Hi <b>${sendName}</b>, <br/>
+            You are invited to see <b>${fromName}</b> portfolio page by clicking this following link!<br/><br/>          
+            <a href="${link}">${link}</a><br/>
             
-            , // html body
+            Thank you
+          
+            `, // html body
   });
 
   console.log('Message sent: %s', info.messageId);

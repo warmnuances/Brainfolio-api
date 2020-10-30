@@ -3,24 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { sendEmail } from '../utils/sendEmail';
 import { createTokenDto } from './dto/create-token.dto';
-import { Visibility } from './interface/visibility.interface';
-// import { Visibility } from './visibility.schema';
+// import { Visibility } from './interface/visibility.interface';
+import { Visibility } from '../schema/visibility.schema';
 @Injectable()
 export class VisibilityService {
 
     constructor(@InjectModel('Visibility') private readonly visibilityModel: Model<Visibility>) {}
-
-
-
-    async findToken(username:string, token:string): Promise<boolean>{
-
-        const visibilityModel = await this.visibilityModel.findOne({username:username, token:token}).exec();
-        if(visibilityModel){
-            return true;
-        }else{
-            throw new HttpException('Invalid request', HttpStatus.NOT_FOUND)
-        }
-    }
 
     async deleteToken( username:string, token:string,): Promise<Visibility>{
         const visibilityModel = await this.visibilityModel.findOneAndRemove({username:username, token:token});
@@ -39,10 +27,10 @@ export class VisibilityService {
         tokenModel.token = tokenModel._id;
         await tokenModel.save()
 
+        //Const for email data
         const sendName = tokenModel.name
         const toEmail = tokenModel.email
-
-        const link = 'http://localhost:3000/aboutUs/' + tokenModel.token 
+        const link = 'https://brainfolio.herokuapp.com/portfolio/'+ username + '?token=' + tokenModel.token 
 
         //send email
         await sendEmail(fromName, sendName, toEmail, link)
