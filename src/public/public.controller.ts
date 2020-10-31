@@ -8,6 +8,7 @@ import { PublicService } from './public.service';
 import { Portfolio } from './interfaces/portfolio.interfaces'
 import { UsernameCheck } from './usernameCheck.guard'
 import { MongoExceptionFilter } from '../utils/MongoFilter';
+import { Userv2 } from 'src/schema/userv2.schema';
 
 @Controller('public')
 @UseFilters(MongoExceptionFilter)
@@ -62,7 +63,7 @@ export class PublicController {
       
     } 
     @Get('profile/:username')
-    findProfileAll(@Param() param): Promise<Profile> {
+    findProfileAll(@Param() param): Promise<Userv2> {
       const username = param.username;
       return this.publicService.findProfile(username);
     }

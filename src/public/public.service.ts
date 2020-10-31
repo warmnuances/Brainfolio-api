@@ -7,16 +7,17 @@ import { Profile } from '../portfolio/components/profile/interfaces/profile.inte
 import { Skills } from '../portfolio/components/skills/interfaces/skills.interface';
 import { Project } from '../projects/interfaces/project.interface';
 import * as admin from 'firebase-admin';
+import { Userv2 } from 'src/schema/userv2.schema';
 
 @Injectable()
 export class PublicService {
 
     constructor(
+        @InjectModel(Userv2.name) private readonly usersModel: Model<Userv2>,
         @InjectModel('Project') private readonly projectModel: Model<Project>,
         @InjectModel('Skills') private readonly skillsModel: Model<Skills>,
         @InjectModel('Experience') private readonly experienceModel: Model<Experience>,
         @InjectModel('Education') private readonly educationModel: Model<Education>,
-        @InjectModel('Profile') private readonly profileModel: Model<Profile>
     ) {}
 
 
@@ -78,43 +79,45 @@ export class PublicService {
         return result
         
     }
-    async findProfile(username:string): Promise<Profile> {
-        const profileModel = await this.profileModel.findOne({username: username});
-        if(!profileModel){
+
+    // Client side will get the background and profile image.
+    async findProfile(username:string): Promise<Userv2> {
+        const user = await this.usersModel.findOne({username: username});
+
+        if(!user){
             throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
         }
 
 
-        const _id = profileModel._id;
         
         //Get link'
-        let profileArray = []
-        profileArray = profileModel.profileImageName;
-        if(profileArray.length != 0){
-            try{               
-                const directory = username + '/profile/' + _id + '/profileImage'
-                const imageLink = await this.getFileNameAndLink(directory, profileArray)
-                profileModel.profileImageName = imageLink[0];
-            }
-            catch(e){
-                throw new InternalServerErrorException("Mongoose Error" + e)
-            }
-        }
+        // const profileImage = user.profile.profileImage;
 
-        let backgroundArray = []
-        backgroundArray = profileModel.backgroundImageName;
-        if(backgroundArray.length != 0){
-            try{
-                const directory = username + '/profile/' + _id + '/backgroundImage'
-                const imageLink =  await this.getFileNameAndLink(directory, backgroundArray);                
-                profileModel.backgroundImageName = imageLink[0]
-            }
-            catch(e){
-                throw new Error("Mongoose Error" + e)
-            }
-        }
+        // if(profileArray){
+        //     try{               
+        //         const directory = username + '/profile/' + _id + '/profileImage'
+        //         const imageLink = await this.getFileNameAndLink(directory, profileArray)
+        //         profileModel.profileImageName = imageLink[0];
+        //     }
+        //     catch(e){
+        //         throw new InternalServerErrorException("Mongoose Error" + e)
+        //     }
+        // }
 
-        return profileModel;
+        // let backgroundArray = []
+        // backgroundArray = profileModel.backgroundImageName;
+        // if(backgroundArray.length != 0){
+        //     try{
+        //         const directory = username + '/profile/' + _id + '/backgroundImage'
+        //         const imageLink =  await this.getFileNameAndLink(directory, backgroundArray);                
+        //         profileModel.backgroundImageName = imageLink[0]
+        //     }
+        //     catch(e){
+        //         throw new Error("Mongoose Error" + e)
+        //     }
+        // }
+
+        return user;
     }
  
     async findExperience(username:string): Promise<Experience[]> {
@@ -140,9 +143,9 @@ export class PublicService {
 
     async portfolioIsPublic(username:string) {
         try{
-            const model = await this.profileModel.findOne({username : username}).exec();
+            const model = await this.usersModel.findOne({username : username}).exec();
             if(model){
-                return model.isPublic;
+                return model.profile.isPublic;
             }else{
                 return false;
             }

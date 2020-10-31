@@ -31,8 +31,10 @@ export class Userv2 extends Document {
   @Prop()
   visibilityList: string[];
 
-  @Prop()
+  @Prop({ type: Profilev2 })
   profile: Profilev2
+
+  
 
 }
 
