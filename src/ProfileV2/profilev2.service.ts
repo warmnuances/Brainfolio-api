@@ -74,8 +74,7 @@ export class Profilev2Service {
         const fileStream = fileUpload.createWriteStream({
           metadata: {
           contentType: file.mimetype
-          },
-          resumable: true
+          }
         })
         fileStream.on('error', function(err) {
             console.log(err);
