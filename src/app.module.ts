@@ -9,8 +9,12 @@ import { AuthV2Module } from './Authv2/authv2.module';
 import {PortfolioModule} from './portfolio/portfolio.module';
 import { PublicModule } from './public/public.module';
 // import { ProjectsModule } from './projects/projects.module';
+import { VisibilityModule } from './visibility/visibility.module';
 
-//TODO: (Optional) Create ConfigServiceto deserialise vars
+import { Profilev2Module } from './ProfileV2/profilev2.module';
+
+
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,7 +29,9 @@ import { PublicModule } from './public/public.module';
     HealthcheckModule,
     ProjectsModule,
     PortfolioModule,
-    PublicModule
+    PublicModule,
+    VisibilityModule,
+    Profilev2Module
   ],
 })
 

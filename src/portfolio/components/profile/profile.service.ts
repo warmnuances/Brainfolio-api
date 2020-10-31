@@ -21,7 +21,7 @@ export class ProfileService {
     // }
 
     async findOne(username: string): Promise<Profile> {
-        var profileModel = await this.profileModel.findOne({username: username});
+        const profileModel = await this.profileModel.findOne({username: username});
 
         
         if(profileModel != null){           
@@ -60,14 +60,14 @@ export class ProfileService {
 
     async getFileNameAndLink(fileNames, username, _id, type:string) {
 
-        var fileNameAndLink = [];
-        var bucket = admin.storage().bucket();
+        const fileNameAndLink = [];
+        const bucket = admin.storage().bucket();
         const config = {
             action: "read" as const,
             expires: Date.now() + 1000 * 60 * 5, // 5 minutes
         };
  
-        for(let fileName of fileNames){
+        for(const fileName of fileNames){
             var fileNamePath = username  + '/profile/' + _id + '/' + type + '/' + fileName;
             var file = bucket.file(fileNamePath);
             var url = await file.getSignedUrl(config) 

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseFilters, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, Param, Query, UseFilters, UseGuards } from '@nestjs/common';
 import { Education } from '../portfolio/components/education/interfaces/education.interface';
 import { Experience } from '../portfolio/components/experience/interfaces/experience.interface';
 import { Profile } from '../portfolio/components/profile/interfaces/profile.interface';
@@ -16,12 +16,6 @@ import { Userv2 } from 'src/schema/userv2.schema';
 export class PublicController {
     constructor(private readonly publicService: PublicService){}
 
-    @Get('allproject/:username')
-    findProjectAll(@Param() param): Promise<Project[]> {
-      const username = param.username;      
-      return this.publicService.findAllProject(username);
-    } 
-
     @Get('project/:username/:id')
     findSingleProject(@Param() param): Promise<Project> {
       const username = param.username;   
@@ -29,63 +23,38 @@ export class PublicController {
       return this.publicService.findProject(username, id);
     } 
 
-    // @Get('portfolio/:username')
-    // getPortfolio(@Param() param) {
-
-    //     const username = param.username;
-    //     if(this.publicService.portfolioIsPublic(username)){
-    //         var portfolio = {}
-
-    //         portfolio['skills'] = this.publicService.findSkills(username);
-    //         portfolio['profile'] = this.publicService.findProfile(username);
-    //         portfolio['experience'] = this.publicService.findExperience(username);
-    //         portfolio['education'] = this.publicService.findEducation(username);
-    //         portfolio['project'] = this.publicService.findProject(username);
-    //         console.log(portfolio);
-            
-    //         return portfolio;
-
-    //     }else{
-    //         return
-    //     }
-
-    // }
+    @Get('allproject/:username')
+    findProjectAll(@Param() param, @Query() query): Promise<Project[]> {
+      const username = param.username;
+      const token = query.token
+      return this.publicService.findAllProject(username, token);
+    } 
 
     @Get('skills/:username')
-    findSkillsAll(@Param() param): Promise<Skills[]> {
+    findSkillsAll(@Param() param, @Query() query): Promise<Skills[]> {
       const username = param.username;
-      if(this.publicService.portfolioIsPublic(username)){
-          return this.publicService.findSkills(username);
-      } else {
-        return null;
-      }
-    
-      
+      const token = query.token
+      return this.publicService.findSkills(username, token);  
     } 
+
     @Get('profile/:username')
     findProfileAll(@Param() param): Promise<Userv2> {
       const username = param.username;
       return this.publicService.findProfile(username);
     }
+
     @Get('experience/:username')
-    findExperienceAll(@Param() param): Promise<Experience[]> {
+    findExperienceAll(@Param() param, @Query() query): Promise<Experience[]> {
       const username = param.username;
-      if(this.publicService.portfolioIsPublic(username)){
-        return this.publicService.findExperience(username);
-      } else {
-        return null;
-      }
+      const token = query.token
+      return this.publicService.findExperience(username, token);
     } 
 
     @Get('education/:username')
-    findEducationAll(@Param() param): Promise<Education[]> {
+    findEducationAll(@Param() param, @Query() query): Promise<Education[]> {
       const username = param.username;
-      if(this.publicService.portfolioIsPublic(username)){
-          return this.publicService.findEducation(username);
-      } else {
-        return null;
-      }
-
+      const token = query.token;
+      return this.publicService.findEducation(username, token);
 
     } 
 

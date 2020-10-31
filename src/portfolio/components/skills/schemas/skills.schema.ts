@@ -5,16 +5,16 @@ import { Document } from 'mongoose';
 export class Skills extends Document {
 
     @Prop()
-    username: String;
+    username: string;
     
     @Prop()
-    category: String;
+    category: string;
 
     @Prop({  })
     name: string;
 
     @Prop({ })
-    rating : string;
+    rating : number;
 
 }
 

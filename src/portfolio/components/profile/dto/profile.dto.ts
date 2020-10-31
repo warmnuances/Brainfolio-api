@@ -3,7 +3,9 @@ import { IsNotEmpty , IsArray} from "class-validator";
 export class ProfileDto {
     _id: string;
     readonly username: string;
-    readonly fullName: string;
+
+
+    readonly fullname: string;
 
     readonly address: string;
 
@@ -20,18 +22,9 @@ export class ProfileDto {
     readonly isPublic: boolean;
     
     readonly dark: boolean;
+    
     readonly profileToDelete: string;
+
     readonly backgroundToDelete: string;
 
 }  
-
-    // portfolioId: string;
-    // fullName: string;
-    // address: string;
-    // email: string;
-    // phone: string;
-    // relevantLink: number;
-    // linkedIn: string;
-    // title:string;
-    // //Profile Image insert
-    // //Background Image insert

@@ -33,7 +33,6 @@ export class AuthV2Service {
         user.email = email;
         user.isCompleted = false;
       
-
         
         const profile = new this.profileModel();
         profile.isPublic = true;
