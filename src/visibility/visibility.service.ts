@@ -10,6 +10,14 @@ export class VisibilityService {
 
     constructor(@InjectModel('Visibility') private readonly visibilityModel: Model<Visibility>) {}
 
+    async getUserList( username:string): Promise<Visibility[]>{
+        try{
+            return this.visibilityModel.find({username:username}).exec();
+        }catch(e){
+            throw new HttpException('MongoError', HttpStatus.CONFLICT)
+        }
+    }
+
     async deleteToken( username:string, token:string,): Promise<Visibility>{
         const visibilityModel = await this.visibilityModel.findOneAndRemove({username:username, token:token});
         if(visibilityModel){
@@ -19,21 +27,22 @@ export class VisibilityService {
         }
         
     }
-    async createToken(fromName:string, username:string, token:createTokenDto): Promise<Visibility>{
+    async createToken(fromName:string, username:string, body:createTokenDto): Promise<Visibility>{
         
         //Creating new token schema
-        const tokenModel = new this.visibilityModel(token)
+        const tokenModel = new this.visibilityModel(body)
         tokenModel.username = username;
         tokenModel.token = tokenModel._id;
-        await tokenModel.save()
 
         //Const for email data
         const sendName = tokenModel.name
         const toEmail = tokenModel.email
-        const link = 'https://brainfolio.herokuapp.com/portfolio/'+ username + '?token=' + tokenModel.token 
+        const link = process.env.FRONTEND_HOST + 'portfolio/' + username + '?token=' + tokenModel.token 
 
         //send email
         await sendEmail(fromName, sendName, toEmail, link)
+
+        await tokenModel.save()
 
         return tokenModel
     }
