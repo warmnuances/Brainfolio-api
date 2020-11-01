@@ -15,51 +15,67 @@ export class Profilev2Service {
         @InjectModel(Userv2.name) private readonly usersModel: Model<Userv2>,
         @InjectModel(Profilev2.name) private readonly profileModel: Model<Profilev2>
     ) {}
+    
+
+    //TODO: Extend with followers in the future
+    async findProfile(credential: Userv2){
+        const user = await this.usersModel.findOne({username: credential.username});
+        if(!user){
+            throw new NotFoundException("User not found")
+        }else{
+            if(user.profile.isPublic){
+                return user;
+            }else{
+                // Throw not found instead of forbidden to conceal if user exists
+                throw new NotFoundException("User not found")
+            }
+        }
+
+    }
 
     async updateProfile(
         createProfileDto :CreateProfileDto, 
         files,
-        user: Userv2
-        ): Promise<Profilev2| CreateProfileDto> {
+        credential:Userv2,
+        ): Promise<Profilev2> {
 
         
         
-        const userInstance = await this.usersModel.findOne({username: user.username});
+        const user = await this.usersModel.findOne({username: credential.username});
         if(createProfileDto.isDarkMode){
-            userInstance.darkMode = createProfileDto.isDarkMode;
-            userInstance.markModified("darkMode");
-            console.log(userInstance)
+            user.darkMode = createProfileDto.isDarkMode;
+            user.markModified("darkMode");
         } 
 
-        if(!userInstance){
+        if(!user){
             throw new NotFoundException("User not found");
         }else{
             for(const [key, value] of Object.entries(createProfileDto)){
-                if(userInstance.profile[key]){
-                    userInstance.profile[key] = value;
+                if(user.profile[key]){
+                    user.profile[key] = value;
                 }
             }
-            userInstance.markModified("profile");
+            user.markModified("profile");
         }
 
 
         if(files.avatar){
             const avatar =  files.avatar[0]
-            const filePath = await this.uploadUserImage(avatar,userInstance);
-            userInstance.profile.profileImage = filePath;
-            userInstance.markModified("profile");
+            const filePath = await this.uploadUserImage(avatar,user);
+            user.profile.profileImage = filePath;
+            user.markModified("profile");
         }
     
         if(files.background){
             const background = files.background[0]
-            const filePath = await this.uploadUserImage(background,userInstance);
-            userInstance.profile.backgroundImage = filePath;
-            userInstance.markModified("profile");
+            const filePath = await this.uploadUserImage(background,user);
+            user.profile.backgroundImage = filePath;
+            user.markModified("profile");
         }
 
-        userInstance.save();
+        user.save();
 
-        return userInstance.profile
+        return user.profile
     }
 
 

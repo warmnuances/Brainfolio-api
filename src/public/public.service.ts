@@ -67,12 +67,17 @@ export class PublicService {
     // Client side will get the background and profile image.
 
     async findProfile(username:string): Promise<Userv2> {
-        const user = await this.usersModel.findOne({username: username, isPublic:true});
+        const user = await this.usersModel.findOne({username: username});
         if(!user){
-            throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
+            throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        }else{
+            if(user.profile.isPublic){
+                return user;
+            }else{
+                // Throw not found instead of forbiddent to conceal if user exist
+                throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+            }
         }
-
-        return user;
     }
 
     async findAllProject(username:string, token:string): Promise<Project[]> {

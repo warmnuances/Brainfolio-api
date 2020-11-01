@@ -5,7 +5,9 @@ import { Experience } from './interfaces/experience.interface'
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../../Auth/get-user.decorator';
 import { User } from '../../../schema/user.schema';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Experience")
 @Controller('edit/experience')
 @UseGuards(AuthGuard())
 export class ExperienceController {

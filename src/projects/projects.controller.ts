@@ -15,8 +15,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../Auth/get-user.decorator';
 import { User } from '../schema/user.schema';
 import { Userv2 } from '../schema/userv2.schema';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 
+
+@ApiTags("Projects")
 @Controller('projects')
 @UseGuards(AuthGuard())  
 export class ProjectsController {

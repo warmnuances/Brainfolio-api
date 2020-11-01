@@ -9,8 +9,9 @@ import { diskStorage , memoryStorage} from 'multer';
 import {profilebackgroundFileFilter ,editProfileImageName, editBackgroundImageName, imageFileFilter} from '../../../utils/file-uploading.utils';
 import {FileDto} from './dto/profile-file.dto';
 import {FileFieldsInterceptor, FilesInterceptor} from '@nestjs/platform-express'
+import { ApiTags } from '@nestjs/swagger';
 
-
+@ApiTags("Profile")
 @Controller('edit/profile')
 @UseGuards(AuthGuard())
 export class ProfileController {

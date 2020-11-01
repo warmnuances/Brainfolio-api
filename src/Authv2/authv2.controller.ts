@@ -7,10 +7,13 @@ import { GetUser } from './get-user.decorator';
 import { Userv2 } from '../schema/userv2.schema';
 import { DarkModeDto } from './dto/dark-mode-dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+// Swagger
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 
-
+@ApiTags("AuthV2")
 @Controller('/v2/auth')
+@ApiBearerAuth()
 export class AuthV2Controller {
   constructor(
     private authService: AuthV2Service,

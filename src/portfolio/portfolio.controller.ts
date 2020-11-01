@@ -5,7 +5,10 @@ import { Portfolio } from './interfaces/portfolio.interface'
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../Auth/get-user.decorator';
 import { User } from '../schema/user.schema';
+import { ApiTags } from '@nestjs/swagger';
 
+
+@ApiTags("Portfolio")
 @Controller('portfolio')
 export class PortfolioController {
     constructor(private readonly portfolioService: PortfolioService){}

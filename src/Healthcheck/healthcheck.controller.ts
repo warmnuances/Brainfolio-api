@@ -1,12 +1,12 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiHeader, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
+import { ApiHeader, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Connection } from 'mongoose';
 import { GetUser } from '../Auth/get-user.decorator';
 import { User } from '../schema/user.schema';
 
-
+@ApiTags("Untracked")
 @Controller("/test")
 export class HealthCheckController {
   private start: number;

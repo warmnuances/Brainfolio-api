@@ -8,7 +8,9 @@ import { CustomTitle } from './interfaces/custom.title.interface'
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../../Auth/get-user.decorator';
 import { User } from '../../../schema/user.schema';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Custom")
 @Controller('edit/custom')
 @UseGuards(AuthGuard())
 export class CustomController {

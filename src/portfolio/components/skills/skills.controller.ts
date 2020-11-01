@@ -5,7 +5,9 @@ import { Skills } from './interfaces/skills.interface'
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../../Auth/get-user.decorator';
 import { User } from '../../../schema/user.schema';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Skills")
 @Controller('edit/skills')
 @UseGuards(AuthGuard())
 export class SkillsController {

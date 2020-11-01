@@ -10,22 +10,17 @@ import {FileFieldsInterceptor} from '@nestjs/platform-express';
 
 import { CreateProfileDto } from './dto/create-profile-dto';
 import { Profilev2Service } from './profilev2.service';
+import { ApiTags } from '@nestjs/swagger';
 
 
-
+@ApiTags("Profilev2")
 @Controller('/v2/edit/profile')
 @UseGuards(AuthGuard())
-
 export class Profilev2Controller {
     constructor(private readonly profileService: Profilev2Service){}
 
 
-    // @Get()
-    // findOne(@GetUser() user: Userv2): Promise<Profilev2> {
-    //     const username = user.username;
-    //     return this.profileService.findOne(username);
-    // }
-
+   
     @Post("save")
     @UseInterceptors(FileFieldsInterceptor(
         [
