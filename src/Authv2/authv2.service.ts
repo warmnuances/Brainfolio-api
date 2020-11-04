@@ -25,7 +25,6 @@ export class AuthV2Service {
     const { uid, email } = payload;
     try{
       let user = await this.userModel.findOne({uid: uid});
-      console.log(user);
 
       if(!user){
         user = new this.userModel();
@@ -71,16 +70,20 @@ export class AuthV2Service {
 
     if(!result.username){
 
-      result.username = username;
-      result.markModified("username")
-      result.isCompleted = true;
-      result.markModified("isCompleted")
-
+      const exists = await this.userModel.findOne({username: username});
+      if(!exists){
+        result.username = username;
+        result.markModified("username")
+        result.isCompleted = true;
+        result.markModified("isCompleted")
+      }else{
+        throw new ConflictException("Username exists!")
+      }
 
       result.save()
 
     }else{
-      throw new ConflictException("Username exists!")
+      throw new ConflictException("Username already being set!")
     }
 
     return {username: result.username};
