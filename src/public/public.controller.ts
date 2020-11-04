@@ -6,13 +6,14 @@ import { Skills } from '../portfolio/components/skills/interfaces/skills.interfa
 import { Project } from '../projects/interfaces/project.interface';
 import { PublicService } from './public.service';
 import { Portfolio } from './interfaces/portfolio.interfaces'
-import { UsernameCheck } from './usernameCheck.guard'
 import { MongoExceptionFilter } from '../utils/MongoFilter';
 import { Userv2 } from 'src/schema/userv2.schema';
+import { GetUser } from 'src/Auth/get-user.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('public')
 @UseFilters(MongoExceptionFilter)
-// @UseGuards(UsernameCheck)
+// @UseGuards(AuthGuard)
 export class PublicController {
     constructor(private readonly publicService: PublicService){}
 
@@ -24,17 +25,18 @@ export class PublicController {
     } 
 
     @Get('allproject/:username')
-    findProjectAll(@Param() param, @Query() query): Promise<Project[]> {
+    findProjectAll(@Param() param, @Query() query, @GetUser() user:Userv2): Promise<Project[]> {
+      
       const username = param.username;
       const token = query.token
-      return this.publicService.findAllProject(username, token);
+      return this.publicService.findAllProject(username, token, user);
     } 
 
     @Get('skills/:username')
-    findSkillsAll(@Param() param, @Query() query): Promise<Skills[]> {
+    findSkillsAll(@Param() param, @Query() query, @GetUser() user:Userv2): Promise<Skills[]> {
       const username = param.username;
       const token = query.token
-      return this.publicService.findSkills(username, token);  
+      return this.publicService.findSkills(username, token, user);  
     } 
 
     @Get('profile/:username')
@@ -44,17 +46,17 @@ export class PublicController {
     }
 
     @Get('experience/:username')
-    findExperienceAll(@Param() param, @Query() query): Promise<Experience[]> {
+    findExperienceAll(@Param() param, @Query() query, @GetUser() user:Userv2): Promise<Experience[]> {
       const username = param.username;
       const token = query.token
-      return this.publicService.findExperience(username, token);
+      return this.publicService.findExperience(username, token, user);
     } 
 
     @Get('education/:username')
-    findEducationAll(@Param() param, @Query() query): Promise<Education[]> {
+    findEducationAll(@Param() param, @Query() query, @GetUser() user:Userv2): Promise<Education[]> {
       const username = param.username;
       const token = query.token;
-      return this.publicService.findEducation(username, token);
+      return this.publicService.findEducation(username, token, user);
 
     } 
 
