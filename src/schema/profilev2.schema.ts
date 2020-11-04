@@ -33,6 +33,9 @@ export class Profilev2 extends Document {
 
   @Prop()
   linkedin: string;
+
+  @Prop()
+  description: string;
   
 }
 

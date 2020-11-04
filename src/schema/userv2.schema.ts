@@ -34,7 +34,6 @@ export class Userv2 extends Document {
   @Prop({ type: Profilev2 })
   profile: Profilev2
 
-  
 
 }
 

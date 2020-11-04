@@ -25,13 +25,15 @@ export class AuthV2Service {
     const { uid, email } = payload;
     try{
       let user = await this.userModel.findOne({uid: uid});
-
+      console.log("User:", user)
       if(!user){
+        console.log("Here:", user)
         user = new this.userModel();
 
         user.uid = uid;
         user.email = email;
         user.isCompleted = false;
+        user.darkMode = false;
       
         
         const profile = new this.profileModel();
@@ -41,7 +43,6 @@ export class AuthV2Service {
 
         user.profile = profile;
         user.save();
-        console.log(profile);
       }
       
       return user;
@@ -59,6 +60,7 @@ export class AuthV2Service {
       isUnique: result? false : true
     }
   }
+
 
   async setUsername(signUpDto: SignUpDto, payload:IFirebasePayload){
     const { uid } = payload;
