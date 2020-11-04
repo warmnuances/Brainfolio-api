@@ -15,7 +15,7 @@ export class ProjectsService {
     // --- Finding all projects ---
     async findAll(username:string): Promise<Project[]> {
         try{
-            return this.projectModel.find({username:username}).exec();
+            return await this.projectModel.find({username:username}).exec();
         }catch(e){
             throw new HttpException('MongoError', HttpStatus.CONFLICT)
         }

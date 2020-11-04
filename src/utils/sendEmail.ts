@@ -21,7 +21,9 @@ export const sendEmail = async (fromName:string, sendName:string, email: string,
     text: 'Hello world?', // plain text body
     html: `Hi <b>${sendName}</b>, <br/>
             You are invited to see <b>${fromName}</b> portfolio page by clicking this following link!<br/><br/>          
-            <a href="${link}">${link}</a><br/>
+            <a href="${link}">${link}</a>
+            
+            <br/><br/>
             
             Thank you
           
