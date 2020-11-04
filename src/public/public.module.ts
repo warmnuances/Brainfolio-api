@@ -11,7 +11,7 @@ import { AuthV2Module } from '../Authv2/authv2.module';
 import { Userv2, Userv2Schema } from '../schema/userv2.schema';
 import { VisibilitySchema } from '../schema/visibility.schema';
 import { UserReq } from './userReq.middleware';
-import { AuthV2Service } from 'src/Authv2/authv2.service';
+import { AuthV2Service } from '../Authv2/authv2.service';
 import { Profilev2, Profilev2Schema } from '../schema/profilev2.schema';
 
 @Module({

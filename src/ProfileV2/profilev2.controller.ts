@@ -24,16 +24,15 @@ export class Profilev2Controller {
     @Post("save")
     @UseInterceptors(FileFieldsInterceptor(
         [
-            { name: 'avatar', maxCount: 1 },
-            { name: 'background', maxCount: 1 }
+            { name: 'avatarFile', maxCount: 1 },
+            { name: 'backgroundFile', maxCount: 1 }
         ]
     ))
     create(
         @GetUser() user: Userv2,
-        @UploadedFiles() files : Express.Multer.File, 
+        @UploadedFiles() files , 
         @Body() createProfileDto: CreateProfileDto
     ) {
-        
         return this.profileService.updateProfile(createProfileDto, files, user)
     }
 

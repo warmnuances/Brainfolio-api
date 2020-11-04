@@ -17,7 +17,6 @@ export class HTTPStrategy extends PassportStrategy(Strategy) {
 
   async validate(jwtPayload: string): Promise<Userv2> | null  {
     let result = null;
-
     try{
       const decodedToken = await admin.auth().verifyIdToken(jwtPayload)
       

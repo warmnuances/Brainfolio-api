@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Request, Response,NextFunction } from 'express';
 import * as admin from 'firebase-admin';
-import { AuthV2Service } from 'src/Authv2/authv2.service';
+import { AuthV2Service } from '../Authv2/authv2.service';
 import { Userv2 } from '../schema/userv2.schema';
 
 
@@ -11,7 +11,7 @@ export class UserReq implements NestMiddleware {
     private readonly authV2Service: AuthV2Service,
   ) {}
 
-  use(req: Request, res: Response, next: Function) {
+  use(req: Request, res: Response, next: NextFunction) {
     const authorization = req.headers.authorization;
 
     if(authorization){

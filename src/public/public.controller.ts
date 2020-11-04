@@ -7,8 +7,8 @@ import { Project } from '../projects/interfaces/project.interface';
 import { PublicService } from './public.service';
 import { Portfolio } from './interfaces/portfolio.interfaces'
 import { MongoExceptionFilter } from '../utils/MongoFilter';
-import { Userv2 } from 'src/schema/userv2.schema';
-import { GetUser } from 'src/Auth/get-user.decorator';
+import { Userv2 } from '../schema/userv2.schema';
+import { GetUser } from '../Auth/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('public')

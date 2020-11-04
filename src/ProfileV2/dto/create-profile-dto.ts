@@ -40,6 +40,18 @@ export class CreateProfileDto {
     @IsOptional()
     @ApiProperty()  
     readonly isPublic: boolean;
+
+    @IsOptional()
+    @ApiProperty()  
+    readonly description: string;
+
+    @IsOptional()
+    @ApiProperty()  
+    readonly profileImage: string;
+
+    @IsOptional()
+    @ApiProperty()  
+    readonly backgroundImage: string;
     
 
 }  

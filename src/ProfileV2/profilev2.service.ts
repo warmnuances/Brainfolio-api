@@ -46,35 +46,60 @@ export class Profilev2Service {
             user.darkMode = createProfileDto.isDarkMode;
             user.markModified("darkMode");
         } 
-
         if(!user){
             throw new NotFoundException("User not found");
         }else{
             for(const [key, value] of Object.entries(createProfileDto)){
-                if(user.profile[key]){
-                    user.profile[key] = value;
+                
+                if(key === "profileImage" ){
+                    if(!value){
+                        user.profile[key] = "";
+                    }else{
+                        user.profile[key] = value;
+                        user.markModified(key)
+                    }
                 }
+                else if(key === "backgroundImage"){
+                    if(!value){
+                        user.profile[key] = "";
+                    }else{
+                        user.profile[key] = value;
+                        user.markModified(key)
+                    }
+                }
+
+                else{
+                    if(value){
+                        user.profile[key] = value;
+                        user.markModified(key)
+                    }
+                }
+                // if(user.profile[key]){
+                //     user.profile[key] = value;
+                //     user.markModified(key);
+                //     console.log(user.profile[key])
+                // }
+             
             }
             user.markModified("profile");
         }
 
 
-        if(files.avatar){
-            const avatar =  files.avatar[0]
+        if(files?.avatarFile){
+            const avatar =  files.avatarFile[0]
             const filePath = await this.uploadUserImage(avatar,user);
             user.profile.profileImage = filePath;
             user.markModified("profile");
         }
     
-        if(files.background){
-            const background = files.background[0]
+        if(files?.backgroundFile){
+            const background = files.backgroundFile[0]
             const filePath = await this.uploadUserImage(background,user);
             user.profile.backgroundImage = filePath;
             user.markModified("profile");
         }
 
-        user.save();
-
+        user.save(err => err && console.log(err));
         return user.profile
     }
 
