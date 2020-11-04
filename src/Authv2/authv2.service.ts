@@ -40,7 +40,7 @@ export class AuthV2Service {
 
 
         user.profile = profile;
-        await user.save();
+        user.save();
       }
       
       return user;
