@@ -80,8 +80,8 @@ export class PublicService {
         }
     }
 
-    async findAllProject(username:string, token:string): Promise<Project[]> {
-        if(await this.verifyToken(username, token) || await this.portfolioIsPublic(username)){
+    async findAllProject(username:string, token:string, user:Userv2): Promise<Project[]> {
+        if(await this.verifyToken(username, token) || await this.portfolioIsPublic(username) || (user && username == user.username)){
             const result = await this.projectModel.find({username:username, isPublic:true}).exec();
             if(result){
                 return result;
@@ -90,8 +90,8 @@ export class PublicService {
         throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
     }
 
-    async findSkills(username:string, token:string): Promise<Skills[]> {
-        if(await this.verifyToken(username, token) || await this.portfolioIsPublic(username)){
+    async findSkills(username:string, token:string, user:Userv2): Promise<Skills[]> {
+        if(await this.verifyToken(username, token) || await this.portfolioIsPublic(username) || (user && username == user.username)){
             const result = await this.skillsModel.find({username:username}).exec();
             if(result){
                 return result
@@ -100,8 +100,8 @@ export class PublicService {
         throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
     }
 
-    async findExperience(username:string, token:string): Promise<Experience[]> {
-        if(await this.verifyToken(username, token) || await this.portfolioIsPublic(username)){
+    async findExperience(username:string, token:string, user:Userv2): Promise<Experience[]> {
+        if(await this.verifyToken(username, token) || await this.portfolioIsPublic(username) || (user && username == user.username)){
             console.log('masuk');
             
             const result = await this.experienceModel.find({username:username}).exec();
@@ -113,8 +113,9 @@ export class PublicService {
     }
 
     
-    async findEducation(username:string, token:string): Promise<Education[]> {
-        if(await this.verifyToken(username, token) || await this.portfolioIsPublic(username)){
+    async findEducation(username:string, token:string, user:Userv2): Promise<Education[]> {
+        
+        if(await this.verifyToken(username, token) || await this.portfolioIsPublic(username) || (user && username == user.username)){
 
             const result = await this.educationModel.find({username:username}).exec();
             if(result){
