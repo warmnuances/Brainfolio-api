@@ -25,6 +25,7 @@ export class AuthV2Service {
     const { uid, email } = payload;
     try{
       let user = await this.userModel.findOne({uid: uid});
+      console.log(user);
 
       if(!user){
         user = new this.userModel();
@@ -41,6 +42,7 @@ export class AuthV2Service {
 
         user.profile = profile;
         user.save();
+        console.log(profile);
       }
       
       return user;
@@ -75,7 +77,7 @@ export class AuthV2Service {
       result.markModified("isCompleted")
 
 
-      await result.save()
+      result.save()
 
     }else{
       throw new ConflictException("Username exists!")
@@ -95,7 +97,7 @@ export class AuthV2Service {
       result.darkMode = isDarkMode;
       result.markModified("darkMode")
 
-      await result.save()
+      result.save()
     }else{
       throw new NotFoundException("User does not exists!")
     }
