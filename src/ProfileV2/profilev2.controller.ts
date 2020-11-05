@@ -36,6 +36,11 @@ export class Profilev2Controller {
         return this.profileService.updateProfile(createProfileDto, files, user)
     }
 
+    @Get()
+    findOne(@GetUser() user: Userv2): Promise<Userv2> {
+        return this.profileService.findProfile(user)
+    }
+
     // @Delete(':id')
     // delete(@Param() param): Promise<Profilev2> {
     //     return this.profileService.delete(param.id);
