@@ -46,6 +46,19 @@ export class PublicService {
 
 
 
+    async getImageLink(filepath) {
+
+        const bucket = admin.storage().bucket();
+        const config = {
+            action: "read" as const,
+            expires: Date.now() + 1000 * 60 * 5, // 5 minutes
+        };
+        const file = bucket.file(filepath);
+        const url = await file.getSignedUrl(config)
+        return url[0];
+    }
+
+
 
     async findProject(username:string, id:string): Promise<Project> {
 
@@ -61,18 +74,26 @@ export class PublicService {
         }catch(e){
             throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
         }
-
     }
 
     // Client side will get the background and profile image.
 
-    async findProfile(username:string, loggedUser:Userv2): Promise<Userv2> {
+    async findProfile(username:string, loggedUser:Userv2) {
         const user = await this.usersModel.findOne({username: username});
         if(!user){
             throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
         }else{
+            
             if(user.profile.isPublic || loggedUser.username == username){
-                return user;
+                let temp = {}
+                temp = {user: user}
+                if(user.profile.profileImage != undefined && user.profile.profileImage != null){
+                    temp["profileImageLink"] = await this.getImageLink(user.profile.profileImage);
+                }
+                if(user.profile.backgroundImage != undefined && user.profile.backgroundImage != null){
+                    temp["backgroundImageLink"] = await this.getImageLink(user.profile.backgroundImage);
+                }
+                return temp;
             }else{
                 // Throw not found instead of forbiddent to conceal if user exist
                 throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
