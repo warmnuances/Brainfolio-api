@@ -4,7 +4,7 @@ export interface Experience extends Document{
     username: string;
     type: string;
     title: string;
-    name: string;
+    companyName: string;
     startDate: Date;
     endDate: Date;
     description: string;

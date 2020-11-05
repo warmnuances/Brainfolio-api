@@ -11,7 +11,7 @@ export class ExperienceDto {
     readonly title: string;
 
     @IsNotEmpty()
-    readonly name: string;
+    readonly companyName: string;
 
     @IsNotEmpty()
     readonly startDate: Date;
