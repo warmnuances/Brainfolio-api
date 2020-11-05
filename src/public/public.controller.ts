@@ -41,7 +41,7 @@ export class PublicController {
     } 
 
     @Get('profile/:username')
-    findProfileAll(@Param() param, @GetUser() user:Userv2): Promise<Userv2> {
+    findProfileAll(@Param() param, @GetUser() user:Userv2){
       const username = param.username;
       return this.publicService.findProfile(username, user);
     }
