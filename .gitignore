@@ -47,6 +47,6 @@ scripts/getFirebaseToken.ps1
 message.json
 
 src/Portfoliov2
-
+scripts/getToken.ps1
 # files
 /files
