@@ -10,6 +10,7 @@ import { MongoExceptionFilter } from '../utils/MongoFilter';
 import { Userv2 } from '../schema/userv2.schema';
 import { GetUser } from '../Auth/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { AllCustom } from './interfaces/allCustom.interface'
 
 @Controller('public')
 @UseFilters(MongoExceptionFilter)
@@ -57,7 +58,12 @@ export class PublicController {
       const username = param.username;
       const token = query.token;
       return this.publicService.findEducation(username, token, user);
+    }
 
-    } 
-
+    // @Get('custom/:username')
+    // getCustom(@Param() param, @Query() query, @GetUser() user:Userv2): Promise<AllCustom> {
+    //   const username = param.username;
+    //   const token = query.token;
+    //   return this.publicService.findCustom(username, token, user);
+    // } 
 }
