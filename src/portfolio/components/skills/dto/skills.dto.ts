@@ -7,7 +7,7 @@ export class SkillsDto {
 
     readonly name: string;
 
-    readonly rating: string;
+    readonly rating: number;
 
 }  
 

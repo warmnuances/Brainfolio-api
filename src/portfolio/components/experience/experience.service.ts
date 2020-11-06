@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Experience } from './interfaces/experience.interface'
+import { Experience } from './schemas/experience.schema';
 import { ExperienceDto } from './dto/experience.dto';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class ExperienceService {
     async create(experience: ExperienceDto): Promise<Experience> {
         const newexperience = new this.experienceModel(experience);
         return newexperience.save();
-      } 
+    } 
     async findAll(username:string): Promise<Experience[]> {
         return this.experienceModel.find({username:username}).exec();
     }

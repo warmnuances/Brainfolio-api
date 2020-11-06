@@ -2,13 +2,13 @@ import { Controller, Get, Post, Put, Delete, Body, Param, ValidationPipe, UseInt
 
 import { CustomService } from './custom.service';
 import { CustomDto } from './dto/custom.dto';
-import { Custom } from './interfaces/custom.interface'
 import { CustomTitleDto } from './dto/custom.title.dto';
-import { CustomTitle } from './interfaces/custom.title.interface'
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../../Auth/get-user.decorator';
 import { User } from '../../../schema/user.schema';
 import { ApiTags } from '@nestjs/swagger';
+import { CustomTitle } from './schemas/custom.title.schema';
+import { Custom } from './schemas/custom.schema';
 
 @ApiTags("Custom")
 @Controller('edit/custom')
