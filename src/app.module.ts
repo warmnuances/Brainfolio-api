@@ -11,7 +11,7 @@ import { PublicModule } from './public/public.module';
 // import { ProjectsModule } from './projects/projects.module';
 import { VisibilityModule } from './visibility/visibility.module';
 import { Profilev2Module } from './ProfileV2/profilev2.module';
-import { Experiencev2Module } from './portfolio/components/experience/experience.module';
+import { ExperienceModule } from './portfolio/components/experience/experience.module';
 
 
 @Module({
@@ -30,7 +30,8 @@ import { Experiencev2Module } from './portfolio/components/experience/experience
     PortfolioModule,
     PublicModule,
     VisibilityModule,
-    Profilev2Module
+    Profilev2Module,
+    ExperienceModule
   ],
 })
 
