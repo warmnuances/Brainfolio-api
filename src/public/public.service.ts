@@ -166,7 +166,7 @@ export class PublicService {
                 custom1['data'] = await this.customModel.find({username:username, type:'custom1'}).exec();
             }
             else{
-                custom1['sectionTitle'] = null;
+                custom1['sectionTitle'] = "Custom Section 1";
                 custom1['data'] = await this.customModel.find({username:username, type:'custom1'}).exec();
             }
             if(custom2SectionTitle){
@@ -174,7 +174,7 @@ export class PublicService {
                 custom2['data'] = await this.customModel.find({username:username, type:'custom2'}).exec();
             }
             else{
-                custom2['sectionTitle'] = null;
+                custom2['sectionTitle'] = "Custom Section 2";
                 custom2['data'] = await this.customModel.find({username:username, type:'custom2'}).exec();
             }
             result = {custom1: custom1, custom2: custom2}
