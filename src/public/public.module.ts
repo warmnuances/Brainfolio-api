@@ -13,8 +13,8 @@ import { VisibilitySchema } from '../schema/visibility.schema';
 import { UserReq } from './userReq.middleware';
 import { AuthV2Service } from '../Authv2/authv2.service';
 import { Profilev2, Profilev2Schema } from '../schema/profilev2.schema';
-// import { CustomSchema } from '../portfolio/components/custom/schemas/custom.schema';
-// import { CustomTitleSchema } from '../portfolio/components/custom/schemas/custom.title.schema';
+import { CustomSchema } from '../portfolio/components/custom/schemas/custom.schema';
+import { CustomTitleSchema } from '../portfolio/components/custom/schemas/custom.title.schema';
 
 @Module({
   imports: [
@@ -27,8 +27,8 @@ import { Profilev2, Profilev2Schema } from '../schema/profilev2.schema';
       { name: 'Visibility', schema: VisibilitySchema },
       { name: Userv2.name, schema: Userv2Schema },
       { name: Profilev2.name, schema: Profilev2Schema },
-      // { name: 'Custom', schema: CustomSchema },
-      // { name: 'CustomTitle', schema: CustomTitleSchema },
+      { name: 'Custom', schema: CustomSchema },
+      { name: 'CustomTitle', schema: CustomTitleSchema },
       
     ]),
     

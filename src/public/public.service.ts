@@ -24,8 +24,8 @@ export class PublicService {
         @InjectModel('Education') private readonly educationModel: Model<Education>,
         @InjectModel('Profile') private readonly profileModel: Model<Profile>,
         @InjectModel('Visibility') private readonly visibilityModel: Model<Visibility>,
-        // @InjectModel('Custom') private readonly customModel: Model<Custom>, 
-        // @InjectModel('CustomTitle') private readonly customTitleModel: Model<CustomTitle>, 
+        @InjectModel('Custom') private readonly customModel: Model<Custom>, 
+        @InjectModel('CustomTitle') private readonly customTitleModel: Model<CustomTitle>, 
         // @InjectModel('AllCustom') private readonly allCustomModel: Model<AllCustom>, 
     ) {}
 
@@ -152,32 +152,39 @@ export class PublicService {
         throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
     }
 
-    // async findCustom(username:string, token:string, user:Userv2): Promise<AllCustom> {
+    async findCustom(username:string, token:string, user:Userv2){
         
-    //     if(await this.verifyToken(username, token) || await this.portfolioIsPublic(username) || (user && username == user.username)){
-    //         let result:AllCustom
-
-    //         const custom1SectionTitle = await this.customTitleModel.findOne({username:username, type:'custom1'}).exec();
-    //         const custom2SectionTitle = await this.customTitleModel.findOne({username:username, type:'custom2'}).exec();
-
+        if(await this.verifyToken(username, token) || await this.portfolioIsPublic(username) || (user && username == user.username)){
+            let result = {}
+            let custom1 = {}
+            let custom2 = {}
+            const custom1SectionTitle = await this.customTitleModel.findOne({username:username, type:'custom1'});
+            const custom2SectionTitle = await this.customTitleModel.findOne({username:username, type:'custom2'});
+   
+            if(custom1SectionTitle){
+                custom1['sectionTitle'] = custom1SectionTitle.sectionTitle;
+                custom1['data'] = await this.customModel.find({username:username, type:'custom1'}).exec();
+            }
+            else{
+                custom1['sectionTitle'] = null;
+                custom1['data'] = await this.customModel.find({username:username, type:'custom1'}).exec();
+            }
+            if(custom2SectionTitle){
+                custom2['sectionTitle'] = custom2SectionTitle.sectionTitle;
+                custom2['data'] = await this.customModel.find({username:username, type:'custom2'}).exec();
+            }
+            else{
+                custom2['sectionTitle'] = null;
+                custom2['data'] = await this.customModel.find({username:username, type:'custom2'}).exec();
+            }
+            result = {custom1: custom1, custom2: custom2}
             
-            
-    //         if(custom1SectionTitle){
-    //             result.custom1.sectionTitle = custom1SectionTitle.sectionTitle;
-    //             result.custom1.data = await this.customModel.find({username:username, type:'custom1'}).exec();
-    //         }
-    //         if(custom2SectionTitle){
-    //             result.custom2.sectionTitle = custom2SectionTitle.sectionTitle;
-    //             result.custom2.data = await this.customModel.find({username:username, type:'custom2'}).exec();
-    //         }
-    //         console.log(result);
-            
-    //         if(result){
-    //             return result;
-    //         }
-    //     }
-    //     throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
-    // }
+            if(result){
+                return result;
+            }
+        }
+        throw new HttpException('Not Found', HttpStatus.NOT_FOUND)
+    }
 
     async portfolioIsPublic(username:string) {
         try{
