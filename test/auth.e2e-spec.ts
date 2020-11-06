@@ -67,8 +67,8 @@ describe('AuthController (e2e) ', () => {
       .post('/auth/signup')
       .send(user)
       .expect(response => {
-        expect(response.body.fullname).toBeUndefined();
-        expect(response.body.email).toBeUndefined();
+        expect(response.body.password).toBeUndefined();
+        expect(response.body.salt).toBeUndefined();
         expect(HttpStatus.CONFLICT)
         done()
       })

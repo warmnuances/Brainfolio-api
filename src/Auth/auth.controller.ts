@@ -21,6 +21,7 @@ export class AuthController {
     const User = await this.authService.signUp(createUserDto)
     delete User.password
     delete User.salt
+  
     return User
   }
 
