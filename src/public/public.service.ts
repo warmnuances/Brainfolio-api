@@ -214,7 +214,24 @@ export class PublicService {
         }
     }
 
+    async findUser(query): Promise<Userv2[]>  {
+        try{
+            const searchRegex = new RegExp(query.search )            
+            const model = await this.usersModel.find({'username': searchRegex}).exec();
+            if(model){
+                if(model.length > 3){
+                    return model.slice(0,3)
+                }else{
+                    return model
+                }
+            }else{                
+                throw Error
+            }
+        }catch(e){
+            throw new HttpException('Invalid request', HttpStatus.NOT_FOUND)
+        }
 
+    }
 
 
 }
