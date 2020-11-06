@@ -1,16 +1,28 @@
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Experience } from './schemas/experience.schema';
 import { ExperienceDto } from './dto/experience.dto';
 
 @Injectable()
 export class ExperienceService {
-    constructor(@InjectModel('Experience') private readonly experienceModel: Model<Experience>) {}
+    constructor(@InjectModel(Experience.name) private experienceModel: Model<Experience>) {}
 
     async create(experience: ExperienceDto): Promise<Experience> {
-        const newexperience = new this.experienceModel(experience);
-        return newexperience.save();
+        const newExperience = new this.experienceModel();
+        for(const [key,value] of Object.entries(experience)){
+            if(value){
+                newExperience[key] = value;
+            }
+        }
+
+        newExperience.save(err => {
+            if(err) {
+                console.log(err)
+            }
+        });
+
+        return newExperience;
     } 
     async findAll(username:string): Promise<Experience[]> {
         return this.experienceModel.find({username:username}).exec();

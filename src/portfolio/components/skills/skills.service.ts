@@ -6,7 +6,7 @@ import { SkillsDto } from './dto/skills.dto';
 
 @Injectable()
 export class SkillsService {
-    constructor(@InjectModel('Skills') private readonly skillsModel: Model<Skills>) {}
+    constructor(@InjectModel(Skills.name) private readonly skillsModel: Model<Skills>) {}
 
     async create(skills: SkillsDto): Promise<Skills> {
         const newskills = new this.skillsModel(skills);

@@ -11,7 +11,7 @@ import { Userv2, Userv2Schema } from '../schema/userv2.schema';
     PassportModule.register({ defaultStrategy: 'bearer', session: false}),
     MongooseModule.forFeature([
       { name: Userv2.name, schema: Userv2Schema },
-      { name: Profilev2.name, schema: Profilev2Schema }
+      { name: Profilev2.name, schema: Profilev2Schema } 
     ])
   ],
   controllers: [AuthV2Controller],
