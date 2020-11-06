@@ -34,7 +34,7 @@ export class ExperienceController {
     }
 
     @Put(':id')
-    update(@Body() updateExperienceDto: Experience, @Param() param): Promise<Experience> {
+    update(@Body() updateExperienceDto: ExperienceDto, @Param() param): Promise<Experience> {
         return this.experienceService.update(param.id, updateExperienceDto);
     }
 

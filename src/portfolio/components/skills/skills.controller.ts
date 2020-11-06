@@ -34,7 +34,7 @@ export class SkillsController {
     }
 
     @Put(':id')
-    update(@Body() updateSkillsDto: Skills, @Param() param): Promise<Skills> {
+    update(@Body() updateSkillsDto: SkillsDto, @Param() param): Promise<Skills> {
         return this.skillsService.update(param.id, updateSkillsDto);
     }
 
