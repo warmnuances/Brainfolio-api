@@ -35,7 +35,7 @@ export class EducationController {
     }
 
     @Put(':id')
-    update(@Body() updateEducationDto: Education, @Param() param): Promise<Education> {
+    update(@Body() updateEducationDto: EducationDto, @Param() param): Promise<Education> {
         return this.educationService.update(param.id,updateEducationDto);
     }
 
