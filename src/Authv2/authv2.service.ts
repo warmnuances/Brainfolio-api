@@ -25,7 +25,7 @@ export class AuthV2Service {
     const { uid, email } = payload;
     try{
       let user = await this.userModel.findOne({uid: uid});
-      console.log("User:", user)
+      
       if(!user){
         console.log("Here:", user)
         user = new this.userModel();

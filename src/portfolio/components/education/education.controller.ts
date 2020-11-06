@@ -25,6 +25,7 @@ export class EducationController {
 
     @Post()
     create(@Body(ValidationPipe) createEducationDto: EducationDto): Promise<Education> {
+        console.log("Education DTO:",createEducationDto)
         return this.educationService.create(createEducationDto);
     }
 
