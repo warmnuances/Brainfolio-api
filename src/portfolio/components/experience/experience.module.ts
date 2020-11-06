@@ -6,9 +6,10 @@ import { Experience, ExperienceSchema } from './schemas/experience.schema';
 import { AuthV2Module } from '../../../Authv2/authv2.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Experience.name, schema: ExperienceSchema }]), 
-  AuthV2Module, 
-  ExperienceModule
+  imports: [MongooseModule.forFeature([
+    { name: Experience.name, schema: ExperienceSchema }
+  ]), 
+  AuthV2Module 
 ],
   controllers: [ExperienceController],
   providers: [ExperienceService],

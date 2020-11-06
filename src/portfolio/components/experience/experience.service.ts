@@ -6,7 +6,7 @@ import { ExperienceDto } from './dto/experience.dto';
 
 @Injectable()
 export class ExperienceService {
-    constructor(@InjectModel(Experience.name) private readonly experienceModel: Model<Experience>) {}
+    constructor(@InjectModel(Experience.name) private experienceModel: Model<Experience>) {}
 
     async create(experience: ExperienceDto): Promise<Experience> {
         const newExperience = new this.experienceModel();
@@ -18,7 +18,7 @@ export class ExperienceService {
 
         newExperience.save(err => {
             if(err) {
-                throw new BadRequestException("(Experience Service create)Bad Input Value: ", err)
+                console.log(err)
             }
         });
 
