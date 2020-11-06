@@ -9,8 +9,8 @@ import { CustomTitle } from './schemas/custom.title.schema';
 @Injectable()
 export class CustomService {
     constructor(
-        @InjectModel('Custom') private readonly customModel: Model<Custom>, 
-        @InjectModel('CustomTitle') private readonly customTitleModel: Model<CustomTitle>, 
+        @InjectModel(Custom.name) private readonly customModel: Model<Custom>, 
+        @InjectModel(CustomTitle.name) private readonly customTitleModel: Model<CustomTitle>, 
         ) {}
 
     async create(custom: CustomDto): Promise<Custom> {
