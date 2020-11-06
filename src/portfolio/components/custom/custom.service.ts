@@ -1,10 +1,10 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Custom } from './interfaces/custom.interface'
+import { Custom } from './schemas/custom.schema';
 import { CustomDto } from './dto/custom.dto';
 import { CustomTitleDto } from './dto/custom.title.dto';
-import { CustomTitle } from './interfaces/custom.title.interface'
+import { CustomTitle } from './schemas/custom.title.schema';
 
 @Injectable()
 export class CustomService {

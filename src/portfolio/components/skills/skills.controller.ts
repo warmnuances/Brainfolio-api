@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, ValidationPipe, UseInterceptors, UploadedFiles, UseGuards } from '@nestjs/common';
 import { SkillsDto } from './dto/skills.dto';
 import { SkillsService } from './skills.service'
-import { Skills } from './interfaces/skills.interface'
+import { Skills } from './schemas/skills.schema';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../../Auth/get-user.decorator';
 import { User } from '../../../schema/user.schema';

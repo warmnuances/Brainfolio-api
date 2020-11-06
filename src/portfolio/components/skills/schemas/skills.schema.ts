@@ -10,11 +10,11 @@ export class Skills extends Document {
     @Prop()
     category: string;
 
-    @Prop({  })
+    @Prop()
     name: string;
 
-    @Prop({ })
-    rating : number;
+    @Prop()
+    rating: number;
 
 }
 
