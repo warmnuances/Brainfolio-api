@@ -25,7 +25,6 @@ export class CreateProfileDto {
     @ApiProperty()
     readonly address: string;
 
-    @IsOptional()
     @ApiProperty()
     readonly phone: string;
 

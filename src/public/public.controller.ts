@@ -60,10 +60,10 @@ export class PublicController {
       return this.publicService.findEducation(username, token, user);
     }
 
-    // @Get('custom/:username')
-    // getCustom(@Param() param, @Query() query, @GetUser() user:Userv2): Promise<AllCustom> {
-    //   const username = param.username;
-    //   const token = query.token;
-    //   return this.publicService.findCustom(username, token, user);
-    // } 
+    @Get('custom/:username')
+    getCustom(@Param() param, @Query() query, @GetUser() user:Userv2) {
+      const username = param.username;
+      const token = query.token;
+      return this.publicService.findCustom(username, token, user);
+    } 
 }
