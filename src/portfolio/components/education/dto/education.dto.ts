@@ -1,12 +1,16 @@
-import { IsNotEmpty} from "class-validator";
+import { IsOptional } from "class-validator";
 
 
 
 export class EducationDto {
+
+
     readonly username: string;
 
+    @IsOptional()
     readonly startDate: Date;
 
+    @IsOptional()
     readonly endDate: Date;
 
     readonly degree: string;
