@@ -10,9 +10,8 @@ import {PortfolioModule} from './portfolio/portfolio.module';
 import { PublicModule } from './public/public.module';
 // import { ProjectsModule } from './projects/projects.module';
 import { VisibilityModule } from './visibility/visibility.module';
-
 import { Profilev2Module } from './ProfileV2/profilev2.module';
-
+import { Experiencev2Module } from './portfolio/components/experience/experience.module';
 
 
 @Module({
