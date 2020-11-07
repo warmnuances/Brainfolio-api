@@ -149,6 +149,8 @@ export class ProjectsService {
             let updateFileName = projectModel.projectFileName;
             projectModel.projectFileName = await this.getFileNameAndLink(updateFileName, username, _id);
             
+
+
             return projectModel;
         }catch(e){
             throw new HttpException('Unable to save files', HttpStatus.CONFLICT)
@@ -194,7 +196,6 @@ export class ProjectsService {
             metadata: {
             contentType: fileToUpload.mimetype
             },
-            resumable: true
         })
         fileStream.on('error', function(err) {
             console.log(err);
@@ -209,9 +210,9 @@ export class ProjectsService {
 
     //Deleting files on the firebase
     async deleteFile(username, _id,  fileName) {
-        var bucket = admin.storage().bucket();
+        let bucket = admin.storage().bucket();
 
-        var fileNamePath = username + '/projects/' + _id + '/' + fileName;
+        let fileNamePath = username + '/projects/' + _id + '/' + fileName;
         await bucket.file(fileNamePath)
             .delete()
             .catch(err => console.error(err));
