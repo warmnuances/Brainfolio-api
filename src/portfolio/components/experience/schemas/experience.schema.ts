@@ -14,9 +14,6 @@ export class Experience extends Document {
   title: string;
 
   @Prop({ required: true })
-  name: string;
-
-  @Prop({ required: true })
   startDate: Date;
 
   @Prop({ required: true })
