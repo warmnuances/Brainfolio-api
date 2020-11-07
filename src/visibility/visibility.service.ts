@@ -37,7 +37,7 @@ export class VisibilityService {
         //Const for email data
         const sendName = tokenModel.name
         const toEmail = tokenModel.email
-        const link = process.env.FRONTEND_HOST + 'portfolio/' + username + '?token=' + tokenModel.token 
+        const link = process.env.FRONTEND_HOST + 'app/portfolio/' + username + '?token=' + tokenModel.token 
 
         //send email
         await sendEmail(fromName, sendName, toEmail, link)
