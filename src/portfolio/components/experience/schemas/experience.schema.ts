@@ -4,28 +4,28 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Experience extends Document {
-  @Prop({ required: true })
+  @Prop()
   username: string;
  
-  @Prop({ required: true })
+  @Prop()
   type: string;
 
-  @Prop({ required: true })
+  @Prop()
   title: string;
 
-  @Prop({ required: true })
+  @Prop()
   companyName: string;
 
-  @Prop({ required: true })
+  @Prop()
   startDate: Date;
 
-  @Prop({ required: true })
+  @Prop()
   endDate: Date;
 
-  @Prop({ required: false })
+  @Prop()
   description: string;
 
-  @Prop({required: false})
+  @Prop()
   onGoing: boolean;
 }
 

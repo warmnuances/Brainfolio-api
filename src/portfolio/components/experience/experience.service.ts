@@ -10,11 +10,14 @@ export class ExperienceService {
 
     async create(experience: ExperienceDto): Promise<Experience> {
         const newExperience = new this.experienceModel();
+
         for(const [key,value] of Object.entries(experience)){
             if(value){
                 newExperience[key] = value;
             }
         }
+
+        console.log("NewExperience", newExperience);
 
         newExperience.save(err => {
             if(err) {

@@ -37,7 +37,7 @@ export class Profilev2Service {
         createProfileDto :CreateProfileDto, 
         files,
         credential:Userv2,
-        ): Promise<Profilev2> {
+        ): Promise<Userv2> {
 
         
         
@@ -100,7 +100,7 @@ export class Profilev2Service {
         }
 
         user.save(err => err && console.log(err));
-        return user.profile
+        return user;
     }
 
 
