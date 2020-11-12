@@ -16,7 +16,7 @@ export class Experience extends Document {
   @Prop()
   companyName: string;
 
-  @Prop({ required: true })
+  @Prop()
   startDate: Date;
 
   @Prop()
