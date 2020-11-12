@@ -51,6 +51,7 @@ export class Profilev2Service {
         }else{
             for(const [key, value] of Object.entries(createProfileDto)){
                 
+ 
                 if(key === "profileImage" ){
                     if(!value){
                         user.profile[key] = "";
@@ -68,6 +69,15 @@ export class Profilev2Service {
                     }
                 }
 
+                else if(key === "isPublic"){
+                    if(value == "true"){
+                        user.profile[key] = true
+                    }
+                    else if(value == "false"){
+                        user.profile[key] = false
+                    }
+                    user.markModified(key)
+                }
                 else{
                     if(value){
                         user.profile[key] = value;

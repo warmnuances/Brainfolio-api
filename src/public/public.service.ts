@@ -89,14 +89,15 @@ export class PublicService {
         if(!user){
             throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
         }else{
-            
+            console.log("here1")
+            console.log(loggedUser)
             if(user.profile.isPublic || loggedUser.username == username){
                 let temp = {}
                 temp = {user: user}
-                if(user.profile.profileImage != undefined && user.profile.profileImage != null){
+                if(user.profile.profileImage != undefined && user.profile.profileImage != null && user.profile.profileImage != ""){
                     temp["profileImageLink"] = await this.getImageLink(user.profile.profileImage);
                 }
-                if(user.profile.backgroundImage != undefined && user.profile.backgroundImage != null){
+                if(user.profile.backgroundImage != undefined && user.profile.backgroundImage != null && user.profile.backgroundImage != ""){
                     temp["backgroundImageLink"] = await this.getImageLink(user.profile.backgroundImage);
                 }
                 return temp;
