@@ -89,8 +89,6 @@ export class PublicService {
         if(!user){
             throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
         }else{
-            console.log("here1")
-            console.log(loggedUser)
             if(user.profile.isPublic || loggedUser.username == username){
                 let temp = {}
                 temp = {user: user}
